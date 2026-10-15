@@ -86,6 +86,16 @@ public class AbyssalGuardianEntity extends HostileEntity {
         super.mobTick(world);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
+        // Auto-prune excess duplicate bosses from old unspaced world generation
+        if (this.age % 40 == 0 && world.getRegistryKey().equals(World.OVERWORLD)) {
+            if (!this.getCommandTags().contains("custom_boss") &&
+                !com.chainores.world.StructureLocator.isNearRegisteredStructure(world, com.chainores.world.StructureLocator.TYPE_FORGE, this.getBlockPos(), 80.0)) {
+                this.bossBar.clearPlayers();
+                this.discard();
+                return;
+            }
+        }
+
         // Ambient sculk particles
         if (world.random.nextInt(4) == 0) {
             world.spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY() + 0.5, this.getZ(), 2, 0.4, 0.4, 0.4, 0.02);

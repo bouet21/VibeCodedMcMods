@@ -29,7 +29,7 @@ public class NetherShrineFeature extends Feature<DefaultFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         ServerWorld serverWorld = context.getWorld().toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_SHRINE, context.getOrigin(), 750)) {
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_SHRINE, context.getOrigin(), 2000)) {
             return false;
         }
         return buildStructure(context.getWorld(), context.getOrigin(), context.getRandom());
@@ -37,7 +37,7 @@ public class NetherShrineFeature extends Feature<DefaultFeatureConfig> {
 
     public static boolean buildStructure(StructureWorldAccess world, BlockPos origin, Random random) {
         ServerWorld serverWorld = world.toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_SHRINE, origin, 750)) {
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_SHRINE, origin, 2000)) {
             return false;
         }
 

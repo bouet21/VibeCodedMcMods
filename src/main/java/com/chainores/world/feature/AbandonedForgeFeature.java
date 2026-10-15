@@ -30,7 +30,7 @@ public class AbandonedForgeFeature extends Feature<DefaultFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         ServerWorld serverWorld = context.getWorld().toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_FORGE, context.getOrigin(), 850)) {
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_FORGE, context.getOrigin(), 2500)) {
             return false;
         }
         return buildStructure(context.getWorld(), context.getOrigin(), context.getRandom());
@@ -38,7 +38,7 @@ public class AbandonedForgeFeature extends Feature<DefaultFeatureConfig> {
 
     public static boolean buildStructure(StructureWorldAccess world, BlockPos origin, Random random) {
         ServerWorld serverWorld = world.toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_FORGE, origin, 850)) {
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_FORGE, origin, 2500)) {
             return false;
         }
 

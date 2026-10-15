@@ -102,6 +102,16 @@ public class VoidColossusEntity extends HostileEntity {
         super.mobTick(world);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
+        // Auto-prune excess duplicate bosses from old unspaced world generation
+        if (this.age % 40 == 0 && world.getRegistryKey().equals(World.END)) {
+            if (!this.getCommandTags().contains("custom_boss") &&
+                !com.chainores.world.StructureLocator.isNearRegisteredStructure(world, com.chainores.world.StructureLocator.TYPE_ALTAR, this.getBlockPos(), 80.0)) {
+                this.bossBar.clearPlayers();
+                this.discard();
+                return;
+            }
+        }
+
         // Ambient void particles
         if (world.random.nextInt(3) == 0) {
             world.spawnParticles(ParticleTypes.PORTAL, this.getX(), this.getY() + 1.5, this.getZ(), 4, 0.5, 0.8, 0.5, 0.1);

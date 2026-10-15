@@ -91,6 +91,16 @@ public class NetherBehemothEntity extends HostileEntity {
         super.mobTick(world);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
+        // Auto-prune excess duplicate bosses from old unspaced world generation
+        if (this.age % 40 == 0 && world.getRegistryKey().equals(World.NETHER)) {
+            if (!this.getCommandTags().contains("custom_boss") &&
+                !com.chainores.world.StructureLocator.isNearRegisteredStructure(world, com.chainores.world.StructureLocator.TYPE_SHRINE, this.getBlockPos(), 80.0)) {
+                this.bossBar.clearPlayers();
+                this.discard();
+                return;
+            }
+        }
+
         // Ambient lava & flame aura
         if (world.random.nextInt(3) == 0) {
             world.spawnParticles(ParticleTypes.FLAME, this.getX(), this.getY() + 1.2, this.getZ(), 3, 0.6, 0.8, 0.6, 0.05);

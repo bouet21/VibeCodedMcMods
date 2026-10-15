@@ -120,6 +120,7 @@ public class BossSummonerItem extends Item {
         }
 
         boss.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, world.random.nextFloat() * 360f, 0.0f);
+        boss.addCommandTag("custom_boss");
 
         // Visual and auditory effects
         if (summonParticle != null) {

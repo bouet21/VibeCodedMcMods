@@ -34,7 +34,7 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
         }
 
         ServerWorld serverWorld = context.getWorld().toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 900)) {
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 2000)) {
             return false;
         }
         return buildStructure(context.getWorld(), origin, context.getRandom());
@@ -48,7 +48,7 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
         }
 
         ServerWorld serverWorld = world.toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 900)) {
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 2000)) {
             return false;
         }
 

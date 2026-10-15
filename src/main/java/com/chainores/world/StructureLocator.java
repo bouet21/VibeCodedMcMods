@@ -54,6 +54,25 @@ public class StructureLocator {
         ChainOresMod.LOGGER.info("Tracked {} at [{}, {}, {}] in {}", type, pos.getX(), pos.getY(), pos.getZ(), dimId);
     }
 
+    public static synchronized boolean isNearRegisteredStructure(ServerWorld world, String type, BlockPos pos, double maxDistance) {
+        if (world == null || pos == null) return false;
+        ensureLoaded(world);
+
+        String dimId = world.getRegistryKey().getValue().toString();
+        double maxDistSq = maxDistance * maxDistance;
+
+        for (StructureEntry entry : ENTRIES) {
+            if (entry.dimension().equals(dimId) && entry.type().equalsIgnoreCase(type)) {
+                double dx = entry.x() - pos.getX();
+                double dz = entry.z() - pos.getZ();
+                if ((dx * dx + dz * dz) <= maxDistSq) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static synchronized boolean isTooClose(ServerWorld world, String type, BlockPos pos, double minDistance) {
         if (world == null || pos == null) return false;
         ensureLoaded(world);
@@ -181,7 +200,35 @@ public class StructureLocator {
                             if (entry.type().equals(TYPE_FORGE) && !entry.dimension().contains("overworld")) return true;
                             return false;
                         });
-                        ChainOresMod.LOGGER.info("Loaded {} validated custom structures from save.", ENTRIES.size());
+
+                        // Enforce minimum 2000 blocks separation between structures of same type and dimension
+                        List<StructureEntry> pruned = new ArrayList<>();
+                        for (StructureEntry entry : ENTRIES) {
+                            boolean duplicate = false;
+                            for (StructureEntry kept : pruned) {
+                                if (kept.type().equalsIgnoreCase(entry.type()) && kept.dimension().equals(entry.dimension())) {
+                                    double dx = kept.x() - entry.x();
+                                    double dz = kept.z() - entry.z();
+                                    if (dx * dx + dz * dz < 2000.0 * 2000.0) {
+                                        duplicate = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!duplicate) {
+                                pruned.add(entry);
+                            }
+                        }
+
+                        if (pruned.size() != ENTRIES.size()) {
+                            ChainOresMod.LOGGER.info("Pruned {} excess clustered structures down to {} properly spaced structures.",
+                                    ENTRIES.size() - pruned.size(), pruned.size());
+                            ENTRIES.clear();
+                            ENTRIES.addAll(pruned);
+                            saveToFile(world);
+                        } else {
+                            ChainOresMod.LOGGER.info("Loaded {} validated custom structures from save.", ENTRIES.size());
+                        }
                     }
                 }
             }
