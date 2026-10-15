@@ -43,5 +43,10 @@ public class ChainOresClient implements ClientModInitializer {
                 com.chainores.registry.ModEntities.COSMIC_SOVEREIGN,
                 com.chainores.client.render.CosmicSovereignRenderer::new
         );
+
+        // Register dynamic modifier and gem socket tooltips
+        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
+            com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, lines);
+        });
     }
 }

@@ -41,6 +41,11 @@ public class ChainAxeItem extends Item {
     }
 
     @Override
+    public float getMiningSpeed(ItemStack stack, BlockState state) {
+        return super.getMiningSpeed(stack, state) * com.chainores.modifier.ChainModifiers.getMiningSpeedMultiplier(stack);
+    }
+
+    @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         super.appendTooltip(stack, context, displayComponent, textConsumer, type);
         textConsumer.accept(Text.literal("Nivel de Progresión: Tier " + tier).formatted(Formatting.DARK_PURPLE, Formatting.BOLD));
@@ -75,7 +80,18 @@ public class ChainAxeItem extends Item {
 
     @Override
     public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (target.getEntityWorld() instanceof ServerWorld) {
+        if (target.getEntityWorld() instanceof ServerWorld world) {
+            String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
+            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
+                attacker.heal(2.5f);
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+            }
+
+            float dmgMult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
+            if (dmgMult > 1.0f) {
+                target.damage(world, world.getDamageSources().magic(), (dmgMult - 1.0f) * 10.0f);
+            }
+
             if (tier >= 10) {
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1));
             }

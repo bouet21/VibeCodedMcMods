@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " R ",
+    "RNR",
+    " R "
+  ],
+  "key": {
+    "R": { "item": "minecraft:redstone_block" },
+    "N": { "item": "minecraft:netherite_ingot" }
+  },
+  "result": {
+    "id": "chainores:blood_gem",
+    "count": 1
+  }
+}

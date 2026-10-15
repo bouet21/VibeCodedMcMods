@@ -1,6 +1,6 @@
 package com.chainores.workstation;
 
-import com.chainores.gear.GearTier;
+import com.chainores.gear.*;
 import com.chainores.ore.OreRegistryData;
 import com.chainores.ore.OreTier;
 import com.chainores.registry.ModGear;
@@ -233,6 +233,42 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
             return new ItemStack(ModGear.GOD_OMNITOOL);
         }
 
+        // 4. Gem Socketing & Reforging in the Forge
+        if (isGear(input.getItem())) {
+            if (catalyst.isOf(com.chainores.registry.ModGems.BLOOD_GEM)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_BLOOD);
+                return out;
+            }
+            if (catalyst.isOf(com.chainores.registry.ModGems.VOID_GEM)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_VOID);
+                return out;
+            }
+            if (catalyst.isOf(com.chainores.registry.ModGems.CORE_GEM)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_CORE);
+                return out;
+            }
+            if (catalyst.isOf(com.chainores.registry.ModGems.GENESIS_GEM)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_GENESIS);
+                return out;
+            }
+            if (catalyst.isOf(net.minecraft.item.Items.AMETHYST_SHARD) || catalyst.isOf(net.minecraft.item.Items.LAPIS_LAZULI)) {
+                ItemStack out = input.copy();
+                String rolled = com.chainores.modifier.ChainModifiers.rollRandomReforge(net.minecraft.util.math.random.Random.create());
+                com.chainores.modifier.ChainModifiers.setReforge(out, rolled);
+                return out;
+            }
+        }
+
         return ItemStack.EMPTY;
+    }
+
+    private boolean isGear(Item item) {
+        return item instanceof ChainSwordItem || item instanceof ChainPickaxeItem || item instanceof ChainAxeItem ||
+                item instanceof ChainShovelItem || item instanceof ChainHoeItem || item instanceof ChainArmorItem ||
+                item instanceof GodOmnitoolItem || item instanceof ChainShieldItem;
     }
 }

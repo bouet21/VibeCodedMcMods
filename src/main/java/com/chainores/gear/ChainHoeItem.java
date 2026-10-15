@@ -38,6 +38,26 @@ public class ChainHoeItem extends Item {
     }
 
     @Override
+    public float getMiningSpeed(ItemStack stack, BlockState state) {
+        return super.getMiningSpeed(stack, state) * com.chainores.modifier.ChainModifiers.getMiningSpeedMultiplier(stack);
+    }
+
+    @Override
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        super.postHit(stack, target, attacker);
+        if (attacker.getEntityWorld() instanceof ServerWorld world) {
+            String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
+            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
+                attacker.heal(2.0f);
+            }
+            float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
+            if (mult > 1.0f) {
+                target.damage(world, world.getDamageSources().magic(), (mult - 1.0f) * 6.0f);
+            }
+        }
+    }
+
+    @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         super.appendTooltip(stack, context, displayComponent, textConsumer, type);
         textConsumer.accept(Text.literal("Nivel de Progresión: Tier " + tier).formatted(Formatting.DARK_PURPLE, Formatting.BOLD));

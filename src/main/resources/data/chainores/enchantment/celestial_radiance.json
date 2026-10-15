@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.chainores.celestial_radiance"
+  },
+  "supported_items": "#minecraft:enchantable/armor",
+  "primary_items": "#minecraft:enchantable/armor",
+  "weight": 1,
+  "max_level": 2,
+  "min_cost": {
+    "base": 25,
+    "per_level_above_first": 15
+  },
+  "max_cost": {
+    "base": 75,
+    "per_level_above_first": 15
+  },
+  "anvil_cost": 8,
+  "slots": [
+    "armor"
+  ]
+}

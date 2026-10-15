@@ -43,6 +43,12 @@ public class ModItemGroups {
                     entries.add(ModBossItems.COSMIC_SINGULARITY);
                     entries.add(ModBossItems.COSMIC_TROPHY);
 
+                    // Phase 4 Socketable Gems
+                    entries.add(ModGems.BLOOD_GEM);
+                    entries.add(ModGems.VOID_GEM);
+                    entries.add(ModGems.CORE_GEM);
+                    entries.add(ModGems.GENESIS_GEM);
+
                     // Weapons, Tools, and Armors (Grouped by milestone sets)
                     for (ModGear.GearSet gear : ModGear.GEAR_SETS) {
                         entries.add(gear.sword);

@@ -72,6 +72,30 @@ public class ChainSwordItem extends Item {
         if (attacker.getEntityWorld().isClient()) return;
         ServerWorld world = (ServerWorld) attacker.getEntityWorld();
 
+        // Gem Modifiers
+        String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
+        if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
+            attacker.heal(3.0f); // 1.5 hearts lifesteal
+            world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+        } else if (com.chainores.modifier.ChainModifiers.GEM_GENESIS.equals(gem)) {
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.TRIGGERED);
+            if (lightning != null) {
+                lightning.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
+                lightning.setCosmetic(true);
+                world.spawnEntity(lightning);
+            }
+            target.damage(world, attacker.getDamageSources().magic(), 25.0f);
+        } else if (com.chainores.modifier.ChainModifiers.GEM_VOID.equals(gem)) {
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 40, 1));
+        }
+
+        // Reforge Damage Multiplier
+        float dmgMult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
+        if (dmgMult > 1.0f && attacker instanceof PlayerEntity pe) {
+            float extra = (dmgMult - 1.0f) * 12.0f;
+            target.damage(world, attacker.getDamageSources().playerAttack(pe), extra);
+        }
+
         switch (tier) {
             case 1 -> {
                 // Tier 1 (Cobreprita): Descarga Estática

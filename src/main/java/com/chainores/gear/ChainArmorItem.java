@@ -147,6 +147,10 @@ public class ChainArmorItem extends Item {
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, world, entity, slot);
         if (entity instanceof ServerPlayerEntity player) {
+            if (slot == EquipmentSlot.HEAD || slot == EquipmentSlot.CHEST || slot == EquipmentSlot.LEGS || slot == EquipmentSlot.FEET) {
+                applyGemAndReforgeArmorBuffs(player, stack);
+            }
+
             // Apply perks from the chestplate slot once per tick to avoid quadruplicating
             if (slot == EquipmentSlot.CHEST && this.equipmentType == EquipmentType.CHESTPLATE) {
                 Map<Integer, Integer> tierCounts = new HashMap<>();
@@ -203,6 +207,44 @@ public class ChainArmorItem extends Item {
                 player.velocityDirty = true;
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_BREEZE_WIND_BURST, net.minecraft.sound.SoundCategory.PLAYERS, 1.0f, 1.2f);
                 player.sendMessage(Text.literal("⚡ ¡DASH IMPULSO EJECUTADO!").formatted(Formatting.AQUA, Formatting.BOLD), true);
+            }
+        }
+    }
+
+    private void applyGemAndReforgeArmorBuffs(ServerPlayerEntity player, ItemStack stack) {
+        String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
+        if (gem != null) {
+            switch (gem) {
+                case com.chainores.modifier.ChainModifiers.GEM_BLOOD ->
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 40, 0, true, false));
+                case com.chainores.modifier.ChainModifiers.GEM_VOID -> {
+                    if (player.fallDistance > 2.0f && !player.isOnGround()) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 40, 0, true, false));
+                    }
+                }
+                case com.chainores.modifier.ChainModifiers.GEM_CORE ->
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, 0, true, false));
+                case com.chainores.modifier.ChainModifiers.GEM_GENESIS -> {
+                    if (!player.hasStatusEffect(StatusEffects.ABSORPTION)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1, true, false));
+                    }
+                }
+            }
+        }
+
+        String reforge = com.chainores.modifier.ChainModifiers.getReforge(stack);
+        if (reforge != null) {
+            switch (reforge) {
+                case com.chainores.modifier.ChainModifiers.REFORGE_DIVINE ->
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 0, true, false));
+                case com.chainores.modifier.ChainModifiers.REFORGE_SWIFT ->
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, 0, true, false));
+                case com.chainores.modifier.ChainModifiers.REFORGE_FIERCE ->
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 40, 0, true, false));
+                case com.chainores.modifier.ChainModifiers.REFORGE_TITANIC ->
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 0, true, false));
+                case com.chainores.modifier.ChainModifiers.REFORGE_LEGENDARY ->
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 40, 0, true, false));
             }
         }
     }

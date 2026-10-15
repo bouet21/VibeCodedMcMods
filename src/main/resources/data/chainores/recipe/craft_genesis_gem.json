@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " D ",
+    "DSD",
+    " D "
+  ],
+  "key": {
+    "D": { "item": "minecraft:diamond_block" },
+    "S": { "item": "minecraft:nether_star" }
+  },
+  "result": {
+    "id": "chainores:genesis_gem",
+    "count": 1
+  }
+}

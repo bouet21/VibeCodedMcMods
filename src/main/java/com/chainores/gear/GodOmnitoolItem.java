@@ -41,7 +41,7 @@ public class GodOmnitoolItem extends Item {
 
     @Override
     public float getMiningSpeed(ItemStack stack, BlockState state) {
-        return 65.0f; // Universal god mining speed
+        return 65.0f * com.chainores.modifier.ChainModifiers.getMiningSpeedMultiplier(stack);
     }
 
     @Override
@@ -75,6 +75,20 @@ public class GodOmnitoolItem extends Item {
                 serverWorld.spawnEntity(lightning);
             }
             target.damage(serverWorld, serverWorld.getDamageSources().magic(), 120.0f);
+
+            // Gem Modifiers
+            String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
+            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
+                attacker.heal(6.0f);
+                serverWorld.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 3, 0.2, 0.2, 0.2, 0.0);
+            }
+
+            // Reforge Damage Boost
+            float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
+            if (mult > 1.0f) {
+                target.damage(serverWorld, serverWorld.getDamageSources().magic(), (mult - 1.0f) * 60.0f);
+            }
+
             attacker.playSound(SoundEvents.ITEM_MACE_SMASH_GROUND_HEAVY, 1.2f, 1.0f);
         }
         super.postHit(stack, target, attacker);

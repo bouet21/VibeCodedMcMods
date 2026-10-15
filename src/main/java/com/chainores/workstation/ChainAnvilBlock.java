@@ -85,7 +85,45 @@ public class ChainAnvilBlock extends Block {
 
             ServerWorld serverWorld = (ServerWorld) world;
 
-            // Scenario A: Damaged item -> Repair
+            // Scenario 1: Gem Socketing (if holding a gem in offhand)
+            ItemStack offhand = player.getOffHandStack();
+            if (!offhand.isEmpty()) {
+                String gemId = null;
+                if (offhand.isOf(com.chainores.registry.ModGems.BLOOD_GEM)) gemId = com.chainores.modifier.ChainModifiers.GEM_BLOOD;
+                else if (offhand.isOf(com.chainores.registry.ModGems.VOID_GEM)) gemId = com.chainores.modifier.ChainModifiers.GEM_VOID;
+                else if (offhand.isOf(com.chainores.registry.ModGems.CORE_GEM)) gemId = com.chainores.modifier.ChainModifiers.GEM_CORE;
+                else if (offhand.isOf(com.chainores.registry.ModGems.GENESIS_GEM)) gemId = com.chainores.modifier.ChainModifiers.GEM_GENESIS;
+
+                if (gemId != null) {
+                    com.chainores.modifier.ChainModifiers.setGem(held, gemId);
+                    if (!player.getAbilities().creativeMode) offhand.decrement(1);
+
+                    world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.2f, 1.3f);
+                    world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0f, 1.2f);
+                    serverWorld.spawnParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 15, 0.3, 0.3, 0.3, 0.1);
+
+                    player.sendMessage(Text.literal("◆ ¡Gema engarzada con éxito en tu equipamiento!").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD), true);
+                    return ActionResult.SUCCESS;
+                }
+            }
+
+            // Scenario 2: Reforging (Shift-click or holding Amethyst Shard)
+            if (player.isSneaking() || (!offhand.isEmpty() && offhand.isOf(Items.AMETHYST_SHARD))) {
+                if (!offhand.isEmpty() && offhand.isOf(Items.AMETHYST_SHARD)) {
+                    if (!player.getAbilities().creativeMode) offhand.decrement(1);
+                }
+                String newReforge = com.chainores.modifier.ChainModifiers.rollRandomReforge(world.random);
+                com.chainores.modifier.ChainModifiers.setReforge(held, newReforge);
+
+                world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.BLOCKS, 1.2f, 1.2f);
+                world.playSound(null, pos, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 0.9f, 1.1f);
+                serverWorld.spawnParticles(ParticleTypes.FIREWORK, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 20, 0.4, 0.4, 0.4, 0.1);
+
+                player.sendMessage(Text.literal("⚡ ¡Arma reforjada! Nuevo prefijo: " + newReforge.toUpperCase()).formatted(Formatting.GOLD, Formatting.BOLD), true);
+                return ActionResult.SUCCESS;
+            }
+
+            // Scenario 3: Damaged item -> Repair
             if (held.isDamaged()) {
                 Item requiredIngot = getRequiredIngot(tier);
                 int slot = findSlotWithItem(player.getInventory(), requiredIngot);
@@ -106,7 +144,7 @@ public class ChainAnvilBlock extends Block {
                 return ActionResult.SUCCESS;
             }
 
-            // Scenario B: Undamaged item -> Temple / Sharpening Buff
+            // Scenario 4: Undamaged item -> Temple / Sharpening Buff
             int lapisSlot = findSlotWithItem(player.getInventory(), Items.LAPIS_LAZULI);
             int redstoneSlot = findSlotWithItem(player.getInventory(), Items.REDSTONE);
 
@@ -122,7 +160,7 @@ public class ChainAnvilBlock extends Block {
 
                 player.sendMessage(Text.literal("★ ¡Templado de Yunque Activo: Fuerza II y Prisa II por 10 min!").formatted(Formatting.GOLD, Formatting.BOLD), true);
             } else {
-                player.sendMessage(Text.literal("ℹ Ítem en perfecto estado. Usa 1 Lapislázuli o Redstone para templarlo.").formatted(Formatting.AQUA), true);
+                player.sendMessage(Text.literal("ℹ Usa Shift para Reforjar, sostén una Gema en mano secundaria para engarzar, o Lapis/Redstone para templar.").formatted(Formatting.AQUA), true);
             }
             return ActionResult.SUCCESS;
         }
