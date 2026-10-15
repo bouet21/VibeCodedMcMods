@@ -234,27 +234,29 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
         }
 
         // 4. Gem Socketing & Reforging in the Forge
+        if (com.chainores.modifier.ChainModifiers.isSocketableItem(input)) {
+            if (catalyst.isOf(com.chainores.registry.ModGems.BLOOD_GEM) && com.chainores.modifier.ChainModifiers.canAddGem(input)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.addGem(out, com.chainores.modifier.ChainModifiers.GEM_BLOOD);
+                return out;
+            }
+            if (catalyst.isOf(com.chainores.registry.ModGems.VOID_GEM) && com.chainores.modifier.ChainModifiers.canAddGem(input)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.addGem(out, com.chainores.modifier.ChainModifiers.GEM_VOID);
+                return out;
+            }
+            if (catalyst.isOf(com.chainores.registry.ModGems.CORE_GEM) && com.chainores.modifier.ChainModifiers.canAddGem(input)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.addGem(out, com.chainores.modifier.ChainModifiers.GEM_CORE);
+                return out;
+            }
+            if (catalyst.isOf(com.chainores.registry.ModGems.GENESIS_GEM) && com.chainores.modifier.ChainModifiers.canAddGem(input)) {
+                ItemStack out = input.copy();
+                com.chainores.modifier.ChainModifiers.addGem(out, com.chainores.modifier.ChainModifiers.GEM_GENESIS);
+                return out;
+            }
+        }
         if (isGear(input.getItem())) {
-            if (catalyst.isOf(com.chainores.registry.ModGems.BLOOD_GEM)) {
-                ItemStack out = input.copy();
-                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_BLOOD);
-                return out;
-            }
-            if (catalyst.isOf(com.chainores.registry.ModGems.VOID_GEM)) {
-                ItemStack out = input.copy();
-                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_VOID);
-                return out;
-            }
-            if (catalyst.isOf(com.chainores.registry.ModGems.CORE_GEM)) {
-                ItemStack out = input.copy();
-                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_CORE);
-                return out;
-            }
-            if (catalyst.isOf(com.chainores.registry.ModGems.GENESIS_GEM)) {
-                ItemStack out = input.copy();
-                com.chainores.modifier.ChainModifiers.setGem(out, com.chainores.modifier.ChainModifiers.GEM_GENESIS);
-                return out;
-            }
             if (catalyst.isOf(net.minecraft.item.Items.AMETHYST_SHARD) || catalyst.isOf(net.minecraft.item.Items.LAPIS_LAZULI)) {
                 ItemStack out = input.copy();
                 String rolled = com.chainores.modifier.ChainModifiers.rollRandomReforge(net.minecraft.util.math.random.Random.create());

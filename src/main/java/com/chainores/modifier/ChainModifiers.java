@@ -6,6 +6,8 @@ import com.chainores.gear.ChainHoeItem;
 import com.chainores.gear.ChainPickaxeItem;
 import com.chainores.gear.ChainShovelItem;
 import com.chainores.gear.ChainSwordItem;
+import com.chainores.gear.DragonBreathBowItem;
+import com.chainores.gear.GalacticCrossbowItem;
 import com.chainores.gear.GodOmnitoolItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -38,8 +40,18 @@ public class ChainModifiers {
     public static final String REFORGE_SWIFT = "swift";
     public static final String REFORGE_TITANIC = "titanic";
 
+    public static boolean isSocketableItem(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        Item item = stack.getItem();
+        return item instanceof ChainArmorItem ||
+               item instanceof ChainSwordItem ||
+               item instanceof DragonBreathBowItem ||
+               item instanceof GalacticCrossbowItem ||
+               item instanceof GodOmnitoolItem;
+    }
+
     public static int getMaxSockets(ItemStack stack) {
-        if (stack.isEmpty()) return 0;
+        if (stack.isEmpty() || !isSocketableItem(stack)) return 0;
         Item item = stack.getItem();
 
         if (item instanceof ChainArmorItem armor) {
@@ -53,41 +65,13 @@ public class ChainModifiers {
 
         if (item instanceof ChainSwordItem sword) {
             int t = sword.getTier();
-            if (t <= 1) return 0;
-            if (t <= 30) return 1;
-            if (t <= 115) return 2;
-            return 3;
+            if (t <= 1) return 0;       // T1: Demasiado débil
+            if (t <= 30) return 1;      // T10 - T30: 1 slot
+            if (t <= 115) return 2;     // T40 - T115: 2 slots
+            return 3;                   // T125 - T150: 3 slots
         }
 
-        if (item instanceof ChainPickaxeItem pickaxe) {
-            int t = pickaxe.getTier();
-            if (t <= 1) return 0;
-            if (t <= 30) return 1;
-            if (t <= 115) return 2;
-            return 3;
-        }
-
-        if (item instanceof ChainAxeItem axe) {
-            int t = axe.getTier();
-            if (t <= 1) return 0;
-            if (t <= 30) return 1;
-            if (t <= 115) return 2;
-            return 3;
-        }
-
-        if (item instanceof ChainShovelItem shovel) {
-            int t = shovel.getTier();
-            if (t <= 1) return 0;
-            if (t <= 30) return 1;
-            if (t <= 115) return 2;
-            return 3;
-        }
-
-        if (item instanceof ChainHoeItem hoe) {
-            int t = hoe.getTier();
-            if (t <= 1) return 0;
-            if (t <= 30) return 1;
-            if (t <= 115) return 2;
+        if (item instanceof DragonBreathBowItem || item instanceof GalacticCrossbowItem) {
             return 3;
         }
 
@@ -236,11 +220,16 @@ public class ChainModifiers {
             }
         }
 
+        // Only weapons and armors show gem sockets!
+        if (!isSocketableItem(stack)) {
+            return;
+        }
+
         int maxSockets = getMaxSockets(stack);
         if (maxSockets <= 0) {
             tooltip.add(Text.literal("Ranuras de Gemas: ").formatted(Formatting.GRAY)
                     .append(Text.literal("[Sin Ranuras]").formatted(Formatting.DARK_GRAY))
-                    .append(Text.literal(" (Material demasiado débil)").formatted(Formatting.DARK_RED, Formatting.ITALIC)));
+                    .append(Text.literal(" (Tier inicial demasiado débil)").formatted(Formatting.DARK_RED, Formatting.ITALIC)));
         } else {
             List<String> gems = getGems(stack);
             tooltip.add(Text.literal("Ranuras de Gemas [" + gems.size() + "/" + maxSockets + "]:").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
