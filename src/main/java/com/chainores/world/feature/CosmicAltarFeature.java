@@ -27,10 +27,31 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        return buildStructure(context.getWorld(), context.getOrigin(), context.getRandom());
+        BlockPos origin = context.getOrigin();
+        double distFromCenterSq = (double) origin.getX() * origin.getX() + (double) origin.getZ() * origin.getZ();
+        if (distFromCenterSq < 600.0 * 600.0) {
+            return false;
+        }
+
+        ServerWorld serverWorld = context.getWorld().toServerWorld();
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 900)) {
+            return false;
+        }
+        return buildStructure(context.getWorld(), origin, context.getRandom());
     }
 
     public static boolean buildStructure(StructureWorldAccess world, BlockPos origin, Random random) {
+        // Prevent generating on central End island (dragon fight zone)
+        double distFromCenterSq = (double) origin.getX() * origin.getX() + (double) origin.getZ() * origin.getZ();
+        if (distFromCenterSq < 600.0 * 600.0) {
+            return false;
+        }
+
+        ServerWorld serverWorld = world.toServerWorld();
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 900)) {
+            return false;
+        }
+
         // Find solid End ground
         BlockPos basePos = origin;
         while (basePos.getY() > 30 && world.getBlockState(basePos.down()).isAir()) {
@@ -130,7 +151,6 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
         }
 
         // 6. Spawn Boss: Coloso del Vacío in Grand Arena
-        ServerWorld serverWorld = world.toServerWorld();
         if (serverWorld != null) {
             VoidColossusEntity boss = ModEntities.VOID_COLOSSUS.create(serverWorld, SpawnReason.STRUCTURE);
             if (boss != null) {

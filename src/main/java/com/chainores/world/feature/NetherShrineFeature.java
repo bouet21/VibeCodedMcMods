@@ -28,10 +28,19 @@ public class NetherShrineFeature extends Feature<DefaultFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+        ServerWorld serverWorld = context.getWorld().toServerWorld();
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_SHRINE, context.getOrigin(), 750)) {
+            return false;
+        }
         return buildStructure(context.getWorld(), context.getOrigin(), context.getRandom());
     }
 
     public static boolean buildStructure(StructureWorldAccess world, BlockPos origin, Random random) {
+        ServerWorld serverWorld = world.toServerWorld();
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_SHRINE, origin, 750)) {
+            return false;
+        }
+
         // Find solid floor with ceiling clearance in Nether
         BlockPos basePos = null;
         int startY = Math.max(32, Math.min(80, origin.getY()));
@@ -157,7 +166,6 @@ public class NetherShrineFeature extends Feature<DefaultFeatureConfig> {
         }
 
         // 6. Spawn Boss: Behemoth del Nether in Colosseum
-        ServerWorld serverWorld = world.toServerWorld();
         if (serverWorld != null) {
             NetherBehemothEntity boss = ModEntities.NETHER_BEHEMOTH.create(serverWorld, SpawnReason.STRUCTURE);
             if (boss != null) {

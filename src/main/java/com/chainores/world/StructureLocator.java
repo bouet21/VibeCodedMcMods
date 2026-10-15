@@ -54,6 +54,25 @@ public class StructureLocator {
         ChainOresMod.LOGGER.info("Tracked {} at [{}, {}, {}] in {}", type, pos.getX(), pos.getY(), pos.getZ(), dimId);
     }
 
+    public static synchronized boolean isTooClose(ServerWorld world, String type, BlockPos pos, double minDistance) {
+        if (world == null || pos == null) return false;
+        ensureLoaded(world);
+
+        String dimId = world.getRegistryKey().getValue().toString();
+        double minDistanceSq = minDistance * minDistance;
+
+        for (StructureEntry entry : ENTRIES) {
+            if (entry.dimension().equals(dimId) && entry.type().equalsIgnoreCase(type)) {
+                double dx = entry.x() - pos.getX();
+                double dz = entry.z() - pos.getZ();
+                if ((dx * dx + dz * dz) < minDistanceSq) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static boolean isValidDimensionForType(ServerWorld world, String type) {
         if (type == null || type.isEmpty()) return true;
         if (type.equalsIgnoreCase(TYPE_FORGE)) {
@@ -114,9 +133,9 @@ public class StructureLocator {
             }
         }
 
-        // Generate ~140 blocks offset from player in a safe chunk
-        int targetX = ((playerPos.getX() >> 4) + 8) * 16 + 8;
-        int targetZ = ((playerPos.getZ() >> 4) + 8) * 16 + 8;
+        // Generate ~450 blocks offset from player in a safe chunk
+        int targetX = ((playerPos.getX() >> 4) + 28) * 16 + 8;
+        int targetZ = ((playerPos.getZ() >> 4) + 28) * 16 + 8;
         int targetY;
 
         BlockPos targetPos;

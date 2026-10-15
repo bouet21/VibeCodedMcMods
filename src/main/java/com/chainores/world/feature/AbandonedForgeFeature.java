@@ -29,10 +29,19 @@ public class AbandonedForgeFeature extends Feature<DefaultFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+        ServerWorld serverWorld = context.getWorld().toServerWorld();
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_FORGE, context.getOrigin(), 850)) {
+            return false;
+        }
         return buildStructure(context.getWorld(), context.getOrigin(), context.getRandom());
     }
 
     public static boolean buildStructure(StructureWorldAccess world, BlockPos origin, Random random) {
+        ServerWorld serverWorld = world.toServerWorld();
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_FORGE, origin, 850)) {
+            return false;
+        }
+
         if (origin.getY() < -50 || origin.getY() > 260) {
             return false;
         }
@@ -153,7 +162,6 @@ public class AbandonedForgeFeature extends Feature<DefaultFeatureConfig> {
         }
 
         // 7. Spawn Boss in Arena: Guardián del Abismo
-        ServerWorld serverWorld = world.toServerWorld();
         if (serverWorld != null) {
             AbyssalGuardianEntity boss = ModEntities.ABYSSAL_GUARDIAN.create(serverWorld, SpawnReason.STRUCTURE);
             if (boss != null) {
