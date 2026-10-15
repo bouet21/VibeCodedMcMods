@@ -15,6 +15,7 @@ public class ModItems {
 
     public static Item GUIDE_BOOK;
     public static Item CHAIN_SMITHING_TEMPLATE;
+    public static Item PROSPECTOR_ROD;
 
     public static void initialize() {
         // Register Guide Book
@@ -31,6 +32,14 @@ public class ModItems {
                 Registries.ITEM,
                 templateKey,
                 new Item(new Item.Settings().registryKey(templateKey).maxCount(64))
+        );
+
+        // Register Prospector Rod
+        RegistryKey<Item> rodKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("prospector_rod"));
+        PROSPECTOR_ROD = Registry.register(
+                Registries.ITEM,
+                rodKey,
+                new com.chainores.item.ProspectorRodItem(new Item.Settings().registryKey(rodKey).maxCount(1))
         );
 
         // Register items for each tier

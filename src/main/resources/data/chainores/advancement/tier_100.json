@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_90",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_100"},
+    "title": {"text": "Latido Carmesí"},
+    "description": {"text": "Extrae el Corazón del Nether y alcanza el gran hito Tier 100"},
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_100"}]
+      }
+    }
+  }
+}

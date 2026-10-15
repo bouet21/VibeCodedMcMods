@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:leggings_tier_1",
+    "chainores:leggings_tier_10",
+    "chainores:leggings_tier_20",
+    "chainores:leggings_tier_30",
+    "chainores:leggings_tier_40",
+    "chainores:leggings_tier_50",
+    "chainores:leggings_tier_60",
+    "chainores:leggings_tier_70",
+    "chainores:leggings_tier_80",
+    "chainores:leggings_tier_90",
+    "chainores:leggings_tier_100",
+    "chainores:leggings_tier_115",
+    "chainores:leggings_tier_125",
+    "chainores:leggings_tier_135",
+    "chainores:leggings_tier_140",
+    "chainores:leggings_tier_150"
+  ]
+}

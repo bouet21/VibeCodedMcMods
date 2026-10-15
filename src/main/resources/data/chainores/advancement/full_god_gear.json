@@ -1,0 +1,25 @@
+{
+  "parent": "chainores:tier_150",
+  "display": {
+    "icon": {"id": "chainores:chestplate_tier_150"},
+    "title": {"text": "★ DIOS DE LA CADENA ★"},
+    "description": {"text": "Equipa el set completo de la Armadura de Metal de los Dioses (Tier 150)"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_full_gear": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {"items": "chainores:helmet_tier_150"},
+          {"items": "chainores:chestplate_tier_150"},
+          {"items": "chainores:leggings_tier_150"},
+          {"items": "chainores:boots_tier_150"}
+        ]
+      }
+    }
+  }
+}

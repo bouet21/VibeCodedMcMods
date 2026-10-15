@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "chainores:chain_smithing_template",
-  "base": "chainores:helmet_tier_135",
-  "addition": "chainores:ingot_tier_140",
-  "result": {
-    "id": "chainores:helmet_tier_140"
-  }
-}

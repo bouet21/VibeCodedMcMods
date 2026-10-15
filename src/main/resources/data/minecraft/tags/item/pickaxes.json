@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:pickaxe_tier_1",
+    "chainores:pickaxe_tier_10",
+    "chainores:pickaxe_tier_20",
+    "chainores:pickaxe_tier_30",
+    "chainores:pickaxe_tier_40",
+    "chainores:pickaxe_tier_50",
+    "chainores:pickaxe_tier_60",
+    "chainores:pickaxe_tier_70",
+    "chainores:pickaxe_tier_80",
+    "chainores:pickaxe_tier_90",
+    "chainores:pickaxe_tier_100",
+    "chainores:pickaxe_tier_115",
+    "chainores:pickaxe_tier_125",
+    "chainores:pickaxe_tier_135",
+    "chainores:pickaxe_tier_140",
+    "chainores:pickaxe_tier_150"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_60",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_70"},
+    "title": {"text": "Ecos de la Oscuridad"},
+    "description": {"text": "Adéntrate en el Deep Dark y extrae Sculk Primordial (T70)"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_70"}]
+      }
+    }
+  }
+}

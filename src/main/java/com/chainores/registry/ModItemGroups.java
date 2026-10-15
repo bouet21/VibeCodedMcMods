@@ -20,9 +20,10 @@ public class ModItemGroups {
                 .icon(() -> new ItemStack(ModItems.GUIDE_BOOK))
                 .displayName(Text.translatable("itemGroup.chainores.main"))
                 .entries((context, entries) -> {
-                    // First entries: Guide Book & Smithing Template
+                    // First entries: Guide Book & Smithing Template & Prospector Rod
                     entries.add(ModItems.GUIDE_BOOK);
                     entries.add(ModItems.CHAIN_SMITHING_TEMPLATE);
+                    entries.add(ModItems.PROSPECTOR_ROD);
 
                     // Weapons, Tools, and Armors (Grouped by milestone sets)
                     for (ModGear.GearSet gear : ModGear.GEAR_SETS) {

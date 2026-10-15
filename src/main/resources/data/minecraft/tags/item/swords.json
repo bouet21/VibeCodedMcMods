@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:sword_tier_1",
+    "chainores:sword_tier_10",
+    "chainores:sword_tier_20",
+    "chainores:sword_tier_30",
+    "chainores:sword_tier_40",
+    "chainores:sword_tier_50",
+    "chainores:sword_tier_60",
+    "chainores:sword_tier_70",
+    "chainores:sword_tier_80",
+    "chainores:sword_tier_90",
+    "chainores:sword_tier_100",
+    "chainores:sword_tier_115",
+    "chainores:sword_tier_125",
+    "chainores:sword_tier_135",
+    "chainores:sword_tier_140",
+    "chainores:sword_tier_150"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:helmet_tier_1",
+    "chainores:helmet_tier_10",
+    "chainores:helmet_tier_20",
+    "chainores:helmet_tier_30",
+    "chainores:helmet_tier_40",
+    "chainores:helmet_tier_50",
+    "chainores:helmet_tier_60",
+    "chainores:helmet_tier_70",
+    "chainores:helmet_tier_80",
+    "chainores:helmet_tier_90",
+    "chainores:helmet_tier_100",
+    "chainores:helmet_tier_115",
+    "chainores:helmet_tier_125",
+    "chainores:helmet_tier_135",
+    "chainores:helmet_tier_140",
+    "chainores:helmet_tier_150"
+  ]
+}

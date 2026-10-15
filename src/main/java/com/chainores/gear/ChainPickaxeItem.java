@@ -1,8 +1,10 @@
 package com.chainores.gear;
 
+import com.chainores.block.ChainOreBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.type.TooltipDisplayComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -12,16 +14,23 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class ChainPickaxeItem extends Item {
     private final int tier;
+    private static boolean IS_CHAINING = false;
 
     public ChainPickaxeItem(ToolMaterial material, int tier, float bonusDamage, Settings settings) {
         super(settings.pickaxe(material, bonusDamage, -2.8f));
@@ -36,9 +45,14 @@ public class ChainPickaxeItem extends Item {
     public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         super.appendTooltip(stack, context, displayComponent, textConsumer, type);
         textConsumer.accept(Text.literal("Nivel de Progresión: Tier " + tier).formatted(Formatting.DARK_PURPLE, Formatting.BOLD));
+        
+        int maxVein = Math.min(64, 4 + (tier / 10) * 4);
+        textConsumer.accept(Text.literal("⚡ Minería en Cadena: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                .append(Text.literal("Hasta " + maxVein + " minerales por veta (Shift al picar)").formatted(Formatting.YELLOW)));
+
         String perk = getPickaxePerkDesc(tier);
         if (!perk.isEmpty()) {
-            textConsumer.accept(Text.literal("Habilidad Minera: ").formatted(Formatting.AQUA)
+            textConsumer.accept(Text.literal("✦ Habilidad Especial: ").formatted(Formatting.AQUA)
                     .append(Text.literal(perk).formatted(Formatting.GREEN)));
         }
     }
@@ -48,7 +62,7 @@ public class ChainPickaxeItem extends Item {
             case 1 -> "Magnetismo: Atrae los ítems minados directo hacia ti";
             case 10 -> "Impacto Contundente: Destruye roca y piedra con gran rapidez";
             case 20 -> "Corte Criogénico: Rompe hielo, hielo azul y obsidiana con doble velocidad";
-            case 30 -> "Super-Fundición: Pica roca como piedra lisa y arena como cristal";
+            case 30 -> "Super-Fundición: Auto-funde piedra lisa, ladrillos y cristal al picar";
             case 40 -> "Tala Silvestre: Picar troncos de árboles rompe el árbol entero en cadena";
             case 50 -> "Fortuna Rúnica: Probabilidad del 35% de duplicar minerales y gemas";
             case 60 -> "Túnel Tectónico: Excava automáticamente en túnel vertical 1x2 hacia adelante";
@@ -70,51 +84,52 @@ public class ChainPickaxeItem extends Item {
         if (!world.isClient() && miner instanceof ServerPlayerEntity player) {
             ServerWorld serverWorld = (ServerWorld) world;
 
-            // Tier 1 & Tier 115 & Tier 125 & Tier 150: Magnetism (attracts nearby drop entities)
+            // Prevent recursion when breaking chained blocks
+            if (!IS_CHAINING) {
+                // 1. Vein Mining on Chain Ores & Vanilla Ores (when player is sneaking or tier >= 50)
+                if ((player.isSneaking() || tier >= 50) && (state.getBlock() instanceof ChainOreBlock || isOreBlock(state))) {
+                    veinMine(serverWorld, player, stack, pos, state);
+                }
+
+                // 2. 5x5 Mining for Tier 135 & 150 (on non-ores when sneaking)
+                else if ((tier >= 135) && player.isSneaking() && state.getHardness(world, pos) > 0) {
+                    mineArea(serverWorld, player, stack, pos, state, 2);
+                }
+                // 3. 3x3 Mining for Tier 70, 100, 125 (on non-ores when sneaking)
+                else if ((tier >= 70) && player.isSneaking() && state.getHardness(world, pos) > 0) {
+                    mineArea(serverWorld, player, stack, pos, state, 1);
+                }
+            }
+
+            // Magnetism (attracts nearby drop entities)
             if (tier == 1 || tier == 115 || tier == 125 || tier >= 150) {
                 attractDrops(serverWorld, player);
             }
 
-            // Tier 30 & 150: Super-Smelt block drops (Cobble -> Stone, Sand -> Glass)
-            if ((tier == 30 || tier >= 150) && !player.isSneaking()) {
-                if (state.isOf(Blocks.COBBLESTONE)) {
-                    world.breakBlock(pos, false);
-                    ItemEntity item = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(Blocks.STONE));
-                    world.spawnEntity(item);
-                } else if (state.isOf(Blocks.SAND)) {
-                    world.breakBlock(pos, false);
-                    ItemEntity item = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(Blocks.GLASS));
-                    world.spawnEntity(item);
-                }
+            // Super-Smelt block drops (Tier 30 & 150)
+            if (tier == 30 || tier >= 150) {
+                applySuperSmelt(serverWorld, pos, state);
             }
 
             // Tier 40: Timber tree feller
-            if (tier == 40 && state.isIn(BlockTags.LOGS)) {
+            if (tier == 40 && state.isIn(BlockTags.LOGS) && !IS_CHAINING) {
                 fellTree(serverWorld, player, stack, pos);
             }
 
             // Tier 50: Runic Fortune extra drop
-            if (tier == 50 && (state.isIn(BlockTags.GOLD_ORES) || state.isIn(BlockTags.DIAMOND_ORES) || state.isIn(BlockTags.IRON_ORES))) {
+            if (tier == 50 && (state.isIn(BlockTags.GOLD_ORES) || state.isIn(BlockTags.DIAMOND_ORES) || state.isIn(BlockTags.IRON_ORES) || state.getBlock() instanceof ChainOreBlock)) {
                 if (world.random.nextFloat() < 0.35f) {
-                    state.getBlock().afterBreak(world, player, pos, state, world.getBlockEntity(pos), stack);
+                    state.getBlock().afterBreak(world, player, pos, state, null, stack);
+                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.7f, 1.5f);
                 }
             }
 
             // Tier 60: 1x2 tunnel forward
-            if (tier == 60 && !player.isSneaking() && state.getHardness(world, pos) > 0) {
+            if (tier == 60 && !player.isSneaking() && state.getHardness(world, pos) > 0 && !IS_CHAINING) {
                 BlockPos above = pos.up();
                 if (world.getBlockState(above).getHardness(world, above) > 0) {
                     serverWorld.breakBlock(above, true, player);
                 }
-            }
-
-            // 5x5 Mining for Tier 135 & 150
-            if ((tier >= 135) && player.isSneaking() && state.getHardness(world, pos) > 0) {
-                mineArea(serverWorld, player, stack, pos, state, 2);
-            }
-            // 3x3 Mining for Tier 70, 100, 125
-            else if ((tier >= 70) && player.isSneaking() && state.getHardness(world, pos) > 0) {
-                mineArea(serverWorld, player, stack, pos, state, 1);
             }
 
             // Tier 80: Extinguish nearby lava into obsidian
@@ -123,6 +138,7 @@ public class ChainPickaxeItem extends Item {
                     BlockPos p = pos.offset(dir);
                     if (world.getBlockState(p).isOf(Blocks.LAVA)) {
                         world.setBlockState(p, Blocks.OBSIDIAN.getDefaultState());
+                        world.playSound(null, p, SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5f, 1.2f);
                     }
                 }
             }
@@ -131,9 +147,90 @@ public class ChainPickaxeItem extends Item {
             if (tier == 140 && world.random.nextFloat() < 0.20f) {
                 ItemEntity item = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new ItemStack(net.minecraft.item.Items.DIAMOND));
                 world.spawnEntity(item);
+                player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 1.0f, 1.8f);
             }
         }
         return super.postMine(stack, world, state, pos, miner);
+    }
+
+    private boolean isOreBlock(BlockState state) {
+        return state.isIn(BlockTags.COAL_ORES)
+                || state.isIn(BlockTags.IRON_ORES)
+                || state.isIn(BlockTags.COPPER_ORES)
+                || state.isIn(BlockTags.GOLD_ORES)
+                || state.isIn(BlockTags.REDSTONE_ORES)
+                || state.isIn(BlockTags.LAPIS_ORES)
+                || state.isIn(BlockTags.DIAMOND_ORES)
+                || state.isIn(BlockTags.EMERALD_ORES);
+    }
+
+    /**
+     * Vein mining algorithm: BFS to chain connected matching ore blocks
+     */
+    private void veinMine(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos startPos, BlockState targetState) {
+        int maxChain = Math.min(64, 4 + (tier / 10) * 4);
+        Queue<BlockPos> queue = new ArrayDeque<>();
+        Set<BlockPos> visited = new HashSet<>();
+
+        queue.add(startPos);
+        visited.add(startPos);
+
+        IS_CHAINING = true;
+        int brokenCount = 0;
+
+        try {
+            while (!queue.isEmpty() && brokenCount < maxChain) {
+                BlockPos current = queue.poll();
+
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            if (dx == 0 && dy == 0 && dz == 0) continue;
+
+                            BlockPos neighbor = current.add(dx, dy, dz);
+                            if (!visited.contains(neighbor)) {
+                                visited.add(neighbor);
+
+                                BlockState neighborState = world.getBlockState(neighbor);
+                                if (neighborState.isOf(targetState.getBlock())) {
+                                    queue.add(neighbor);
+                                    world.breakBlock(neighbor, true, player);
+                                    brokenCount++;
+                                    stack.damage(1, player, EquipmentSlot.MAINHAND);
+
+                                    if (brokenCount >= maxChain || stack.isEmpty()) {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } finally {
+            IS_CHAINING = false;
+        }
+
+        if (brokenCount > 0) {
+            float pitch = Math.min(2.0f, 1.0f + brokenCount * 0.05f);
+            player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.9f, pitch);
+        }
+    }
+
+    private void applySuperSmelt(ServerWorld world, BlockPos pos, BlockState state) {
+        Box box = new Box(pos).expand(1.5);
+        world.getEntitiesByClass(ItemEntity.class, box, e -> true).forEach(item -> {
+            ItemStack dropStack = item.getStack();
+            if (dropStack.isOf(Blocks.COBBLESTONE.asItem())) {
+                item.setStack(new ItemStack(Blocks.STONE, dropStack.getCount()));
+            } else if (dropStack.isOf(Blocks.COBBLED_DEEPSLATE.asItem())) {
+                item.setStack(new ItemStack(Blocks.DEEPSLATE, dropStack.getCount()));
+            } else if (dropStack.isOf(Blocks.SAND.asItem()) || dropStack.isOf(Blocks.RED_SAND.asItem())) {
+                item.setStack(new ItemStack(Blocks.GLASS, dropStack.getCount()));
+            } else if (dropStack.isOf(net.minecraft.item.Items.CLAY_BALL)) {
+                item.setStack(new ItemStack(net.minecraft.item.Items.BRICK, dropStack.getCount()));
+            }
+        });
     }
 
     private void attractDrops(ServerWorld world, ServerPlayerEntity player) {
@@ -144,36 +241,64 @@ public class ChainPickaxeItem extends Item {
     }
 
     private void fellTree(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos start) {
-        BlockPos current = start.up();
+        Queue<BlockPos> queue = new ArrayDeque<>();
+        Set<BlockPos> visited = new HashSet<>();
+        queue.add(start);
+        visited.add(start);
+
+        IS_CHAINING = true;
         int count = 0;
-        while (count < 15 && world.getBlockState(current).isIn(BlockTags.LOGS)) {
-            world.breakBlock(current, true, player);
-            current = current.up();
-            count++;
+        try {
+            while (!queue.isEmpty() && count < 32) {
+                BlockPos current = queue.poll();
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = 0; dy <= 1; dy++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            BlockPos neighbor = current.add(dx, dy, dz);
+                            if (!visited.contains(neighbor) && world.getBlockState(neighbor).isIn(BlockTags.LOGS)) {
+                                visited.add(neighbor);
+                                queue.add(neighbor);
+                                world.breakBlock(neighbor, true, player);
+                                stack.damage(1, player, EquipmentSlot.MAINHAND);
+                                count++;
+                                if (count >= 32 || stack.isEmpty()) break;
+                            }
+                        }
+                    }
+                }
+            }
+        } finally {
+            IS_CHAINING = false;
         }
     }
 
     private void mineArea(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center, BlockState centerState, int radius) {
         Direction facing = Direction.getEntityFacingOrder(player)[0];
+        IS_CHAINING = true;
+        try {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dy = -radius; dy <= radius; dy++) {
+                    if (dx == 0 && dy == 0) continue;
 
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
-                if (dx == 0 && dy == 0) continue;
+                    BlockPos targetPos;
+                    if (facing.getAxis() == Direction.Axis.Y) {
+                        targetPos = center.add(dx, 0, dy);
+                    } else if (facing.getAxis() == Direction.Axis.X) {
+                        targetPos = center.add(0, dy, dx);
+                    } else {
+                        targetPos = center.add(dx, dy, 0);
+                    }
 
-                BlockPos targetPos;
-                if (facing.getAxis() == Direction.Axis.Y) {
-                    targetPos = center.add(dx, 0, dy);
-                } else if (facing.getAxis() == Direction.Axis.X) {
-                    targetPos = center.add(0, dy, dx);
-                } else {
-                    targetPos = center.add(dx, dy, 0);
-                }
-
-                BlockState targetState = world.getBlockState(targetPos);
-                if (!targetState.isAir() && targetState.getHardness(world, targetPos) > 0 && targetState.getHardness(world, targetPos) <= centerState.getHardness(world, center) + 4.0f) {
-                    world.breakBlock(targetPos, true, player);
+                    BlockState targetState = world.getBlockState(targetPos);
+                    if (!targetState.isAir() && targetState.getHardness(world, targetPos) > 0 && targetState.getHardness(world, targetPos) <= centerState.getHardness(world, center) + 4.0f) {
+                        world.breakBlock(targetPos, true, player);
+                        stack.damage(1, player, EquipmentSlot.MAINHAND);
+                        if (stack.isEmpty()) break;
+                    }
                 }
             }
+        } finally {
+            IS_CHAINING = false;
         }
     }
 }

@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "chainores:chain_smithing_template",
-  "base": "minecraft:copper_ingot",
-  "addition": "chainores:raw_tier_1",
-  "result": {
-    "id": "chainores:ingot_tier_1"
-  }
-}

@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:ore_tier_1",
+    "chainores:block_tier_1",
+    "chainores:ore_tier_2",
+    "chainores:block_tier_2",
+    "chainores:ore_tier_3",
+    "chainores:block_tier_3",
+    "chainores:ore_tier_4",
+    "chainores:block_tier_4",
+    "chainores:ore_tier_5",
+    "chainores:block_tier_5"
+  ]
+}

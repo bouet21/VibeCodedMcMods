@@ -39,6 +39,7 @@ public class ChainOresGuideScreen extends Screen {
         this.addDrawableChild(ButtonWidget.builder(Text.literal("< Anterior"), button -> {
             if (pageIndex > 0) {
                 pageIndex--;
+                playPageTurnSound();
                 init();
             }
         }).dimensions(x + 10, y + panelHeight - 24, 75, 18).build());
@@ -46,6 +47,7 @@ public class ChainOresGuideScreen extends Screen {
         this.addDrawableChild(ButtonWidget.builder(Text.literal("Siguiente >"), button -> {
             if (pageIndex < totalPages - 1) {
                 pageIndex++;
+                playPageTurnSound();
                 init();
             }
         }).dimensions(x + panelWidth - 85, y + panelHeight - 24, 75, 18).build());
@@ -71,8 +73,15 @@ public class ChainOresGuideScreen extends Screen {
     private void addStageJumpButton(int bx, int by, int bw, String label, int targetIndex) {
         this.addDrawableChild(ButtonWidget.builder(Text.literal(label), button -> {
             this.pageIndex = targetIndex;
+            playPageTurnSound();
             init();
         }).dimensions(bx, by, bw, 16).build());
+    }
+
+    private void playPageTurnSound() {
+        if (this.client != null && this.client.player != null) {
+            this.client.player.playSound(net.minecraft.sound.SoundEvents.ITEM_BOOK_PAGE_TURN, 0.7f, 1.0f);
+        }
     }
 
     private void drawCustomBorder(DrawContext context, int x, int y, int w, int h, int color) {

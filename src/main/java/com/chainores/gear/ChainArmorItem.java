@@ -90,6 +90,8 @@ public class ChainArmorItem extends Item {
         };
     }
 
+    private static final java.util.Map<java.util.UUID, Integer> ACTIVE_SETS = new java.util.concurrent.ConcurrentHashMap<>();
+
     @Override
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, world, entity, slot);
@@ -97,7 +99,17 @@ public class ChainArmorItem extends Item {
             // Apply set perks exclusively from the chestplate slot to avoid duplicate runs per tick
             if (slot == EquipmentSlot.CHEST && this.equipmentType == EquipmentType.CHESTPLATE) {
                 if (hasFullSet(player, tier)) {
+                    Integer prev = ACTIVE_SETS.get(player.getUuid());
+                    if (prev == null || prev != tier) {
+                        ACTIVE_SETS.put(player.getUuid(), tier);
+                        String title = getArmorPerkDesc(tier);
+                        if (title.contains(":")) title = title.split(":")[0];
+                        player.sendMessage(Text.literal("✦ Set Activado: " + title + " ✦").formatted(Formatting.GOLD, Formatting.BOLD), true);
+                        player.playSound(net.minecraft.sound.SoundEvents.BLOCK_BEACON_ACTIVATE, 0.8f, 1.4f);
+                    }
                     applyFullSetPerks(player, tier);
+                } else if (ACTIVE_SETS.containsKey(player.getUuid()) && ACTIVE_SETS.get(player.getUuid()) == tier) {
+                    ACTIVE_SETS.remove(player.getUuid());
                 }
             }
         }

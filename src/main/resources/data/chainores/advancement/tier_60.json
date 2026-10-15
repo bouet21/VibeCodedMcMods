@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_50",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_60"},
+    "title": {"text": "Núcleo Tectónico"},
+    "description": {"text": "Extrae mineral de las profundidades volcánicas (T60 Coreium)"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_60"}]
+      }
+    }
+  }
+}

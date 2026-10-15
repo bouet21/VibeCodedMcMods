@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "chainores:chain_smithing_template",
-  "base": "chainores:sword_tier_20",
-  "addition": "chainores:ingot_tier_30",
-  "result": {
-    "id": "chainores:sword_tier_30"
-  }
-}

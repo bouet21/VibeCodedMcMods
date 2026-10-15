@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "chainores:chain_smithing_template",
-  "base": "chainores:leggings_tier_140",
-  "addition": "chainores:ingot_tier_150",
-  "result": {
-    "id": "chainores:leggings_tier_150"
-  }
-}

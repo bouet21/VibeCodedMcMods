@@ -11,7 +11,25 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
+import com.chainores.block.ChainOreBlock;
+
 public class ModBlocks {
+
+    public static int getLuminance(int tier) {
+        if (tier >= 150) return 15;
+        if (tier >= 140) return 13;
+        if (tier >= 135) return 12;
+        if (tier >= 125) return 11;
+        if (tier >= 115) return 9;
+        if (tier >= 100) return 10;
+        if (tier >= 90) return 8;
+        if (tier >= 80) return 10;
+        if (tier >= 70) return 7;
+        if (tier >= 50) return 5;
+        if (tier == 30) return 9;
+        if (tier >= 21 && tier < 30) return 3;
+        return 0;
+    }
 
     public static void initialize() {
         for (OreTier ore : OreRegistryData.TIERS) {
@@ -26,12 +44,18 @@ public class ModBlocks {
             };
 
             float strengthBonus = (float) ore.tier * 0.05f;
+            int light = getLuminance(ore.tier);
+
             oreSettings = oreSettings
                     .registryKey(oreKey)
                     .strength(3.0f + strengthBonus, 3.0f + strengthBonus)
                     .requiresTool();
 
-            Block oreBlock = new Block(oreSettings);
+            if (light > 0) {
+                oreSettings = oreSettings.luminance(state -> light);
+            }
+
+            Block oreBlock = new ChainOreBlock(ore.tier, oreSettings);
             Registry.register(Registries.BLOCK, oreKey, oreBlock);
             ore.oreBlock = oreBlock;
 
@@ -42,11 +66,16 @@ public class ModBlocks {
                     .strength(5.0f + strengthBonus, 6.0f + strengthBonus)
                     .requiresTool();
 
+            if (light > 0) {
+                int storageLight = Math.min(15, light + 2);
+                storageSettings = storageSettings.luminance(state -> storageLight);
+            }
+
             Block storageBlock = new Block(storageSettings);
             Registry.register(Registries.BLOCK, storageKey, storageBlock);
             ore.storageBlock = storageBlock;
         }
 
-        ChainOresMod.LOGGER.info("Registered 300 blocks with required registry keys for 1.21.11.");
+        ChainOresMod.LOGGER.info("Registered 300 blocks with required registry keys, dynamic luminance and particles for 1.21.11.");
     }
 }

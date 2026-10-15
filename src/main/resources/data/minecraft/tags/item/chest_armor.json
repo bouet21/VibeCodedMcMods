@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:chestplate_tier_1",
+    "chainores:chestplate_tier_10",
+    "chainores:chestplate_tier_20",
+    "chainores:chestplate_tier_30",
+    "chainores:chestplate_tier_40",
+    "chainores:chestplate_tier_50",
+    "chainores:chestplate_tier_60",
+    "chainores:chestplate_tier_70",
+    "chainores:chestplate_tier_80",
+    "chainores:chestplate_tier_90",
+    "chainores:chestplate_tier_100",
+    "chainores:chestplate_tier_115",
+    "chainores:chestplate_tier_125",
+    "chainores:chestplate_tier_135",
+    "chainores:chestplate_tier_140",
+    "chainores:chestplate_tier_150"
+  ]
+}

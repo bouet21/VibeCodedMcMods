@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_80",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_90"},
+    "title": {"text": "Cosecha de Almas"},
+    "description": {"text": "Encuentra la Gema del Purgatorio en el Valle de Almas (T90)"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_90"}]
+      }
+    }
+  }
+}

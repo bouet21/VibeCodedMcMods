@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_30",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_40"},
+    "title": {"text": "Espíritu Silvestre"},
+    "description": {"text": "Descubre la Clorofita viva en la densa jungla (T40)"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_40"}]
+      }
+    }
+  }
+}

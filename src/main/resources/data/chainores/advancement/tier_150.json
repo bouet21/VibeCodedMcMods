@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_140",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_150"},
+    "title": {"text": "★ ASCENSIÓN DIVINA ★"},
+    "description": {"text": "Forja el legendario Metal de los Dioses (Tier 150)"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_150"}]
+      }
+    }
+  }
+}

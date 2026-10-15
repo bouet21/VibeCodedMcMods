@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_70",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_80"},
+    "title": {"text": "Forja del Inframundo"},
+    "description": {"text": "Domina el calor extremo con el Núcleo Infernal (T80)"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_80"}]
+      }
+    }
+  }
+}

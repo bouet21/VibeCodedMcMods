@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_115",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_125"},
+    "title": {"text": "Vanguardia Cósmica"},
+    "description": {"text": "Alcanza las estrellas con Galactita (Tier 125)"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_125"}]
+      }
+    }
+  }
+}

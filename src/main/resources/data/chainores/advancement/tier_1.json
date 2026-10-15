@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:root",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_1"},
+    "title": {"text": "Primer Eslabón"},
+    "description": {"text": "Extrae tu primer mineral en progresión: Cobreprita T1"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_1"}]
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_10",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_20"},
+    "title": {"text": "Cero Absoluto"},
+    "description": {"text": "Conquista las nieves eternas con Cero Absoluto (T20)"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_20"}]
+      }
+    }
+  }
+}

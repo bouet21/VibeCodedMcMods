@@ -183,12 +183,16 @@ public class ChainSwordItem extends Item {
                     l1.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
                     world.spawnEntity(l1);
                 }
+                world.playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sound.SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, net.minecraft.sound.SoundCategory.PLAYERS, 1.0f, 1.1f);
                 attacker.heal(10.0f);
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 160, 3));
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.END_ROD, target.getX(), target.getY() + 1.0, target.getZ(), 20, 0.4, 0.6, 0.4, 0.1);
 
                 // Execute if below 25% health
                 if (target.getHealth() < target.getMaxHealth() * 0.25f) {
                     target.setHealth(0.0f);
+                    world.spawnParticles(net.minecraft.particle.ParticleTypes.TOTEM_OF_UNDYING, target.getX(), target.getY() + 1.0, target.getZ(), 45, 0.5, 0.8, 0.5, 0.2);
+                    attacker.playSound(net.minecraft.sound.SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 0.8f, 1.5f);
                 }
             }
         }

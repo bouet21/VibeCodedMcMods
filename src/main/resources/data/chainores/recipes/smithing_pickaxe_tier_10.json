@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "chainores:chain_smithing_template",
-  "base": "chainores:pickaxe_tier_1",
-  "addition": "chainores:ingot_tier_10",
-  "result": {
-    "id": "chainores:pickaxe_tier_10"
-  }
-}

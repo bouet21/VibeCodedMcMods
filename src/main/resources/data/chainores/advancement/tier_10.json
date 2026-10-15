@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_1",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_10"},
+    "title": {"text": "Edad de Invar"},
+    "description": {"text": "Supera la superficie y alcanza el Tier 10"},
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_10"}]
+      }
+    }
+  }
+}

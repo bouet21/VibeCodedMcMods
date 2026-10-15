@@ -1,0 +1,20 @@
+{
+  "parent": "chainores:tier_125",
+  "display": {
+    "icon": {"id": "chainores:ingot_tier_135"},
+    "title": {"text": "Bucle Temporal"},
+    "description": {"text": "Domina el tiempo y el espacio con el Fragmento Infinito (Tier 135)"},
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": "chainores:ingot_tier_135"}]
+      }
+    }
+  }
+}

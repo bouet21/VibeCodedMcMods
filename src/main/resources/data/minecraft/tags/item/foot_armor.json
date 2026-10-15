@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:boots_tier_1",
+    "chainores:boots_tier_10",
+    "chainores:boots_tier_20",
+    "chainores:boots_tier_30",
+    "chainores:boots_tier_40",
+    "chainores:boots_tier_50",
+    "chainores:boots_tier_60",
+    "chainores:boots_tier_70",
+    "chainores:boots_tier_80",
+    "chainores:boots_tier_90",
+    "chainores:boots_tier_100",
+    "chainores:boots_tier_115",
+    "chainores:boots_tier_125",
+    "chainores:boots_tier_135",
+    "chainores:boots_tier_140",
+    "chainores:boots_tier_150"
+  ]
+}

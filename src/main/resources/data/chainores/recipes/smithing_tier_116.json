@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "chainores:chain_smithing_template",
-  "base": "chainores:ingot_tier_115",
-  "addition": "chainores:raw_tier_116",
-  "result": {
-    "id": "chainores:ingot_tier_116"
-  }
-}

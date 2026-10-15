@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": "chainores:chain_smithing_template",
-  "base": "minecraft:iron_chestplate",
-  "addition": "chainores:ingot_tier_1",
-  "result": {
-    "id": "chainores:chestplate_tier_1"
-  }
-}
