@@ -1,0 +1,110 @@
+{
+  "textures": {
+    "shield": "chainores:item/abyssal_aegis",
+    "particle": "chainores:item/abyssal_aegis"
+  },
+  "elements": [
+    {
+      "name": "plate_center",
+      "from": [3.5, 1.5, 7.5],
+      "to": [12.5, 14.5, 8.5],
+      "faces": {
+        "north": {"uv": [3.5, 1.5, 12.5, 14.5], "texture": "#shield"},
+        "south": {"uv": [3.5, 1.5, 12.5, 14.5], "texture": "#shield"},
+        "up": {"uv": [3.5, 7.5, 12.5, 8.5], "texture": "#shield"},
+        "down": {"uv": [3.5, 7.5, 12.5, 8.5], "texture": "#shield"},
+        "west": {"uv": [7.5, 1.5, 8.5, 14.5], "texture": "#shield"},
+        "east": {"uv": [7.5, 1.5, 8.5, 14.5], "texture": "#shield"}
+      }
+    },
+    {
+      "name": "plate_left_wing",
+      "from": [1.5, 2.5, 8.0],
+      "to": [3.5, 13.5, 9.0],
+      "faces": {
+        "north": {"uv": [1.5, 2.5, 3.5, 13.5], "texture": "#shield"},
+        "south": {"uv": [1.5, 2.5, 3.5, 13.5], "texture": "#shield"},
+        "up": {"uv": [1.5, 8.0, 3.5, 9.0], "texture": "#shield"},
+        "down": {"uv": [1.5, 8.0, 3.5, 9.0], "texture": "#shield"},
+        "west": {"uv": [8.0, 2.5, 9.0, 13.5], "texture": "#shield"},
+        "east": {"uv": [8.0, 2.5, 9.0, 13.5], "texture": "#shield"}
+      }
+    },
+    {
+      "name": "plate_right_wing",
+      "from": [12.5, 2.5, 8.0],
+      "to": [14.5, 13.5, 9.0],
+      "faces": {
+        "north": {"uv": [12.5, 2.5, 14.5, 13.5], "texture": "#shield"},
+        "south": {"uv": [12.5, 2.5, 14.5, 13.5], "texture": "#shield"},
+        "up": {"uv": [12.5, 8.0, 14.5, 9.0], "texture": "#shield"},
+        "down": {"uv": [12.5, 8.0, 14.5, 9.0], "texture": "#shield"},
+        "west": {"uv": [8.0, 2.5, 9.0, 13.5], "texture": "#shield"},
+        "east": {"uv": [8.0, 2.5, 9.0, 13.5], "texture": "#shield"}
+      }
+    },
+    {
+      "name": "cosmic_boss",
+      "from": [6.0, 6.0, 6.5],
+      "to": [10.0, 10.0, 8.0],
+      "faces": {
+        "north": {"uv": [6.0, 6.0, 10.0, 10.0], "texture": "#shield"},
+        "south": {"uv": [6.0, 6.0, 10.0, 10.0], "texture": "#shield"},
+        "up": {"uv": [6.0, 6.5, 10.0, 8.0], "texture": "#shield"},
+        "down": {"uv": [6.0, 6.5, 10.0, 8.0], "texture": "#shield"},
+        "west": {"uv": [6.5, 6.0, 8.0, 10.0], "texture": "#shield"},
+        "east": {"uv": [6.5, 6.0, 8.0, 10.0], "texture": "#shield"}
+      }
+    },
+    {
+      "name": "grip_handle",
+      "from": [7.0, 5.0, 8.5],
+      "to": [9.0, 11.0, 10.5],
+      "faces": {
+        "north": {"uv": [7.0, 5.0, 9.0, 11.0], "texture": "#shield"},
+        "south": {"uv": [7.0, 5.0, 9.0, 11.0], "texture": "#shield"},
+        "up": {"uv": [7.0, 8.5, 9.0, 10.5], "texture": "#shield"},
+        "down": {"uv": [7.0, 8.5, 9.0, 10.5], "texture": "#shield"},
+        "west": {"uv": [8.5, 5.0, 10.5, 11.0], "texture": "#shield"},
+        "east": {"uv": [8.5, 5.0, 10.5, 11.0], "texture": "#shield"}
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, 90, -25],
+      "translation": [2.0, -3.0, -2.5],
+      "scale": [0.85, 0.85, 0.85]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, -90, 25],
+      "translation": [-2.0, -3.0, -2.5],
+      "scale": [0.85, 0.85, 0.85]
+    },
+    "firstperson_righthand": {
+      "rotation": [5, -175, -5],
+      "translation": [-1.0, -3.5, 4.0],
+      "scale": [0.9, 0.9, 0.9]
+    },
+    "firstperson_lefthand": {
+      "rotation": [5, 175, 5],
+      "translation": [1.0, -3.5, 4.0],
+      "scale": [0.9, 0.9, 0.9]
+    },
+    "gui": {
+      "rotation": [15, -30, -5],
+      "translation": [0, 0, 0],
+      "scale": [0.65, 0.65, 0.65]
+    },
+    "ground": {
+      "rotation": [0, 0, 0],
+      "translation": [0, 3, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "fixed": {
+      "rotation": [0, 180, 0],
+      "translation": [0, 0, 0],
+      "scale": [0.75, 0.75, 0.75]
+    }
+  }
+}

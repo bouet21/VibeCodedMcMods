@@ -6,6 +6,11 @@ import com.chainores.gear.ChainAxeItem;
 import com.chainores.gear.ChainHoeItem;
 import com.chainores.gear.ChainPickaxeItem;
 import com.chainores.gear.ChainShieldItem;
+import com.chainores.gear.SentinelShieldItem;
+import com.chainores.gear.FrostguardShieldItem;
+import com.chainores.gear.AbyssalAegisItem;
+import com.chainores.gear.InfernalBulwarkItem;
+import com.chainores.gear.CosmicShieldItem;
 import com.chainores.gear.ChainShovelItem;
 import com.chainores.gear.ChainSwordItem;
 import com.chainores.gear.DragonBreathBowItem;
@@ -58,6 +63,11 @@ public class ModGear {
     public static Item DRAGON_BOW;
     public static Item GALACTIC_CROSSBOW;
     public static Item AEGIS_SHIELD;
+    public static Item SENTINEL_SHIELD;
+    public static Item FROSTGUARD_SHIELD;
+    public static Item ABYSSAL_AEGIS;
+    public static Item INFERNAL_BULWARK;
+    public static Item COSMIC_SHIELD;
     public static Item GOD_OMNITOOL;
 
     static {
@@ -184,6 +194,41 @@ public class ModGear {
                 Registries.ITEM,
                 shieldKey,
                 new ChainShieldItem(new Item.Settings().registryKey(shieldKey).fireproof())
+        );
+
+        RegistryKey<Item> sentinelKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("sentinel_shield"));
+        SENTINEL_SHIELD = Registry.register(
+                Registries.ITEM,
+                sentinelKey,
+                new SentinelShieldItem(new Item.Settings().registryKey(sentinelKey).fireproof())
+        );
+
+        RegistryKey<Item> frostguardKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("frostguard_shield"));
+        FROSTGUARD_SHIELD = Registry.register(
+                Registries.ITEM,
+                frostguardKey,
+                new FrostguardShieldItem(new Item.Settings().registryKey(frostguardKey).fireproof())
+        );
+
+        RegistryKey<Item> abyssalKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("abyssal_aegis"));
+        ABYSSAL_AEGIS = Registry.register(
+                Registries.ITEM,
+                abyssalKey,
+                new AbyssalAegisItem(new Item.Settings().registryKey(abyssalKey).fireproof())
+        );
+
+        RegistryKey<Item> infernalKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("infernal_bulwark"));
+        INFERNAL_BULWARK = Registry.register(
+                Registries.ITEM,
+                infernalKey,
+                new InfernalBulwarkItem(new Item.Settings().registryKey(infernalKey).fireproof())
+        );
+
+        RegistryKey<Item> cosmicKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("cosmic_shield"));
+        COSMIC_SHIELD = Registry.register(
+                Registries.ITEM,
+                cosmicKey,
+                new CosmicShieldItem(new Item.Settings().registryKey(cosmicKey).fireproof())
         );
 
         RegistryKey<Item> omniKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("god_omnitool"));

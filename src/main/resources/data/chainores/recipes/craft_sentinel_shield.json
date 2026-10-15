@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "CIC",
+    "CSC",
+    " C "
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "I": "chainores:ingot_tier_10",
+    "S": "minecraft:shield"
+  },
+  "result": {
+    "id": "chainores:sentinel_shield",
+    "count": 1
+  }
+}

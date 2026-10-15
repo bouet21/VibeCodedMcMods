@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "EIE",
+    "ESE",
+    " E "
+  ],
+  "key": {
+    "E": "minecraft:echo_shard",
+    "I": "chainores:ingot_tier_70",
+    "S": "minecraft:shield"
+  },
+  "result": {
+    "id": "chainores:abyssal_aegis",
+    "count": 1
+  }
+}

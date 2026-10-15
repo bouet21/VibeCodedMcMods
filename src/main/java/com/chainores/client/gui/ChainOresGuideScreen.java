@@ -317,26 +317,42 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "• Arco del Aliento de Dragón (T115):", cx, cy + 62, 0xFFFF55FF, false);
             context.drawText(this.textRenderer, "  Flechas explosivas teledirigidas con fuego cósmico.", cx, cy + 72, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "• Ballesta Galáctica (T125) y Escudo Égida 3D:", cx, cy + 86, 0xFFFFAA00, false);
-            context.drawText(this.textRenderer, "  Multidisparo estelar quíntuple y escudo 3D con pulso sónico AoE.", cx, cy + 96, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "• Arsenal Defensivo: 6 Escudos Temáticos 3D (T10 - T150):", cx, cy + 86, 0xFFFFAA00, false);
+            context.drawText(this.textRenderer, "  Centinela, Escarcha, Égida, Abisal, Infernal y Cósmico (Shift-Bloqueo).", cx, cy + 96, 0xFFE0E0E0, false);
 
             context.drawText(this.textRenderer, "★ HERRAMIENTA UNIVERSAL DE LOS DIOSES (T150):", cx, cy + 112, 0xFFFFD700, false);
             context.drawText(this.textRenderer, "  Combina pico 5x5, hacha, pala y azada. 120 daño sagrado y rayo.", cx, cy + 122, 0xFFFFFF55, false);
 
             ItemStack bow = new ItemStack(ModGear.DRAGON_BOW);
             ItemStack xbow = new ItemStack(ModGear.GALACTIC_CROSSBOW);
-            ItemStack shield = new ItemStack(ModGear.AEGIS_SHIELD);
             ItemStack omni = new ItemStack(ModGear.GOD_OMNITOOL);
+            ItemStack s1 = new ItemStack(ModGear.SENTINEL_SHIELD);
+            ItemStack s2 = new ItemStack(ModGear.FROSTGUARD_SHIELD);
+            ItemStack s3 = new ItemStack(ModGear.AEGIS_SHIELD);
+            ItemStack s4 = new ItemStack(ModGear.ABYSSAL_AEGIS);
+            ItemStack s5 = new ItemStack(ModGear.INFERNAL_BULWARK);
+            ItemStack s6 = new ItemStack(ModGear.COSMIC_SHIELD);
 
-            context.drawItem(bow, cx + 230, cy + 58);
-            context.drawItem(xbow, cx + 252, cy + 58);
-            context.drawItem(shield, cx + 274, cy + 58);
-            context.drawItem(omni, cx + 296, cy + 58);
+            context.drawItem(bow, cx + 250, cy + 58);
+            context.drawItem(xbow, cx + 272, cy + 58);
+            context.drawItem(omni, cx + 294, cy + 58);
 
-            checkTooltip(context, bow, cx + 230, cy + 58, mouseX, mouseY);
-            checkTooltip(context, xbow, cx + 252, cy + 58, mouseX, mouseY);
-            checkTooltip(context, shield, cx + 274, cy + 58, mouseX, mouseY);
-            checkTooltip(context, omni, cx + 296, cy + 58, mouseX, mouseY);
+            context.drawItem(s1, cx + 180, cy + 84);
+            context.drawItem(s2, cx + 202, cy + 84);
+            context.drawItem(s3, cx + 224, cy + 84);
+            context.drawItem(s4, cx + 246, cy + 84);
+            context.drawItem(s5, cx + 268, cy + 84);
+            context.drawItem(s6, cx + 290, cy + 84);
+
+            checkTooltip(context, bow, cx + 250, cy + 58, mouseX, mouseY);
+            checkTooltip(context, xbow, cx + 272, cy + 58, mouseX, mouseY);
+            checkTooltip(context, omni, cx + 294, cy + 58, mouseX, mouseY);
+            checkTooltip(context, s1, cx + 180, cy + 84, mouseX, mouseY);
+            checkTooltip(context, s2, cx + 202, cy + 84, mouseX, mouseY);
+            checkTooltip(context, s3, cx + 224, cy + 84, mouseX, mouseY);
+            checkTooltip(context, s4, cx + 246, cy + 84, mouseX, mouseY);
+            checkTooltip(context, s5, cx + 268, cy + 84, mouseX, mouseY);
+            checkTooltip(context, s6, cx + 290, cy + 84, mouseX, mouseY);
         } else {
             context.drawText(this.textRenderer, Text.literal("✦ SISTEMA DE SETS DE ARMADURA Y DASH ✦").formatted(Formatting.AQUA, Formatting.BOLD),
                     cx, cy, 0xFF55FFFF, false);

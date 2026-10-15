@@ -1054,6 +1054,11 @@
   "item.chainores.dragon_breath_bow": "Dragon Breath Bow",
   "item.chainores.galactic_crossbow": "Galactic Crossbow",
   "item.chainores.aegis_shield": "Cosmic Aegis Shield",
+  "item.chainores.sentinel_shield": "Kinetic Sentinel Shield",
+  "item.chainores.frostguard_shield": "Everfrost Bulwark",
+  "item.chainores.abyssal_aegis": "Shadow Abyssal Aegis",
+  "item.chainores.infernal_bulwark": "Magma Infernal Bulwark",
+  "item.chainores.cosmic_shield": "Genesis Celestial Shield",
   "item.chainores.god_omnitool": "God Omnitool of Creation"
 ,
   "block.chainores.chain_forge": "Chain Forge",

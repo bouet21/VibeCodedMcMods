@@ -27,7 +27,11 @@ import java.util.function.Consumer;
 public class ChainShieldItem extends Item {
 
     public ChainShieldItem(Settings settings) {
-        super(settings.maxDamage(15000).fireproof());
+        this(settings, 15000);
+    }
+
+    public ChainShieldItem(Settings settings, int maxDamage) {
+        super(settings.maxDamage(maxDamage).fireproof());
     }
 
     @Override

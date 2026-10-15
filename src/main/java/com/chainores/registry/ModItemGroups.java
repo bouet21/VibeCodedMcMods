@@ -28,7 +28,12 @@ public class ModItemGroups {
                     entries.add(ModGear.GOD_OMNITOOL);
                     entries.add(ModGear.DRAGON_BOW);
                     entries.add(ModGear.GALACTIC_CROSSBOW);
+                    entries.add(ModGear.SENTINEL_SHIELD);
+                    entries.add(ModGear.FROSTGUARD_SHIELD);
                     entries.add(ModGear.AEGIS_SHIELD);
+                    entries.add(ModGear.ABYSSAL_AEGIS);
+                    entries.add(ModGear.INFERNAL_BULWARK);
+                    entries.add(ModGear.COSMIC_SHIELD);
                     entries.add(ModWorkstations.CHAIN_FORGE_ITEM);
                     entries.add(ModWorkstations.CHAIN_ANVIL_ITEM);
                     entries.add(ModWorkstations.COSMIC_SMELTER_ITEM);

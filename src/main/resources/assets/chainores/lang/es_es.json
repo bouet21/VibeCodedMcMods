@@ -1054,6 +1054,11 @@
   "item.chainores.dragon_breath_bow": "Arco de Aliento de Dragón",
   "item.chainores.galactic_crossbow": "Ballesta de Galactita",
   "item.chainores.aegis_shield": "Escudo de la Égida Cósmica",
+  "item.chainores.sentinel_shield": "Escudo del Centinela Cinético",
+  "item.chainores.frostguard_shield": "Baluarte de Escarcha Eterna",
+  "item.chainores.abyssal_aegis": "Égida Abisal de las Sombras",
+  "item.chainores.infernal_bulwark": "Baluarte Infernal del Magma",
+  "item.chainores.cosmic_shield": "Égida Celestial del Génesis",
   "item.chainores.god_omnitool": "Omnitool Divina de la Creación"
 ,
   "block.chainores.chain_forge": "Forja en Cadena",
