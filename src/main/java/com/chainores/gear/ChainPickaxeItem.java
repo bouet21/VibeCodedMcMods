@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 
 public class ChainPickaxeItem extends Item {
     private final int tier;
-    private static boolean IS_CHAINING = false;
+    private static final ThreadLocal<Boolean> IS_CHAINING = ThreadLocal.withInitial(() -> false);
 
     public ChainPickaxeItem(ToolMaterial material, int tier, float bonusDamage, Settings settings) {
         super(settings.pickaxe(material, bonusDamage, -2.8f));
@@ -105,7 +105,7 @@ public class ChainPickaxeItem extends Item {
             ServerWorld serverWorld = (ServerWorld) world;
 
             // Prevent recursion when breaking chained blocks
-            if (!IS_CHAINING) {
+            if (!IS_CHAINING.get()) {
                 // 1. Vein Mining on Chain Ores & Vanilla Ores (when player is sneaking or tier >= 50)
                 if ((player.isSneaking() || tier >= 50) && (state.getBlock() instanceof ChainOreBlock || isOreBlock(state))) {
                     veinMine(serverWorld, player, stack, pos, state);
@@ -132,7 +132,7 @@ public class ChainPickaxeItem extends Item {
             }
 
             // Tier 40: Timber tree feller
-            if (tier == 40 && state.isIn(BlockTags.LOGS) && !IS_CHAINING) {
+            if (tier == 40 && state.isIn(BlockTags.LOGS) && !IS_CHAINING.get()) {
                 fellTree(serverWorld, player, stack, pos);
             }
 
@@ -145,7 +145,7 @@ public class ChainPickaxeItem extends Item {
             }
 
             // Tier 60: 1x2 tunnel forward
-            if (tier == 60 && !player.isSneaking() && state.getHardness(world, pos) > 0 && !IS_CHAINING) {
+            if (tier == 60 && !player.isSneaking() && state.getHardness(world, pos) > 0 && !IS_CHAINING.get()) {
                 BlockPos above = pos.up();
                 if (world.getBlockState(above).getHardness(world, above) > 0) {
                     serverWorld.breakBlock(above, true, player);
@@ -195,7 +195,7 @@ public class ChainPickaxeItem extends Item {
         queue.add(startPos);
         visited.add(startPos);
 
-        IS_CHAINING = true;
+        IS_CHAINING.set(true);
         int brokenCount = 0;
 
         try {
@@ -228,7 +228,7 @@ public class ChainPickaxeItem extends Item {
                 }
             }
         } finally {
-            IS_CHAINING = false;
+            IS_CHAINING.set(false);
         }
 
         if (brokenCount > 0) {
@@ -266,7 +266,7 @@ public class ChainPickaxeItem extends Item {
         queue.add(start);
         visited.add(start);
 
-        IS_CHAINING = true;
+        IS_CHAINING.set(true);
         int count = 0;
         try {
             while (!queue.isEmpty() && count < 32) {
@@ -288,13 +288,13 @@ public class ChainPickaxeItem extends Item {
                 }
             }
         } finally {
-            IS_CHAINING = false;
+            IS_CHAINING.set(false);
         }
     }
 
     private void mineArea(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center, BlockState centerState, int radius) {
         Direction facing = Direction.getEntityFacingOrder(player)[0];
-        IS_CHAINING = true;
+        IS_CHAINING.set(true);
         try {
             for (int dx = -radius; dx <= radius; dx++) {
                 for (int dy = -radius; dy <= radius; dy++) {
@@ -318,7 +318,7 @@ public class ChainPickaxeItem extends Item {
                 }
             }
         } finally {
-            IS_CHAINING = false;
+            IS_CHAINING.set(false);
         }
     }
 }

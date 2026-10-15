@@ -208,15 +208,15 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
                 if (!validCatalyst) continue;
             }
 
-            if (input.isOf(current.sword)) return new ItemStack(next.sword);
-            if (input.isOf(current.pickaxe)) return new ItemStack(next.pickaxe);
-            if (input.isOf(current.axe)) return new ItemStack(next.axe);
-            if (input.isOf(current.shovel)) return new ItemStack(next.shovel);
-            if (input.isOf(current.hoe)) return new ItemStack(next.hoe);
-            if (input.isOf(current.helmet)) return new ItemStack(next.helmet);
-            if (input.isOf(current.chestplate)) return new ItemStack(next.chestplate);
-            if (input.isOf(current.leggings)) return new ItemStack(next.leggings);
-            if (input.isOf(current.boots)) return new ItemStack(next.boots);
+            if (input.isOf(current.sword)) return transferGearData(input, new ItemStack(next.sword));
+            if (input.isOf(current.pickaxe)) return transferGearData(input, new ItemStack(next.pickaxe));
+            if (input.isOf(current.axe)) return transferGearData(input, new ItemStack(next.axe));
+            if (input.isOf(current.shovel)) return transferGearData(input, new ItemStack(next.shovel));
+            if (input.isOf(current.hoe)) return transferGearData(input, new ItemStack(next.hoe));
+            if (input.isOf(current.helmet)) return transferGearData(input, new ItemStack(next.helmet));
+            if (input.isOf(current.chestplate)) return transferGearData(input, new ItemStack(next.chestplate));
+            if (input.isOf(current.leggings)) return transferGearData(input, new ItemStack(next.leggings));
+            if (input.isOf(current.boots)) return transferGearData(input, new ItemStack(next.boots));
         }
 
         // 3. Special Weapons
@@ -264,6 +264,26 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    private static ItemStack transferGearData(ItemStack input, ItemStack output) {
+        if (input.isEmpty() || output.isEmpty()) return output;
+
+        String gem = com.chainores.modifier.ChainModifiers.getGem(input);
+        if (gem != null) {
+            com.chainores.modifier.ChainModifiers.setGem(output, gem);
+        }
+
+        String reforge = com.chainores.modifier.ChainModifiers.getReforge(input);
+        if (reforge != null) {
+            com.chainores.modifier.ChainModifiers.setReforge(output, reforge);
+        }
+
+        if (input.contains(net.minecraft.component.DataComponentTypes.CUSTOM_NAME)) {
+            output.set(net.minecraft.component.DataComponentTypes.CUSTOM_NAME, input.get(net.minecraft.component.DataComponentTypes.CUSTOM_NAME));
+        }
+
+        return output;
     }
 
     private boolean isGear(Item item) {

@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class GodOmnitoolItem extends Item {
-    private static boolean IS_WORKING = false;
+    private static final ThreadLocal<Boolean> IS_WORKING = ThreadLocal.withInitial(() -> false);
 
     public GodOmnitoolItem(Settings settings) {
         super(settings.maxDamage(50000).fireproof());
@@ -139,7 +139,7 @@ public class GodOmnitoolItem extends Item {
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld && miner instanceof ServerPlayerEntity player) {
-            if (!IS_WORKING) {
+            if (!IS_WORKING.get()) {
                 if (state.isIn(BlockTags.LOGS)) {
                     fellFullTree(serverWorld, player, stack, pos);
                 } else if (state.getBlock() instanceof CropBlock crop) {
@@ -163,7 +163,7 @@ public class GodOmnitoolItem extends Item {
         queue.add(start);
         visited.add(start);
 
-        IS_WORKING = true;
+        IS_WORKING.set(true);
         int count = 0;
         try {
             while (!queue.isEmpty() && count < 256) {
@@ -189,12 +189,12 @@ public class GodOmnitoolItem extends Item {
             }
             player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 1.0f, 1.5f);
         } finally {
-            IS_WORKING = false;
+            IS_WORKING.set(false);
         }
     }
 
     private void harvestEden(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center) {
-        IS_WORKING = true;
+        IS_WORKING.set(true);
         try {
             for (int dx = -4; dx <= 4; dx++) {
                 for (int dz = -4; dz <= 4; dz++) {
@@ -207,13 +207,13 @@ public class GodOmnitoolItem extends Item {
                 }
             }
         } finally {
-            IS_WORKING = false;
+            IS_WORKING.set(false);
         }
     }
 
     private void omniMineArea(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center, int radius) {
         Direction facing = Direction.getEntityFacingOrder(player)[0];
-        IS_WORKING = true;
+        IS_WORKING.set(true);
         try {
             for (int dx = -radius; dx <= radius; dx++) {
                 for (int dy = -radius; dy <= radius; dy++) {
@@ -236,7 +236,7 @@ public class GodOmnitoolItem extends Item {
             }
             player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.9f, 1.8f);
         } finally {
-            IS_WORKING = false;
+            IS_WORKING.set(false);
         }
     }
 }

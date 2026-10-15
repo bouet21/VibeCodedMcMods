@@ -215,4 +215,16 @@ public class CosmicSovereignEntity extends HostileEntity {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(149).ingotItem, 16));
         }
     }
+
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
+        this.bossBar.clearPlayers();
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        this.bossBar.clearPlayers();
+    }
 }

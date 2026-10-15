@@ -10,12 +10,12 @@ import com.chainores.registry.ModWorkstations;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ChainOresGuideScreen extends Screen {
 
@@ -35,7 +35,8 @@ public class ChainOresGuideScreen extends Screen {
     private Tab currentTab = Tab.MINERALS;
     private int pageIndex = 0;
     private final int totalPages = OreRegistryData.TIERS.size();
-    private int subPage = 0; // for tabs with multiple pages
+    private int subPage = 0;
+    private TextFieldWidget searchField;
 
     public ChainOresGuideScreen() {
         this(0);
@@ -81,6 +82,27 @@ public class ChainOresGuideScreen extends Screen {
 
         // Tab-specific controls
         if (currentTab == Tab.MINERALS) {
+            // Interactive Search Field
+            int searchX = x + 242;
+            int searchY = y + 28;
+            this.searchField = new TextFieldWidget(this.textRenderer, searchX, searchY, 86, 13, Text.literal("Buscar"));
+            this.searchField.setPlaceholder(Text.literal("🔍 Buscar ore...").formatted(Formatting.DARK_GRAY));
+            this.searchField.setMaxLength(24);
+            this.searchField.setChangedListener(query -> {
+                if (query.trim().isEmpty()) return;
+                String q = query.trim().toLowerCase();
+                for (int i = 0; i < OreRegistryData.TIERS.size(); i++) {
+                    OreTier o = OreRegistryData.TIERS.get(i);
+                    if (String.valueOf(o.tier).equals(q) ||
+                            o.esName.toLowerCase().contains(q) ||
+                            o.enName.toLowerCase().contains(q)) {
+                        this.pageIndex = i;
+                        break;
+                    }
+                }
+            });
+            this.addSelectableChild(this.searchField);
+
             // Prev & Next Buttons
             this.addDrawableChild(ButtonWidget.builder(Text.literal("< Anterior"), button -> {
                 if (pageIndex > 0) {
@@ -152,9 +174,20 @@ public class ChainOresGuideScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
+    public boolean keyPressed(KeyInput input) {
+        if (this.searchField != null && this.searchField.isFocused()) {
+            if (this.searchField.keyPressed(input)) {
+                return true;
+            }
+            if (input.key() != 256) { // 256 = GLFW_KEY_ESCAPE
+                return true; // Prevent inventory key ('E') from prematurely closing guide codex
+            }
+        }
+        return super.keyPressed(input);
+    }
 
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         int panelWidth = 340;
         int panelHeight = 230;
         int x = (this.width - panelWidth) / 2;
@@ -171,6 +204,13 @@ public class ChainOresGuideScreen extends Screen {
         context.fill(x + 6, contentY, x + panelWidth - 6, contentY + contentH, 0x88000000);
         drawCustomBorder(context, x + 6, contentY, panelWidth - 12, contentH, 0xFF4A3E31);
 
+        // Render buttons and widgets on top of background panel
+        super.render(context, mouseX, mouseY, delta);
+
+        if (currentTab == Tab.MINERALS && searchField != null) {
+            searchField.render(context, mouseX, mouseY, delta);
+        }
+
         switch (currentTab) {
             case MINERALS -> renderMineralsTab(context, x, y, mouseX, mouseY);
             case ARSENAL -> renderArsenalTab(context, x, y, mouseX, mouseY);
@@ -186,10 +226,9 @@ public class ChainOresGuideScreen extends Screen {
         // Subheader Info
         String pageNumText = "Tier " + (pageIndex + 1) + " / " + totalPages;
         context.drawText(this.textRenderer, Text.literal(pageNumText).formatted(Formatting.YELLOW),
-                x + 340 - 90, y + 30, 0xFFFFF1A8, false);
+                x + 115, y + 30, 0xFFFFF1A8, false);
 
         // 1. Left Showcase: Ore, Raw, Ingot, Block
-        int leftW = 100;
         int leftX = x + 10;
         int topY = y + 28;
 
@@ -218,7 +257,7 @@ public class ChainOresGuideScreen extends Screen {
 
         String oreTitle = "#" + ore.tier + " " + ore.esName;
         context.drawText(this.textRenderer, Text.literal(oreTitle).formatted(Formatting.GOLD, Formatting.BOLD),
-                rightX, topY + 4, 0xFFFFCC00, false);
+                rightX, topY + 14, 0xFFFFCC00, false);
 
         String dimName = switch (ore.dimension) {
             case OVERWORLD -> "Overworld";
@@ -230,14 +269,14 @@ public class ChainOresGuideScreen extends Screen {
             case NETHER -> 0xFFFF5555;
             case END -> 0xFFFF55FF;
         };
-        context.drawText(this.textRenderer, "Dimensión: " + dimName, rightX, topY + 18, dimColor, false);
-        context.drawText(this.textRenderer, "Biomas: " + getBiomeDescription(ore.biomeGroup), rightX, topY + 30, 0xFFFFFF88, false);
-        context.drawText(this.textRenderer, "Y: " + ore.minY + " a " + ore.maxY + " (Veta: " + ore.veinSize + ")", rightX, topY + 42, 0xFFE0E0E0, false);
-        context.drawText(this.textRenderer, "Pico mín.: " + getToolDescription(ore.harvestLevel), rightX, topY + 54, 0xFF55FFFF, false);
+        context.drawText(this.textRenderer, "Dimensión: " + dimName, rightX, topY + 26, dimColor, false);
+        context.drawText(this.textRenderer, "Biomas: " + getBiomeDescription(ore.biomeGroup), rightX, topY + 38, 0xFFFFFF88, false);
+        context.drawText(this.textRenderer, "Y: " + ore.minY + " a " + ore.maxY + " (Veta: " + ore.veinSize + ")", rightX, topY + 50, 0xFFE0E0E0, false);
+        context.drawText(this.textRenderer, "Pico mín.: " + getToolDescription(ore.harvestLevel), rightX, topY + 62, 0xFF55FFFF, false);
 
         // Smithing Upgrade Recipe Box
-        int recBoxY = topY + 68;
-        drawCustomBorder(context, rightX, recBoxY, rightW, 44, 0xFF5A4938);
+        int recBoxY = topY + 74;
+        drawCustomBorder(context, rightX, recBoxY, rightW, 40, 0xFF5A4938);
         context.drawText(this.textRenderer, Text.literal("Receta en Mesa de Herrería / Forja:").formatted(Formatting.LIGHT_PURPLE),
                 rightX + 4, recBoxY + 3, 0xFFFF77FF, false);
 
@@ -246,7 +285,7 @@ public class ChainOresGuideScreen extends Screen {
                 ? new ItemStack(Items.COPPER_INGOT)
                 : new ItemStack(OreRegistryData.TIERS.get(ore.tier - 2).ingotItem);
 
-        int recItemY = recBoxY + 18;
+        int recItemY = recBoxY + 16;
         context.drawItem(templateStack, rightX + 6, recItemY);
         context.drawText(this.textRenderer, "+", rightX + 26, recItemY + 4, 0xFFFFFFFF, false);
         context.drawItem(prevStack, rightX + 34, recItemY);
@@ -289,11 +328,21 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "★ HERRAMIENTA UNIVERSAL DE LOS DIOSES (T150):", cx, cy + 112, 0xFFFFD700, false);
             context.drawText(this.textRenderer, "  Combina pico 5x5, hacha, pala y azada. 120 daño sagrado y rayo.", cx, cy + 122, 0xFFFFFF55, false);
 
-            // Icon Showcase
-            context.drawItem(new ItemStack(ModGear.DRAGON_BOW), cx + 240, cy + 58);
-            context.drawItem(new ItemStack(ModGear.GALACTIC_CROSSBOW), cx + 260, cy + 58);
-            context.drawItem(new ItemStack(ModGear.AEGIS_SHIELD), cx + 280, cy + 58);
-            context.drawItem(new ItemStack(ModGear.GOD_OMNITOOL), cx + 300, cy + 58);
+            // Icon Showcase with Tooltips
+            ItemStack bow = new ItemStack(ModGear.DRAGON_BOW);
+            ItemStack xbow = new ItemStack(ModGear.GALACTIC_CROSSBOW);
+            ItemStack shield = new ItemStack(ModGear.AEGIS_SHIELD);
+            ItemStack omni = new ItemStack(ModGear.GOD_OMNITOOL);
+
+            context.drawItem(bow, cx + 230, cy + 58);
+            context.drawItem(xbow, cx + 252, cy + 58);
+            context.drawItem(shield, cx + 274, cy + 58);
+            context.drawItem(omni, cx + 296, cy + 58);
+
+            checkTooltip(context, bow, cx + 230, cy + 58, mouseX, mouseY);
+            checkTooltip(context, xbow, cx + 252, cy + 58, mouseX, mouseY);
+            checkTooltip(context, shield, cx + 274, cy + 58, mouseX, mouseY);
+            checkTooltip(context, omni, cx + 296, cy + 58, mouseX, mouseY);
         } else {
             context.drawText(this.textRenderer, Text.literal("✦ SISTEMA DE SETS DE ARMADURA Y DASH ✦").formatted(Formatting.AQUA, Formatting.BOLD),
                     cx, cy, 0xFF55FFFF, false);
@@ -310,6 +359,22 @@ public class ChainOresGuideScreen extends Screen {
 
             context.drawText(this.textRenderer, "⚡ Habilidad Activa Universal (Dash Impulso):", cx, cy + 104, 0xFF55FFFF, false);
             context.drawText(this.textRenderer, "  Esprintar + Agacharse ejecuta un impulso sónico en el aire (CD: 4s).", cx, cy + 114, 0xFFFFF1A8, false);
+
+            // Armor Showcase with Tooltips
+            ItemStack h = new ItemStack(ModGear.GEAR_SETS.get(0).helmet);
+            ItemStack c = new ItemStack(ModGear.GEAR_SETS.get(6).chestplate);
+            ItemStack l = new ItemStack(ModGear.GEAR_SETS.get(9).leggings);
+            ItemStack b = new ItemStack(ModGear.GEAR_SETS.get(ModGear.GEAR_SETS.size() - 1).boots);
+
+            context.drawItem(h, cx + 230, cy + 58);
+            context.drawItem(c, cx + 252, cy + 58);
+            context.drawItem(l, cx + 274, cy + 58);
+            context.drawItem(b, cx + 296, cy + 58);
+
+            checkTooltip(context, h, cx + 230, cy + 58, mouseX, mouseY);
+            checkTooltip(context, c, cx + 252, cy + 58, mouseX, mouseY);
+            checkTooltip(context, l, cx + 274, cy + 58, mouseX, mouseY);
+            checkTooltip(context, b, cx + 296, cy + 58, mouseX, mouseY);
         }
     }
 
@@ -320,23 +385,27 @@ public class ChainOresGuideScreen extends Screen {
         context.drawText(this.textRenderer, Text.literal("✦ ESTACIONES DE TRABAJO ESPECIALIZADAS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                 cx, cy, 0xFFFFD700, false);
 
-        // Workstation 1: Chain Forge
-        context.drawItem(new ItemStack(ModWorkstations.CHAIN_FORGE_ITEM), cx, cy + 14);
+        ItemStack forge = new ItemStack(ModWorkstations.CHAIN_FORGE_ITEM);
+        context.drawItem(forge, cx, cy + 14);
         context.drawText(this.textRenderer, "Forja en Cadena (Chain Forge):", cx + 22, cy + 14, 0xFFFFCC00, false);
         context.drawText(this.textRenderer, "Mesa de forja con interfaz GUI y combustible de calor.", cx + 22, cy + 24, 0xFFE0E0E0, false);
         context.drawText(this.textRenderer, "Mejora equipamiento nivel a nivel y requiere Catalizadores de Jefes.", cx + 22, cy + 34, 0xFFAAAAAA, false);
 
-        // Workstation 2: Indestructible Anvil
-        context.drawItem(new ItemStack(ModWorkstations.CHAIN_ANVIL_ITEM), cx, cy + 50);
+        ItemStack anvil = new ItemStack(ModWorkstations.CHAIN_ANVIL_ITEM);
+        context.drawItem(anvil, cx, cy + 50);
         context.drawText(this.textRenderer, "Yunque en Cadena (Indestructible):", cx + 22, cy + 50, 0xFF55FF55, false);
         context.drawText(this.textRenderer, "¡Nunca se rompe! Repara ítems al 100% sin penalización de XP.", cx + 22, cy + 60, 0xFFE0E0E0, false);
         context.drawText(this.textRenderer, "Templado (+50 durabilidad), engarce de gemas y reforjado.", cx + 22, cy + 70, 0xFFAAAAAA, false);
 
-        // Workstation 3: Cosmic Smelter
-        context.drawItem(new ItemStack(ModWorkstations.COSMIC_SMELTER_ITEM), cx, cy + 86);
+        ItemStack smelter = new ItemStack(ModWorkstations.COSMIC_SMELTER_ITEM);
+        context.drawItem(smelter, cx, cy + 86);
         context.drawText(this.textRenderer, "Fundidor Cósmico (Cosmic Smelter):", cx + 22, cy + 86, 0xFFFF55FF, false);
         context.drawText(this.textRenderer, "Cuadruplica (x4) los lingotes producidos por cada mineral crudo.", cx + 22, cy + 96, 0xFFE0E0E0, false);
         context.drawText(this.textRenderer, "35% de probabilidad de transmutar al tier inmediatamente superior.", cx + 22, cy + 106, 0xFFFFFF55, false);
+
+        checkTooltip(context, forge, cx, cy + 14, mouseX, mouseY);
+        checkTooltip(context, anvil, cx, cy + 50, mouseX, mouseY);
+        checkTooltip(context, smelter, cx, cy + 86, mouseX, mouseY);
     }
 
     private void renderBossesTab(DrawContext context, int x, int y, int mouseX, int mouseY) {
@@ -347,35 +416,57 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, Text.literal("✦ JEFES SUPREMOS DE DIMENSIÓN ✦").formatted(Formatting.RED, Formatting.BOLD),
                     cx, cy, 0xFFFF5555, false);
 
-            context.drawItem(new ItemStack(ModBossItems.ABYSSAL_EYE), cx, cy + 14);
+            ItemStack eye = new ItemStack(ModBossItems.ABYSSAL_EYE);
+            context.drawItem(eye, cx, cy + 14);
             context.drawText(this.textRenderer, "1. Guardián del Abismo (Tier 70 - Deep Dark):", cx + 22, cy + 14, 0xFF55FFFF, false);
             context.drawText(this.textRenderer, "Invócalo con el Ojo del Abismo. Dropea el Catalizador del Abismo.", cx + 22, cy + 24, 0xFFE0E0E0, false);
 
-            context.drawItem(new ItemStack(ModBossItems.FLAME_HEART), cx, cy + 42);
+            ItemStack heart = new ItemStack(ModBossItems.FLAME_HEART);
+            context.drawItem(heart, cx, cy + 42);
             context.drawText(this.textRenderer, "2. Behemoth del Nether (Tier 105 - Nether):", cx + 22, cy + 42, 0xFFFF5555, false);
             context.drawText(this.textRenderer, "Invócalo con el Corazón Ígneo. Dropea el Núcleo del Nether.", cx + 22, cy + 52, 0xFFE0E0E0, false);
 
-            context.drawItem(new ItemStack(ModBossItems.VOID_BEACON), cx, cy + 70);
+            ItemStack beacon = new ItemStack(ModBossItems.VOID_BEACON);
+            context.drawItem(beacon, cx, cy + 70);
             context.drawText(this.textRenderer, "3. Coloso del Vacío (Tier 135 - The End):", cx + 22, cy + 70, 0xFFFF55FF, false);
             context.drawText(this.textRenderer, "Invócalo con la Baliza del Vacío. Dropea el Fragmento del Vacío.", cx + 22, cy + 80, 0xFFE0E0E0, false);
 
-            context.drawItem(new ItemStack(ModBossItems.COSMIC_ALTAR_CORE), cx, cy + 98);
+            ItemStack core = new ItemStack(ModBossItems.COSMIC_ALTAR_CORE);
+            context.drawItem(core, cx, cy + 98);
             context.drawText(this.textRenderer, "4. Soberano Cósmico (Tier 150 - Dimensión Cósmica):", cx + 22, cy + 98, 0xFFFFD700, false);
             context.drawText(this.textRenderer, "Jefe final invocado con el Altar Cósmico. Dropea la Singularidad.", cx + 22, cy + 108, 0xFFFFF1A8, false);
+
+            checkTooltip(context, eye, cx, cy + 14, mouseX, mouseY);
+            checkTooltip(context, heart, cx, cy + 42, mouseX, mouseY);
+            checkTooltip(context, beacon, cx, cy + 70, mouseX, mouseY);
+            checkTooltip(context, core, cx, cy + 98, mouseX, mouseY);
         } else {
             context.drawText(this.textRenderer, Text.literal("✦ ESTRUCTURAS EN EL MUNDO ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
-            context.drawText(this.textRenderer, "• Forjas Abandonadas (Overworld):", cx, cy + 16, 0xFF55FF55, false);
-            context.drawText(this.textRenderer, "  Ruinas subterráneas con Yunque en Cadena y plantillas de herrería.", cx, cy + 26, 0xFFE0E0E0, false);
+            ItemStack cat = new ItemStack(ModBossItems.ABYSSAL_CATALYST);
+            context.drawItem(cat, cx, cy + 16);
+            context.drawText(this.textRenderer, "Forjas Abandonadas (Overworld):", cx + 22, cy + 16, 0xFF55FF55, false);
+            context.drawText(this.textRenderer, "Ruinas subterráneas con Yunque en Cadena y plantillas de herrería.", cx + 22, cy + 26, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "• Cámaras Selladas de Netherita (Nether):", cx, cy + 46, 0xFFFF5555, false);
-            context.drawText(this.textRenderer, "  Fortalezas protegidas por lava con minerales de tier Nether.", cx, cy + 56, 0xFFE0E0E0, false);
+            ItemStack ncore = new ItemStack(ModBossItems.NETHER_CORE);
+            context.drawItem(ncore, cx, cy + 46);
+            context.drawText(this.textRenderer, "Cámaras Selladas de Netherita (Nether):", cx + 22, cy + 46, 0xFFFF5555, false);
+            context.drawText(this.textRenderer, "Fortalezas protegidas por lava con minerales de tier Nether.", cx + 22, cy + 56, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "• Templos Cósmicos (The End):", cx, cy + 76, 0xFFFF55FF, false);
-            context.drawText(this.textRenderer, "  Torres flotantes con cofres de lingotes cósmicos y altares arcanos.", cx, cy + 86, 0xFFE0E0E0, false);
+            ItemStack shard = new ItemStack(ModBossItems.VOID_SHARD);
+            context.drawItem(shard, cx, cy + 76);
+            context.drawText(this.textRenderer, "Templos Cósmicos (The End):", cx + 22, cy + 76, 0xFFFF55FF, false);
+            context.drawText(this.textRenderer, "Torres flotantes con cofres de lingotes cósmicos y altares arcanos.", cx + 22, cy + 86, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "ℹ Estas estructuras contienen cofres con loot exclusivo de progresión.", cx, cy + 110, 0xFFFFAA00, false);
+            ItemStack trophy = new ItemStack(ModBossItems.COSMIC_TROPHY);
+            context.drawItem(trophy, cx + 295, cy + 104);
+            context.drawText(this.textRenderer, "ℹ Estructuras con loot exclusivo de progresión y trofeos.", cx, cy + 110, 0xFFFFAA00, false);
+
+            checkTooltip(context, cat, cx, cy + 16, mouseX, mouseY);
+            checkTooltip(context, ncore, cx, cy + 46, mouseX, mouseY);
+            checkTooltip(context, shard, cx, cy + 76, mouseX, mouseY);
+            checkTooltip(context, trophy, cx + 295, cy + 104, mouseX, mouseY);
         }
     }
 
@@ -386,25 +477,36 @@ public class ChainOresGuideScreen extends Screen {
         context.drawText(this.textRenderer, Text.literal("✦ GEMAS, REFORJADO Y ENCANTAMIENTOS ✦").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD),
                 cx, cy, 0xFFFF77FF, false);
 
-        // 4 Gems
-        context.drawItem(new ItemStack(ModGems.BLOOD_GEM), cx, cy + 14);
+        ItemStack blood = new ItemStack(ModGems.BLOOD_GEM);
+        context.drawItem(blood, cx, cy + 14);
         context.drawText(this.textRenderer, "Gema de Sangre: Robo de Vida (+2.5♥) y Regeneración pasiva.", cx + 20, cy + 18, 0xFFFF5555, false);
 
-        context.drawItem(new ItemStack(ModGems.VOID_GEM), cx, cy + 34);
+        ItemStack voidGem = new ItemStack(ModGems.VOID_GEM);
+        context.drawItem(voidGem, cx, cy + 34);
         context.drawText(this.textRenderer, "Gema del Vacío: Levitación enemiga y Antigravedad al caer.", cx + 20, cy + 38, 0xFFFF55FF, false);
 
-        context.drawItem(new ItemStack(ModGems.CORE_GEM), cx, cy + 54);
+        ItemStack core = new ItemStack(ModGems.CORE_GEM);
+        context.drawItem(core, cx, cy + 54);
         context.drawText(this.textRenderer, "Gema del Núcleo: +35% Prisa minera extrema y Velocidad I.", cx + 20, cy + 58, 0xFFFFAA00, false);
 
-        context.drawItem(new ItemStack(ModGems.GENESIS_GEM), cx, cy + 74);
+        ItemStack genesis = new ItemStack(ModGems.GENESIS_GEM);
+        context.drawItem(genesis, cx, cy + 74);
         context.drawText(this.textRenderer, "Gema del Génesis: Rayo celestial, escudo de Absorción y +50% poder.", cx + 20, cy + 78, 0xFF55FFFF, false);
 
-        // Reforge Prefixes info
+        // Reforge Prefixes info with Amethyst Shard icon
+        ItemStack amethyst = new ItemStack(Items.AMETHYST_SHARD);
+        context.drawItem(amethyst, cx + 285, cy + 96);
         context.drawText(this.textRenderer, "⚡ Prefijos en Yunque (con Amatista):", cx, cy + 98, 0xFFFFD700, false);
         context.drawText(this.textRenderer, "[DIVINO] (+50%), [LEGENDARIO] (+25%), [FEROZ], [VELOZ], [TITÁNICO].", cx, cy + 108, 0xFFFFF1A8, false);
 
         // Enchantments
         context.drawText(this.textRenderer, "✦ Encantamientos: Desintegración en Cadena, Drenaje del Vacío, Radiancia.", cx, cy + 122, 0xFF88FF88, false);
+
+        checkTooltip(context, blood, cx, cy + 14, mouseX, mouseY);
+        checkTooltip(context, voidGem, cx, cy + 34, mouseX, mouseY);
+        checkTooltip(context, core, cx, cy + 54, mouseX, mouseY);
+        checkTooltip(context, genesis, cx, cy + 74, mouseX, mouseY);
+        checkTooltip(context, amethyst, cx + 285, cy + 96, mouseX, mouseY);
     }
 
     private void checkTooltip(DrawContext context, ItemStack stack, int itemX, int itemY, int mouseX, int mouseY) {

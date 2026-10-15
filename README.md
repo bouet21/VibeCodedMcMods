@@ -189,12 +189,15 @@ El bastón de prospección cuenta con 3 modos de rastreo seleccionables con **Sh
 
 Al entrar por primera vez al mundo recibes el **Códice de Minerales en Cadena** (`chainores:guide_book`), o puedes abrirlo con `/chainores guide`.
 
-Cuenta con **5 pestañas interactivas:**
-1. **`[Minerales]`**: Enciclopedia completa de los 150 tiers con renderizado 3D de muestras, recetas en herrería, alturas y biomas.
-2. **`[Arsenal]`**: Guía de hachas TreeCapitator, palas 3x3, azadas 9x9, armas especiales y tabla de bonificaciones de armadura 2/4, 3/4 y 4/4 con Dash.
-3. **`[Estaciones]`**: Instrucciones de uso de la Forja en Cadena, Yunque Indestructible y Fundidor Cósmico.
-4. **`[Jefes y Mundo]`**: Invocación de los 4 jefes supremos, catalizadores de transición y localización de estructuras.
-5. **`[Gemas y Reforje]`**: Guía de efectos de las 4 gemas, prefijos de reforjado y encantamientos.
+Cuenta con:
+- 🔍 **Buscador Interactivo Integrado:** Permite buscar y saltar en tiempo real a cualquiera de los 150 minerales por número de tier, nombre en español o inglés sin perder el foco.
+- 🗂️ **Tooltips Universales:** Al pasar el cursor sobre cualquier ítem o bloque en cualquiera de las 5 pestañas, se despliega su tooltip completo con lore y estadísticas.
+- **5 pestañas interactivas:**
+  1. **`[Minerales]`**: Enciclopedia completa de los 150 tiers con renderizado 3D de muestras, recetas en herrería, alturas, biomas y botones de salto rápido por eras.
+  2. **`[Arsenal]`**: Guía de hachas TreeCapitator, palas 3x3, azadas 9x9, armas especiales y tabla de bonificaciones de armadura 2/4, 3/4 y 4/4 con Dash Impulso.
+  3. **`[Estaciones]`**: Instrucciones de uso de la Forja en Cadena, Yunque Indestructible y Fundidor Cósmico.
+  4. **`[Jefes y Mundo]`**: Invocación de los 4 jefes supremos, catalizadores de transición y localización de estructuras.
+  5. **`[Gemas y Reforje]`**: Guía de efectos de las 4 gemas, prefijos de reforjado y encantamientos.
 
 ---
 

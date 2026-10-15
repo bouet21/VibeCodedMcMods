@@ -151,19 +151,26 @@ public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity {
             if (entity.cookTime >= entity.totalCookTime) {
                 input.decrement(1);
 
-                // 35% chance to double output!
-                int yield = 1;
+                // Cuadruplicar (x4) lingotes
+                int yield = 4;
+                ItemStack out = recipeResult.copy();
+
+                // 35% probabilidad de transmutar al tier superior!
                 if (world.random.nextFloat() < 0.35f) {
-                    yield = 2;
-                    world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.0f, 1.6f);
-                    ((ServerWorld) world).spawnParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, 12, 0.2, 0.2, 0.2, 0.05);
+                    for (int i = 0; i < OreRegistryData.TIERS.size() - 1; i++) {
+                        if (recipeResult.isOf(OreRegistryData.TIERS.get(i).ingotItem)) {
+                            out = new ItemStack(OreRegistryData.TIERS.get(i + 1).ingotItem);
+                            break;
+                        }
+                    }
+                    world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.2f, 1.8f);
+                    ((ServerWorld) world).spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, 15, 0.3, 0.3, 0.3, 0.1);
                 }
 
                 if (outputSlot.isEmpty()) {
-                    ItemStack out = recipeResult.copy();
                     out.setCount(yield);
                     entity.inventory.set(OUTPUT_SLOT, out);
-                } else {
+                } else if (ItemStack.areItemsAndComponentsEqual(outputSlot, out)) {
                     outputSlot.increment(yield);
                 }
 
@@ -201,7 +208,7 @@ public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity {
     private static boolean canInsertOutput(ItemStack outputSlot, ItemStack result) {
         if (outputSlot.isEmpty()) return true;
         if (!ItemStack.areItemsAndComponentsEqual(outputSlot, result)) return false;
-        return outputSlot.getCount() + 2 <= outputSlot.getMaxCount();
+        return outputSlot.getCount() + 4 <= outputSlot.getMaxCount();
     }
 
     private static ItemStack getSmeltingResult(ItemStack input) {

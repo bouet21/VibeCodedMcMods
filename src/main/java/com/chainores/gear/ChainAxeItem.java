@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 
 public class ChainAxeItem extends Item {
     private final int tier;
-    private static boolean IS_FELLING = false;
+    private static final ThreadLocal<Boolean> IS_FELLING = ThreadLocal.withInitial(() -> false);
 
     public ChainAxeItem(ToolMaterial material, int tier, float bonusDamage, Settings settings) {
         super(settings.axe(material, bonusDamage, -3.0f));
@@ -108,7 +108,7 @@ public class ChainAxeItem extends Item {
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld && miner instanceof ServerPlayerEntity player) {
-            if (!IS_FELLING && state.isIn(BlockTags.LOGS) && (player.isSneaking() || tier >= 40)) {
+            if (!IS_FELLING.get() && state.isIn(BlockTags.LOGS) && (player.isSneaking() || tier >= 40)) {
                 fellTree(serverWorld, player, stack, pos, state);
             }
         }
@@ -131,7 +131,7 @@ public class ChainAxeItem extends Item {
             default -> 256;
         };
 
-        IS_FELLING = true;
+        IS_FELLING.set(true);
         int count = 0;
         try {
             while (!queue.isEmpty() && count < maxLogs) {
@@ -189,7 +189,7 @@ public class ChainAxeItem extends Item {
                 player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.8f, 1.2f);
             }
         } finally {
-            IS_FELLING = false;
+            IS_FELLING.set(false);
         }
     }
 }

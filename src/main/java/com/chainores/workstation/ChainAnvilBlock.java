@@ -107,10 +107,22 @@ public class ChainAnvilBlock extends Block {
                 }
             }
 
-            // Scenario 2: Reforging (Shift-click or holding Amethyst Shard)
-            if (player.isSneaking() || (!offhand.isEmpty() && offhand.isOf(Items.AMETHYST_SHARD))) {
-                if (!offhand.isEmpty() && offhand.isOf(Items.AMETHYST_SHARD)) {
-                    if (!player.getAbilities().creativeMode) offhand.decrement(1);
+            // Scenario 2: Reforging (Shift-click or holding Amethyst Shard / Lapis Lazuli)
+            boolean hasMaterial = (!offhand.isEmpty() && (offhand.isOf(Items.AMETHYST_SHARD) || offhand.isOf(Items.LAPIS_LAZULI)));
+            int invSlot = findSlotWithItem(player.getInventory(), Items.AMETHYST_SHARD);
+            if (invSlot == -1) invSlot = findSlotWithItem(player.getInventory(), Items.LAPIS_LAZULI);
+
+            if (player.isSneaking() || hasMaterial) {
+                if (!player.getAbilities().creativeMode) {
+                    if (hasMaterial) {
+                        offhand.decrement(1);
+                    } else if (invSlot != -1) {
+                        player.getInventory().getStack(invSlot).decrement(1);
+                    } else {
+                        world.playSound(null, pos, SoundEvents.BLOCK_DISPENSER_FAIL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        player.sendMessage(Text.literal("✘ Para reforjar necesitas 1 Fragmento de Amatista o Lapislázuli.").formatted(Formatting.RED), true);
+                        return ActionResult.SUCCESS;
+                    }
                 }
                 String newReforge = com.chainores.modifier.ChainModifiers.rollRandomReforge(world.random);
                 com.chainores.modifier.ChainModifiers.setReforge(held, newReforge);
@@ -119,7 +131,7 @@ public class ChainAnvilBlock extends Block {
                 world.playSound(null, pos, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 0.9f, 1.1f);
                 serverWorld.spawnParticles(ParticleTypes.FIREWORK, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 20, 0.4, 0.4, 0.4, 0.1);
 
-                player.sendMessage(Text.literal("⚡ ¡Arma reforjada! Nuevo prefijo: " + newReforge.toUpperCase()).formatted(Formatting.GOLD, Formatting.BOLD), true);
+                player.sendMessage(Text.literal("⚡ ¡Arma reforjada! Nuevo prefijo: [" + newReforge.toUpperCase() + "]").formatted(Formatting.GOLD, Formatting.BOLD), true);
                 return ActionResult.SUCCESS;
             }
 

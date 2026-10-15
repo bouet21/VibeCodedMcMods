@@ -185,4 +185,16 @@ public class NetherBehemothEntity extends HostileEntity {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(104).ingotItem, 4 + world.random.nextInt(5)));
         }
     }
+
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
+        this.bossBar.clearPlayers();
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        this.bossBar.clearPlayers();
+    }
 }

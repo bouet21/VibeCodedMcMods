@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 public class ChainShovelItem extends Item {
     private final int tier;
-    private static boolean IS_EXCAVATING = false;
+    private static final ThreadLocal<Boolean> IS_EXCAVATING = ThreadLocal.withInitial(() -> false);
 
     public ChainShovelItem(ToolMaterial material, int tier, float bonusDamage, Settings settings) {
         super(settings.shovel(material, bonusDamage, -3.0f));
@@ -123,7 +123,7 @@ public class ChainShovelItem extends Item {
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld && miner instanceof ServerPlayerEntity player) {
-            if (!IS_EXCAVATING && state.isIn(BlockTags.SHOVEL_MINEABLE) && (player.isSneaking() || tier >= 100)) {
+            if (!IS_EXCAVATING.get() && state.isIn(BlockTags.SHOVEL_MINEABLE) && (player.isSneaking() || tier >= 100)) {
                 int radius = (tier >= 135) ? 2 : (tier >= 40 ? 1 : 0);
                 if (radius > 0) {
                     excavateArea(serverWorld, player, stack, pos, radius);
@@ -140,7 +140,7 @@ public class ChainShovelItem extends Item {
 
     private void excavateArea(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center, int radius) {
         Direction facing = Direction.getEntityFacingOrder(player)[0];
-        IS_EXCAVATING = true;
+        IS_EXCAVATING.set(true);
         try {
             for (int dx = -radius; dx <= radius; dx++) {
                 for (int dy = -radius; dy <= radius; dy++) {
@@ -173,7 +173,7 @@ public class ChainShovelItem extends Item {
                 });
             }
         } finally {
-            IS_EXCAVATING = false;
+            IS_EXCAVATING.set(false);
         }
     }
 
