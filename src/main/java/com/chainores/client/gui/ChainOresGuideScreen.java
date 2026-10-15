@@ -367,28 +367,40 @@ public class ChainOresGuideScreen extends Screen {
             int rowH = 17;
 
             context.drawItem(s1, cx, sy);
-            context.drawText(this.textRenderer, "Centinela (T10): ", cx + 20, sy + 4, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "Bloqueo firme y absorción temporal.", cx + 96, sy + 4, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Centinela (T10): ").formatted(Formatting.WHITE)
+                            .append(Text.literal("Bloqueo firme y absorción temporal.").formatted(Formatting.GRAY)),
+                    cx + 20, sy + 4, 0xFFFFFFFF, false);
 
             context.drawItem(s2, cx, sy + rowH);
-            context.drawText(this.textRenderer, "Escarcha (T30): ", cx + 20, sy + rowH + 4, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "Onda glacial; congela y Lentitud IV.", cx + 94, sy + rowH + 4, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Escarcha (T30): ").formatted(Formatting.AQUA)
+                            .append(Text.literal("Onda glacial; congela y Lentitud IV.").formatted(Formatting.GRAY)),
+                    cx + 20, sy + rowH + 4, 0xFFFFFFFF, false);
 
             context.drawItem(s3, cx, sy + rowH * 2);
-            context.drawText(this.textRenderer, "Égida (T70): ", cx + 20, sy + rowH * 2 + 4, 0xFFFFD700, false);
-            context.drawText(this.textRenderer, "Refleja proyectiles (200% de daño devuelto).", cx + 76, sy + rowH * 2 + 4, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Égida (T70): ").formatted(Formatting.GOLD)
+                            .append(Text.literal("Refleja proyectiles (200% daño devuelto).").formatted(Formatting.GRAY)),
+                    cx + 20, sy + rowH * 2 + 4, 0xFFFFFFFF, false);
 
             context.drawItem(s4, cx, sy + rowH * 3);
-            context.drawText(this.textRenderer, "Abisal (T105): ", cx + 20, sy + rowH * 3 + 4, 0xFF55FF55, false);
-            context.drawText(this.textRenderer, "Onda sónica destructiva de Warden.", cx + 86, sy + rowH * 3 + 4, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Abisal (T105): ").formatted(Formatting.DARK_AQUA)
+                            .append(Text.literal("Onda sónica destructiva de Warden.").formatted(Formatting.GRAY)),
+                    cx + 20, sy + rowH * 3 + 4, 0xFFFFFFFF, false);
 
             context.drawItem(s5, cx, sy + rowH * 4);
-            context.drawText(this.textRenderer, "Infernal (T135): ", cx + 20, sy + rowH * 4 + 4, 0xFFFF5555, false);
-            context.drawText(this.textRenderer, "Inmola al agresor y quema en 5 bloques.", cx + 96, sy + rowH * 4 + 4, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Infernal (T135): ").formatted(Formatting.RED)
+                            .append(Text.literal("Inmola al agresor y quema en 5 bloques.").formatted(Formatting.GRAY)),
+                    cx + 20, sy + rowH * 4 + 4, 0xFFFFFFFF, false);
 
             context.drawItem(s6, cx, sy + rowH * 5);
-            context.drawText(this.textRenderer, "Cósmico (T150): ", cx + 20, sy + rowH * 5 + 4, 0xFFFF55FF, false);
-            context.drawText(this.textRenderer, "Distorsión gravitatoria; repele y empuja.", cx + 96, sy + rowH * 5 + 4, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Cósmico (T150): ").formatted(Formatting.LIGHT_PURPLE)
+                            .append(Text.literal("Distorsión gravitatoria; repele y empuja.").formatted(Formatting.GRAY)),
+                    cx + 20, sy + rowH * 5 + 4, 0xFFFFFFFF, false);
 
             context.drawText(this.textRenderer, "★ Mantén Clic Derecho para bloquear y activar el contraataque.", cx, sy + rowH * 6 + 4, 0xFFFFF1A8, false);
 
@@ -497,23 +509,47 @@ public class ChainOresGuideScreen extends Screen {
 
             ItemStack eye = new ItemStack(ModBossItems.ABYSSAL_EYE);
             context.drawItem(eye, cx, cy + 14);
-            context.drawText(this.textRenderer, "1. Guardián del Abismo (T70 - Overworld, Y < 0):", cx + 22, cy + 14, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "  Forja Abandonada u Ojo Abisal. Drop: Catalizador.", cx + 22, cy + 24, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("1. Guardián del Abismo ").formatted(Formatting.AQUA, Formatting.BOLD)
+                            .append(Text.literal("(T70 - Overworld, Y < 0)").formatted(Formatting.DARK_AQUA)),
+                    cx + 22, cy + 14, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("  Forja Abandonada u Ojo Abisal. ").formatted(Formatting.GRAY)
+                            .append(Text.literal("Drop: Catalizador.").formatted(Formatting.YELLOW)),
+                    cx + 22, cy + 24, 0xFFFFFFFF, false);
 
             ItemStack heart = new ItemStack(ModBossItems.FLAME_HEART);
             context.drawItem(heart, cx, cy + 40);
-            context.drawText(this.textRenderer, "2. Behemoth del Nether (T105 - Nether, Y 25-100):", cx + 22, cy + 40, 0xFFFF5555, false);
-            context.drawText(this.textRenderer, "  Santuario Nether o Corazón Ígneo. Drop: Cat. Ígneo.", cx + 22, cy + 50, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("2. Behemoth del Nether ").formatted(Formatting.RED, Formatting.BOLD)
+                            .append(Text.literal("(T105 - Nether, Y 25-100)").formatted(Formatting.DARK_RED)),
+                    cx + 22, cy + 40, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("  Santuario Nether o Corazón Ígneo. ").formatted(Formatting.GRAY)
+                            .append(Text.literal("Drop: Cat. Ígneo.").formatted(Formatting.YELLOW)),
+                    cx + 22, cy + 50, 0xFFFFFFFF, false);
 
             ItemStack beacon = new ItemStack(ModBossItems.VOID_BEACON);
             context.drawItem(beacon, cx, cy + 66);
-            context.drawText(this.textRenderer, "3. Coloso del Vacío (T135 - The End, Islas):", cx + 22, cy + 66, 0xFFFF55FF, false);
-            context.drawText(this.textRenderer, "  Altar Cósmico o Baliza Vacío. Drop: Cat. del Vacío.", cx + 22, cy + 76, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("3. Coloso del Vacío ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD)
+                            .append(Text.literal("(T135 - The End, Islas)").formatted(Formatting.DARK_PURPLE)),
+                    cx + 22, cy + 66, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("  Altar Cósmico o Baliza Vacío. ").formatted(Formatting.GRAY)
+                            .append(Text.literal("Drop: Cat. del Vacío.").formatted(Formatting.YELLOW)),
+                    cx + 22, cy + 76, 0xFFFFFFFF, false);
 
             ItemStack core = new ItemStack(ModBossItems.COSMIC_ALTAR_CORE);
             context.drawItem(core, cx, cy + 92);
-            context.drawText(this.textRenderer, "4. Soberano Cósmico (T150 - Boss Final):", cx + 22, cy + 92, 0xFFFFD700, false);
-            context.drawText(this.textRenderer, "  Invocado con Núcleo del Altar. Drop: Singularidad.", cx + 22, cy + 102, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("4. Soberano Cósmico ").formatted(Formatting.GOLD, Formatting.BOLD)
+                            .append(Text.literal("(T150 - Boss Final)").formatted(Formatting.YELLOW)),
+                    cx + 22, cy + 92, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("  Invocado con Núcleo del Altar. ").formatted(Formatting.GRAY)
+                            .append(Text.literal("Drop: Singularidad.").formatted(Formatting.GOLD)),
+                    cx + 22, cy + 102, 0xFFFFFFFF, false);
 
             context.drawText(this.textRenderer, "★ Pasa el ratón por los iconos para ver sus recetas e info.", cx, cy + 118, 0xFFAAAAAA, false);
 
@@ -559,26 +595,34 @@ public class ChainOresGuideScreen extends Screen {
 
             ItemStack blood = new ItemStack(ModGems.BLOOD_GEM);
             context.drawItem(blood, cx, cy + 14);
-            context.drawText(this.textRenderer, "Gema Carmesí: ", cx + 20, cy + 14, 0xFFFF5555, false);
-            context.drawText(this.textRenderer, "+15% Robo de Vida (Armas)", cx + 96, cy + 14, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema Carmesí: ").formatted(Formatting.RED, Formatting.BOLD)
+                            .append(Text.literal("+15% Robo de Vida (Armas)").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 14, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer, "Armadura: Regeneración pasiva II y salvavidas.", cx + 20, cy + 24, 0xFFAAAAAA, false);
 
             ItemStack voidGem = new ItemStack(ModGems.VOID_GEM);
             context.drawItem(voidGem, cx, cy + 38);
-            context.drawText(this.textRenderer, "Gema del Vacío: ", cx + 20, cy + 38, 0xFFFF55FF, false);
-            context.drawText(this.textRenderer, "+30% Daño cósmico y levitación", cx + 104, cy + 38, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema del Vacío: ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD)
+                            .append(Text.literal("+30% Daño cósmico y levitación").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 38, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer, "Armadura: Inmunidad a daño de caída y planeo.", cx + 20, cy + 48, 0xFFAAAAAA, false);
 
             ItemStack core = new ItemStack(ModGems.CORE_GEM);
             context.drawItem(core, cx, cy + 62);
-            context.drawText(this.textRenderer, "Gema del Núcleo: ", cx + 20, cy + 62, 0xFFFFAA00, false);
-            context.drawText(this.textRenderer, "+35% Vel. ataque e ignición", cx + 110, cy + 62, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema del Núcleo: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                            .append(Text.literal("+35% Vel. ataque e ignición").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 62, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer, "Armadura: Inmune a fuego/lava y Velocidad II.", cx + 20, cy + 72, 0xFFAAAAAA, false);
 
             ItemStack genesis = new ItemStack(ModGems.GENESIS_GEM);
             context.drawItem(genesis, cx, cy + 86);
-            context.drawText(this.textRenderer, "Gema del Génesis: ", cx + 20, cy + 86, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "Rayos sagrados en críticos", cx + 116, cy + 86, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema del Génesis: ").formatted(Formatting.AQUA, Formatting.BOLD)
+                            .append(Text.literal("Rayos sagrados en críticos").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 86, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer, "Armadura: +4 Absorción y retribución sagrada.", cx + 20, cy + 96, 0xFFAAAAAA, false);
 
             // Tier slot breakdown box
