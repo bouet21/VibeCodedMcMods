@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "I I",
+    "I I"
+  ],
+  "key": {
+    "I": "chainores:ingot_tier_60"
+  },
+  "result": {
+    "id": "chainores:boots_tier_60",
+    "count": 1
+  }
+}

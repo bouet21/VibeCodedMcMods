@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "chainores:chain_smithing_template",
+  "base": "chainores:hoe_tier_50",
+  "addition": "chainores:ingot_tier_60",
+  "result": {
+    "id": "chainores:hoe_tier_60"
+  }
+}

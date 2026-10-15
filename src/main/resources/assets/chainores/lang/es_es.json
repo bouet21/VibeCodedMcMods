@@ -1111,5 +1111,6 @@
   "item.chainores.genesis_gem.desc": "Engarzable en Yunque/Forja. Otorga rayo divino, absorción y +50% poder.",
   "reforge.chainores.divine": "Prefijo: [DIVINO]",
   "gem.chainores.core": "Engarzado: Gema del Núcleo (+35% Prisa)",
-  "item.chainores.core_gem.desc": "Engarzable en Yunque/Forja. Otorga prisa minera extrema y velocidad."
+  "item.chainores.core_gem.desc": "Engarzable en Yunque/Forja. Otorga prisa minera extrema y velocidad.",
+  "item.chainores.structure_compass": "Brújula de Estructuras"
 }

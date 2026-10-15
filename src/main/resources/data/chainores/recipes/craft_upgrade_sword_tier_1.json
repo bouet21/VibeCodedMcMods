@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:iron_sword",
+    "chainores:ingot_tier_1"
+  ],
+  "result": {
+    "id": "chainores:sword_tier_1",
+    "count": 1
+  }
+}

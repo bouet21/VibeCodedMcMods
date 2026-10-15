@@ -79,6 +79,10 @@ public class NetherShrineFeature extends Feature<DefaultFeatureConfig> {
             }
         }
 
+        if (world.toServerWorld() != null) {
+            com.chainores.world.StructureLocator.record(world.toServerWorld(), com.chainores.world.StructureLocator.TYPE_SHRINE, origin);
+        }
+
         return true;
     }
 }

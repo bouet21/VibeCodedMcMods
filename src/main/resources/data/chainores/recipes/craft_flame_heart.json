@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " B ",
+    "BMB",
+    " I "
+  ],
+  "key": {
+    "B": "minecraft:blaze_powder",
+    "M": "minecraft:magma_block",
+    "I": "chainores:ingot_tier_105"
+  },
+  "result": {
+    "id": "chainores:flame_heart",
+    "count": 1
+  }
+}

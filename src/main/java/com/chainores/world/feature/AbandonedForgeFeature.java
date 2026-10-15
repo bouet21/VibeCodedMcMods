@@ -76,6 +76,10 @@ public class AbandonedForgeFeature extends Feature<DefaultFeatureConfig> {
             }
         }
 
+        if (world.toServerWorld() != null) {
+            com.chainores.world.StructureLocator.record(world.toServerWorld(), com.chainores.world.StructureLocator.TYPE_FORGE, origin);
+        }
+
         return true;
     }
 }

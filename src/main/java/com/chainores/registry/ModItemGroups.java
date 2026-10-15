@@ -24,6 +24,7 @@ public class ModItemGroups {
                     entries.add(ModItems.GUIDE_BOOK);
                     entries.add(ModItems.CHAIN_SMITHING_TEMPLATE);
                     entries.add(ModItems.PROSPECTOR_ROD);
+                    entries.add(ModItems.STRUCTURE_COMPASS);
                     entries.add(ModGear.GOD_OMNITOOL);
                     entries.add(ModGear.DRAGON_BOW);
                     entries.add(ModGear.GALACTIC_CROSSBOW);

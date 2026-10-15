@@ -1111,5 +1111,6 @@
   "item.chainores.genesis_gem.desc": "Socketable in Anvil/Forge. Grants celestial lightning and +50% power.",
   "reforge.chainores.divine": "Prefix: [DIVINE]",
   "gem.chainores.core": "Socketed: Core Gem (+35% Haste)",
-  "item.chainores.core_gem.desc": "Socketable in Anvil/Forge. Grants extreme mining haste and speed."
+  "item.chainores.core_gem.desc": "Socketable in Anvil/Forge. Grants extreme mining haste and speed.",
+  "item.chainores.structure_compass": "Structure Compass"
 }

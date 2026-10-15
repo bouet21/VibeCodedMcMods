@@ -69,6 +69,10 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
             }
         }
 
+        if (world.toServerWorld() != null) {
+            com.chainores.world.StructureLocator.record(world.toServerWorld(), com.chainores.world.StructureLocator.TYPE_ALTAR, origin);
+        }
+
         return true;
     }
 }

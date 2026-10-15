@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "I",
+    "I",
+    "S"
+  ],
+  "key": {
+    "I": "chainores:ingot_tier_20",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "chainores:sword_tier_20",
+    "count": 1
+  }
+}

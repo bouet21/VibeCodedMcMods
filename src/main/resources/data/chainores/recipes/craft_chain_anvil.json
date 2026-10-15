@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    " A ",
+    "SSS"
+  ],
+  "key": {
+    "I": "chainores:block_tier_20",
+    "A": "minecraft:anvil",
+    "S": "chainores:ingot_tier_20"
+  },
+  "result": {
+    "id": "chainores:chain_anvil",
+    "count": 1
+  }
+}

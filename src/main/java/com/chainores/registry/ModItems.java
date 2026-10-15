@@ -16,6 +16,7 @@ public class ModItems {
     public static Item GUIDE_BOOK;
     public static Item CHAIN_SMITHING_TEMPLATE;
     public static Item PROSPECTOR_ROD;
+    public static Item STRUCTURE_COMPASS;
 
     public static void initialize() {
         // Register Guide Book
@@ -40,6 +41,14 @@ public class ModItems {
                 Registries.ITEM,
                 rodKey,
                 new com.chainores.item.ProspectorRodItem(new Item.Settings().registryKey(rodKey).maxCount(1))
+        );
+
+        // Register Structure Compass
+        RegistryKey<Item> compassKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("structure_compass"));
+        STRUCTURE_COMPASS = Registry.register(
+                Registries.ITEM,
+                compassKey,
+                new com.chainores.item.StructureCompassItem()
         );
 
         // Register items for each tier

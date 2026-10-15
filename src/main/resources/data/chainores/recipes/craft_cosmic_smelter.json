@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "OCO",
+    "CFC",
+    "OCO"
+  ],
+  "key": {
+    "O": "minecraft:crying_obsidian",
+    "C": "chainores:ingot_tier_70",
+    "F": "minecraft:blast_furnace"
+  },
+  "result": {
+    "id": "chainores:cosmic_smelter",
+    "count": 1
+  }
+}

@@ -82,6 +82,73 @@ public class ChainOresCommands {
                             return 1;
                         })
                 )
+                // /chainores locate
+                .then(CommandManager.literal("locate")
+                        .executes(ctx -> executeLocate(ctx.getSource(), null))
+                        .then(CommandManager.literal("forge").executes(ctx -> executeLocate(ctx.getSource(), "forge")))
+                        .then(CommandManager.literal("shrine").executes(ctx -> executeLocate(ctx.getSource(), "shrine")))
+                        .then(CommandManager.literal("altar").executes(ctx -> executeLocate(ctx.getSource(), "altar")))
+                )
         );
+
+        // Standalone alias /structures as requested
+        dispatcher.register(CommandManager.literal("structures")
+                .executes(ctx -> executeLocate(ctx.getSource(), null))
+                .then(CommandManager.literal("forge").executes(ctx -> executeLocate(ctx.getSource(), "forge")))
+                .then(CommandManager.literal("shrine").executes(ctx -> executeLocate(ctx.getSource(), "shrine")))
+                .then(CommandManager.literal("altar").executes(ctx -> executeLocate(ctx.getSource(), "altar")))
+        );
+    }
+
+    private static int executeLocate(ServerCommandSource source, String typeArg) {
+        ServerPlayerEntity player = source.getPlayer();
+        net.minecraft.server.world.ServerWorld world = source.getWorld();
+        net.minecraft.util.math.BlockPos origin = player != null ? player.getBlockPos() : net.minecraft.util.math.BlockPos.ORIGIN;
+
+        String targetType = null;
+        if (typeArg != null) {
+            String lower = typeArg.toLowerCase();
+            if (lower.contains("forge") || lower.contains("forja")) {
+                targetType = com.chainores.world.StructureLocator.TYPE_FORGE;
+            } else if (lower.contains("shrine") || lower.contains("santuario")) {
+                targetType = com.chainores.world.StructureLocator.TYPE_SHRINE;
+            } else if (lower.contains("altar")) {
+                targetType = com.chainores.world.StructureLocator.TYPE_ALTAR;
+            }
+        }
+
+        var result = com.chainores.world.StructureLocator.findNearest(world, origin, targetType);
+        if (result.isPresent()) {
+            var entry = result.get();
+            int dx = entry.x() - origin.getX();
+            int dz = entry.z() - origin.getZ();
+            int dist = (int) Math.sqrt(dx * dx + dz * dz);
+            String name = com.chainores.world.StructureLocator.getLocalizedName(entry.type());
+
+            source.sendMessage(Text.literal("═══════════════════════════════════════════════").formatted(Formatting.DARK_PURPLE));
+            source.sendMessage(Text.literal("✦ ESTRUCTURA LOCALIZADA ✦").formatted(Formatting.GOLD, Formatting.BOLD));
+            source.sendMessage(Text.literal("• Tipo: ").formatted(Formatting.GRAY).append(Text.literal(name).formatted(Formatting.AQUA, Formatting.BOLD)));
+            source.sendMessage(Text.literal("• Coordenadas: ").formatted(Formatting.GRAY)
+                    .append(Text.literal("X: " + entry.x() + "  Y: " + entry.y() + "  Z: " + entry.z()).formatted(Formatting.YELLOW)));
+            source.sendMessage(Text.literal("• Distancia: ").formatted(Formatting.GRAY)
+                    .append(Text.literal(dist + " bloques de distancia").formatted(Formatting.GREEN)));
+
+            Text tpBtn = Text.literal("✦ [CLICK AQUÍ PARA TELETRANSPORTARTE] ✦")
+                    .styled(s -> s.withColor(Formatting.LIGHT_PURPLE)
+                            .withBold(true)
+                            .withUnderline(true)
+                            .withClickEvent(new net.minecraft.text.ClickEvent.RunCommand("/tp @s " + entry.x() + " " + entry.y() + " " + entry.z()))
+                            .withHoverEvent(new net.minecraft.text.HoverEvent.ShowText(Text.literal("Clic para teletransportarte a la estructura"))));
+            source.sendMessage(tpBtn);
+            source.sendMessage(Text.literal("═══════════════════════════════════════════════").formatted(Formatting.DARK_PURPLE));
+
+            if (player != null) {
+                player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 1.0f, 1.2f);
+            }
+            return 1;
+        } else {
+            source.sendMessage(Text.literal("⚠ No se encontró ninguna estructura en esta dimensión.").formatted(Formatting.RED));
+            return 0;
+        }
     }
 }

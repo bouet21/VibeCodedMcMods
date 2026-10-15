@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "TET",
+    "ISI",
+    " T "
+  ],
+  "key": {
+    "T": "minecraft:iron_ingot",
+    "E": "minecraft:tripwire_hook",
+    "I": "chainores:ingot_tier_125",
+    "S": "minecraft:string"
+  },
+  "result": {
+    "id": "chainores:galactic_crossbow",
+    "count": 1
+  }
+}

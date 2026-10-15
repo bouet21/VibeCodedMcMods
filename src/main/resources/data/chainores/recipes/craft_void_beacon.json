@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " P ",
+    "PEP",
+    " I "
+  ],
+  "key": {
+    "P": "minecraft:purpur_block",
+    "E": "minecraft:ender_eye",
+    "I": "chainores:ingot_tier_135"
+  },
+  "result": {
+    "id": "chainores:void_beacon",
+    "count": 1
+  }
+}

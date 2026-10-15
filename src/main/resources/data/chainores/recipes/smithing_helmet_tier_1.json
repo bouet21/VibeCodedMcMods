@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "chainores:chain_smithing_template",
+  "base": "minecraft:iron_helmet",
+  "addition": "chainores:ingot_tier_1",
+  "result": {
+    "id": "chainores:helmet_tier_1"
+  }
+}

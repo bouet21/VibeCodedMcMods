@@ -87,10 +87,14 @@ public class TextureEnhancer {
         ImageIO.write(omnitool, "PNG", new File(itemDir, "god_omnitool.png"));
         System.out.println("Enhanced God Omnitool (T150) texture!");
 
-        // 7. Prospector Rod
+        // 7. Prospector Rod & Structure Compass
         BufferedImage rod = renderProspectorRod();
         ImageIO.write(rod, "PNG", new File(itemDir, "prospector_rod.png"));
         System.out.println("Enhanced Prospector Rod texture!");
+
+        BufferedImage compass = renderStructureCompass();
+        ImageIO.write(compass, "PNG", new File(itemDir, "structure_compass.png"));
+        System.out.println("Enhanced Structure Compass texture!");
 
         // 8. 4 Sockets Gems
         ImageIO.write(renderFacetedGem(0xE01830, 0x7A0012, 0xFF8090), "PNG", new File(itemDir, "blood_gem.png"));
@@ -448,8 +452,73 @@ public class TextureEnhancer {
         return img;
     }
 
+    private static BufferedImage renderStructureCompass() {
+        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        int brassHighlight = 0xFFFFF2A8;
+        int brassBody = 0xFFD4AF37;
+        int brassShadow = 0xFF7D5F00;
+        int darkRim = 0xFF423000;
+        int dialBg = 0xFF121526;
+        int needleRed = 0xFFFF2E4C;
+        int needleCyan = 0xFF00F5D4;
+        int centerGold = 0xFFFFFFFF;
+
+        // Outer Ring Octagonal / Round (circle r=6 around center 7.5, 7.5)
+        for (int y = 1; y <= 14; y++) {
+            for (int x = 1; x <= 14; x++) {
+                double dx = x - 7.5;
+                double dy = y - 7.5;
+                double dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist <= 6.8 && dist > 5.2) {
+                    if (y <= 4 || (y <= 7 && x <= 4)) {
+                        img.setRGB(x, y, brassHighlight);
+                    } else if (dist > 6.2) {
+                        img.setRGB(x, y, darkRim);
+                    } else if (y > 10) {
+                        img.setRGB(x, y, brassShadow);
+                    } else {
+                        img.setRGB(x, y, brassBody);
+                    }
+                } else if (dist <= 5.2) {
+                    img.setRGB(x, y, dialBg);
+                }
+            }
+        }
+
+        // Top suspension ring
+        img.setRGB(7, 0, brassHighlight); img.setRGB(8, 0, brassHighlight);
+        img.setRGB(6, 1, brassBody); img.setRGB(9, 1, brassShadow);
+
+        // Cardinal Insets (North: Ruby, South: Sapphire, West: Amber, East: Emerald)
+        img.setRGB(7, 2, 0xFFFF3B56); img.setRGB(8, 2, 0xFFFF7085);
+        img.setRGB(7, 13, 0xFF00B4D8); img.setRGB(8, 13, 0xFF90E0EF);
+        img.setRGB(2, 7, 0xFFFFBE0B); img.setRGB(2, 8, 0xFFFB5607);
+        img.setRGB(13, 7, 0xFF06D6A0); img.setRGB(13, 8, 0xFF118AB2);
+
+        // Compass Needle
+        img.setRGB(6, 6, needleRed);
+        img.setRGB(5, 5, needleRed);
+        img.setRGB(4, 4, 0xFFFF8597);
+
+        img.setRGB(9, 9, needleCyan);
+        img.setRGB(10, 10, needleCyan);
+        img.setRGB(11, 11, 0xFF99FCF0);
+
+        // Center Pivoting Spindle
+        img.setRGB(7, 7, brassBody);
+        img.setRGB(8, 7, centerGold);
+        img.setRGB(7, 8, brassShadow);
+        img.setRGB(8, 8, brassBody);
+
+        return img;
+    }
+
     private static BufferedImage renderFacetedGem(int primary, int shadow, int highlight) {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        primary = 0xFF000000 | primary;
+        shadow = 0xFF000000 | shadow;
+        highlight = 0xFF000000 | highlight;
+        int darkOutline = adjustBrightness(shadow & 0x00FFFFFF, -0.60f) | 0xFF000000;
 
         // Faceted Diamond cut shape
         // Top crown: y=3 to 6
@@ -464,7 +533,13 @@ public class TextureEnhancer {
         for (int x = 5; x <= 10; x++) img.setRGB(x, 9, (x <= 7) ? primary : shadow);
         for (int x = 6; x <= 9; x++)  img.setRGB(x, 10, (x <= 7) ? primary : shadow);
         for (int x = 7; x <= 8; x++)  img.setRGB(x, 11, shadow);
-        img.setRGB(7, 12, shadow); img.setRGB(8, 12, shadow);
+        img.setRGB(7, 12, darkOutline); img.setRGB(8, 12, darkOutline);
+
+        // Crisp dark outline accents
+        img.setRGB(5, 3, darkOutline); img.setRGB(10, 3, darkOutline);
+        img.setRGB(3, 4, darkOutline); img.setRGB(12, 4, darkOutline);
+        img.setRGB(2, 5, darkOutline); img.setRGB(13, 5, darkOutline);
+        img.setRGB(1, 6, darkOutline); img.setRGB(14, 6, darkOutline);
 
         // Brilliant sparkle at (6, 5) and (7, 4)
         img.setRGB(6, 5, 0xFFFFFFFF);

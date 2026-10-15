@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " M ",
+    "MNM",
+    " M "
+  ],
+  "key": {
+    "M": { "item": "minecraft:magma_block" },
+    "N": { "item": "minecraft:netherite_ingot" }
+  },
+  "result": {
+    "id": "chainores:core_gem",
+    "count": 1
+  }
+}
