@@ -205,18 +205,27 @@ public class ChainModifiers {
     }
 
     public static void appendModifierTooltips(ItemStack stack, List<Text> tooltip) {
+        // Prevent duplicate tooltip lines if called multiple times
+        boolean hasSocketInfo = tooltip.stream().anyMatch(t -> t.getString().contains("Ranuras de Gemas"));
+        if (hasSocketInfo) {
+            return;
+        }
+
         String reforge = getReforge(stack);
         if (reforge != null) {
-            Text reforgeText = switch (reforge) {
-                case REFORGE_DIVINE -> Text.translatable("reforge.chainores.divine").formatted(Formatting.AQUA, Formatting.BOLD);
-                case REFORGE_LEGENDARY -> Text.translatable("reforge.chainores.legendary").formatted(Formatting.GOLD, Formatting.BOLD);
-                case REFORGE_FIERCE -> Text.translatable("reforge.chainores.fierce").formatted(Formatting.RED, Formatting.BOLD);
-                case REFORGE_SWIFT -> Text.translatable("reforge.chainores.swift").formatted(Formatting.GREEN, Formatting.BOLD);
-                case REFORGE_TITANIC -> Text.translatable("reforge.chainores.titanic").formatted(Formatting.GRAY, Formatting.BOLD);
-                default -> Text.empty();
-            };
-            if (!reforgeText.getString().isEmpty()) {
-                tooltip.add(Text.literal("⚡ ").formatted(Formatting.YELLOW).append(reforgeText));
+            boolean hasReforgeInfo = tooltip.stream().anyMatch(t -> t.getString().contains("⚡ "));
+            if (!hasReforgeInfo) {
+                Text reforgeText = switch (reforge) {
+                    case REFORGE_DIVINE -> Text.translatable("reforge.chainores.divine").formatted(Formatting.AQUA, Formatting.BOLD);
+                    case REFORGE_LEGENDARY -> Text.translatable("reforge.chainores.legendary").formatted(Formatting.GOLD, Formatting.BOLD);
+                    case REFORGE_FIERCE -> Text.translatable("reforge.chainores.fierce").formatted(Formatting.RED, Formatting.BOLD);
+                    case REFORGE_SWIFT -> Text.translatable("reforge.chainores.swift").formatted(Formatting.GREEN, Formatting.BOLD);
+                    case REFORGE_TITANIC -> Text.translatable("reforge.chainores.titanic").formatted(Formatting.GRAY, Formatting.BOLD);
+                    default -> Text.empty();
+                };
+                if (!reforgeText.getString().isEmpty()) {
+                    tooltip.add(Text.literal("⚡ ").formatted(Formatting.YELLOW).append(reforgeText));
+                }
             }
         }
 

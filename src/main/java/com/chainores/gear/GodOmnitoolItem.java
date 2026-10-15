@@ -64,7 +64,6 @@ public class GodOmnitoolItem extends Item {
         textConsumer.accept(Text.literal(" • Pala Cósmica: Nivelación y auto-fundición").formatted(Formatting.GOLD));
         textConsumer.accept(Text.literal(" • Azada del Edén: Arado e hidratación 9x9 instantáneo").formatted(Formatting.LIGHT_PURPLE));
         textConsumer.accept(Text.literal(" • Filo del Juicio: 120 Daño Sagrado y Rayo Divino").formatted(Formatting.RED, Formatting.BOLD));
-        com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, textConsumer);
     }
 
     @Override

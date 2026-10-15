@@ -72,7 +72,6 @@ public class ChainArmorItem extends Item {
                 .append(Text.literal(getArmorPerkDesc(tier)).formatted(Formatting.YELLOW)));
         textConsumer.accept(Text.literal("⚡ Habilidad Activa: ").formatted(Formatting.LIGHT_PURPLE)
                 .append(Text.literal("Esprintar + Agacharse activa Dash Impulso (CD: 4s)").formatted(Formatting.GRAY, Formatting.ITALIC)));
-        com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, textConsumer);
     }
 
     public static String getArmor2PieceDesc(int tier) {

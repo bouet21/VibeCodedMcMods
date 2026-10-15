@@ -61,6 +61,12 @@ public class CosmicSmelterScreen extends HandledScreen<CosmicSmelterScreenHandle
     }
 
     @Override
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 0xFF00FFD5, false);
+        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, 0xFFAAAAAA, false);
+    }
+
+    @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int x = this.x;
         int y = this.y;
@@ -82,11 +88,6 @@ public class CosmicSmelterScreen extends HandledScreen<CosmicSmelterScreenHandle
         drawSlotRecess(context, x + 55, y + 16);
         drawSlotRecess(context, x + 55, y + 52);
         drawSlotRecess(context, x + 115, y + 34);
-
-        // Slot Subtitles
-        context.drawText(this.textRenderer, Text.literal("Mineral").formatted(Formatting.DARK_GRAY), x + 50, y + 6, 0xFF00FFD5, false);
-        context.drawText(this.textRenderer, Text.literal("Fuego").formatted(Formatting.DARK_GRAY), x + 53, y + 72, 0xFFFF7722, false);
-        context.drawText(this.textRenderer, Text.literal("Salida x2").formatted(Formatting.DARK_GRAY), x + 109, y + 54, 0xFFFFAAFF, false);
 
         // Output Halo in Celestial Magenta
         context.fill(x + 114, y + 33, x + 134, y + 34, 0xFFDE3CE3);

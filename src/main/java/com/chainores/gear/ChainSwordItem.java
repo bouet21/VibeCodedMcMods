@@ -41,7 +41,6 @@ public class ChainSwordItem extends Item {
             textConsumer.accept(Text.literal("Habilidad de Combate: ").formatted(Formatting.RED)
                     .append(Text.literal(perk).formatted(Formatting.GOLD)));
         }
-        com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, textConsumer);
     }
 
     public static String getSwordPerkDesc(int tier) {

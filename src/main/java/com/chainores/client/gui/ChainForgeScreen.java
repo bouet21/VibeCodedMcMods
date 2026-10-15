@@ -61,6 +61,12 @@ public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
     }
 
     @Override
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 0xFFFFCC00, false);
+        context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY, 0xFFAAAAAA, false);
+    }
+
+    @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int x = this.x;
         int y = this.y;
@@ -82,11 +88,6 @@ public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
         drawSlotRecess(context, x + 43, y + 34);
         drawSlotRecess(context, x + 67, y + 16);
         drawSlotRecess(context, x + 125, y + 34);
-
-        // Slot Labels
-        context.drawText(this.textRenderer, Text.literal("Base").formatted(Formatting.DARK_GRAY), x + 43, y + 54, 0xFF7A7A7A, false);
-        context.drawText(this.textRenderer, Text.literal("Cat.").formatted(Formatting.DARK_GRAY), x + 68, y + 6, 0xFFD4AF37, false);
-        context.drawText(this.textRenderer, Text.literal("Salida").formatted(Formatting.DARK_GRAY), x + 124, y + 54, 0xFF55FF55, false);
 
         // Output Slot Gold Glowing Halo
         context.fill(x + 124, y + 33, x + 144, y + 34, 0xFFFFCC00);
