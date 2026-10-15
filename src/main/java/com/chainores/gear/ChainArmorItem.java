@@ -17,10 +17,16 @@ import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class ChainArmorItem extends Item {
@@ -41,31 +47,75 @@ public class ChainArmorItem extends Item {
         return equipmentType;
     }
 
-    /**
-     * Checks if the player has the COMPLETE 4-piece armor set of this specific tier equipped.
-     */
-    public static boolean hasFullSet(ServerPlayerEntity player, int tier) {
-        ItemStack head = player.getEquippedStack(EquipmentSlot.HEAD);
-        ItemStack chest = player.getEquippedStack(EquipmentSlot.CHEST);
-        ItemStack legs = player.getEquippedStack(EquipmentSlot.LEGS);
-        ItemStack feet = player.getEquippedStack(EquipmentSlot.FEET);
+    public static int getEquippedPieceCount(ServerPlayerEntity player, int tier) {
+        int count = 0;
+        if (player.getEquippedStack(EquipmentSlot.HEAD).getItem() instanceof ChainArmorItem h && h.getTier() == tier) count++;
+        if (player.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ChainArmorItem c && c.getTier() == tier) count++;
+        if (player.getEquippedStack(EquipmentSlot.LEGS).getItem() instanceof ChainArmorItem l && l.getTier() == tier) count++;
+        if (player.getEquippedStack(EquipmentSlot.FEET).getItem() instanceof ChainArmorItem b && b.getTier() == tier) count++;
+        return count;
+    }
 
-        return head.getItem() instanceof ChainArmorItem h && h.getTier() == tier
-            && chest.getItem() instanceof ChainArmorItem c && c.getTier() == tier
-            && legs.getItem() instanceof ChainArmorItem l && l.getTier() == tier
-            && feet.getItem() instanceof ChainArmorItem b && b.getTier() == tier;
+    public static boolean hasFullSet(ServerPlayerEntity player, int tier) {
+        return getEquippedPieceCount(player, tier) >= 4;
     }
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         super.appendTooltip(stack, context, displayComponent, textConsumer, type);
         textConsumer.accept(Text.literal("Nivel de Progresión: Tier " + tier).formatted(Formatting.DARK_PURPLE, Formatting.BOLD));
-        String perk = getArmorPerkDesc(tier);
-        if (!perk.isEmpty()) {
-            textConsumer.accept(Text.literal("Efecto de Set Completo (4/4): ").formatted(Formatting.GOLD, Formatting.BOLD)
-                    .append(Text.literal(perk).formatted(Formatting.YELLOW)));
-            textConsumer.accept(Text.literal("⚡ Requiere equipar el set entero (Casco, Pechera, Pantalones y Botas)").formatted(Formatting.GRAY, Formatting.ITALIC));
-        }
+        textConsumer.accept(Text.literal("✦ Bonus Parcial (2/4): ").formatted(Formatting.AQUA, Formatting.BOLD)
+                .append(Text.literal(getArmor2PieceDesc(tier)).formatted(Formatting.WHITE)));
+        textConsumer.accept(Text.literal("✦ Bonus Parcial (3/4): ").formatted(Formatting.GREEN, Formatting.BOLD)
+                .append(Text.literal(getArmor3PieceDesc(tier)).formatted(Formatting.WHITE)));
+        textConsumer.accept(Text.literal("★ Set Completo (4/4): ").formatted(Formatting.GOLD, Formatting.BOLD)
+                .append(Text.literal(getArmorPerkDesc(tier)).formatted(Formatting.YELLOW)));
+        textConsumer.accept(Text.literal("⚡ Habilidad Activa: ").formatted(Formatting.LIGHT_PURPLE)
+                .append(Text.literal("Esprintar + Agacharse activa Dash Impulso (CD: 4s)").formatted(Formatting.GRAY, Formatting.ITALIC)));
+    }
+
+    public static String getArmor2PieceDesc(int tier) {
+        return switch (tier) {
+            case 1 -> "Velocidad I y -25% caída";
+            case 10 -> "Resistencia I";
+            case 20 -> "Inmunidad a congelación";
+            case 30 -> "Visión Nocturna";
+            case 40 -> "Regeneración I";
+            case 50 -> "Prisa Minera I";
+            case 60 -> "Impulso de Salto I";
+            case 70 -> "Sigilo Sculk y Visión Nocturna";
+            case 80 -> "Protección Ígnea I";
+            case 90 -> "Velocidad I y purga leve";
+            case 100 -> "+2 Corazones Máximos";
+            case 115 -> "Caída Lenta pasiva";
+            case 125 -> "Resistencia I y Fuerza I";
+            case 135 -> "Resistencia II";
+            case 140 -> "+4 Corazones Máximos";
+            case 150 -> "+6 Corazones y Resistencia II";
+            default -> "Bonus básico";
+        };
+    }
+
+    public static String getArmor3PieceDesc(int tier) {
+        return switch (tier) {
+            case 1 -> "Velocidad I y -50% caída";
+            case 10 -> "Resistencia I y anti-empuje";
+            case 20 -> "Prisa Minera I y respiración acuática";
+            case 30 -> "Inmunidad a Fuego/Lava";
+            case 40 -> "Regeneración I y saturación periódica";
+            case 50 -> "Prisa II y Suerte I";
+            case 60 -> "Salto II y anti-caída";
+            case 70 -> "Absorción I continua";
+            case 80 -> "Espinas Ígneas a enemigos";
+            case 90 -> "Velocidad II y purga de venenos";
+            case 100 -> "+4 Corazones y Furia Carmesí";
+            case 115 -> "Salto III y Planeo Dracónico";
+            case 125 -> "Escudo Gravitacional";
+            case 135 -> "Bucle Temporal y rescate de caída";
+            case 140 -> "+8 Corazones y sin hambre";
+            case 150 -> "+10 Corazones, Fuerza II y Modo Divino";
+            default -> "Bonus intermedio";
+        };
     }
 
     public static String getArmorPerkDesc(int tier) {
@@ -90,28 +140,119 @@ public class ChainArmorItem extends Item {
         };
     }
 
-    private static final java.util.Map<java.util.UUID, Integer> ACTIVE_SETS = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> ACTIVE_SETS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long> DASH_COOLDOWNS = new ConcurrentHashMap<>();
 
     @Override
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, world, entity, slot);
         if (entity instanceof ServerPlayerEntity player) {
-            // Apply set perks exclusively from the chestplate slot to avoid duplicate runs per tick
+            // Apply perks from the chestplate slot once per tick to avoid quadruplicating
             if (slot == EquipmentSlot.CHEST && this.equipmentType == EquipmentType.CHESTPLATE) {
-                if (hasFullSet(player, tier)) {
-                    Integer prev = ACTIVE_SETS.get(player.getUuid());
-                    if (prev == null || prev != tier) {
-                        ACTIVE_SETS.put(player.getUuid(), tier);
-                        String title = getArmorPerkDesc(tier);
-                        if (title.contains(":")) title = title.split(":")[0];
-                        player.sendMessage(Text.literal("✦ Set Activado: " + title + " ✦").formatted(Formatting.GOLD, Formatting.BOLD), true);
-                        player.playSound(net.minecraft.sound.SoundEvents.BLOCK_BEACON_ACTIVATE, 0.8f, 1.4f);
+                Map<Integer, Integer> tierCounts = new HashMap<>();
+                for (EquipmentSlot s : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                    if (player.getEquippedStack(s).getItem() instanceof ChainArmorItem cai) {
+                        tierCounts.put(cai.getTier(), tierCounts.getOrDefault(cai.getTier(), 0) + 1);
                     }
-                    applyFullSetPerks(player, tier);
-                } else if (ACTIVE_SETS.containsKey(player.getUuid()) && ACTIVE_SETS.get(player.getUuid()) == tier) {
-                    ACTIVE_SETS.remove(player.getUuid());
+                }
+
+                for (Map.Entry<Integer, Integer> entry : tierCounts.entrySet()) {
+                    int t = entry.getKey();
+                    int count = entry.getValue();
+
+                    if (count >= 2) {
+                        apply2PiecePerk(player, t);
+                    }
+                    if (count >= 3) {
+                        apply3PiecePerk(player, t);
+                    }
+                    if (count >= 4) {
+                        Integer prev = ACTIVE_SETS.get(player.getUuid());
+                        if (prev == null || prev != t) {
+                            ACTIVE_SETS.put(player.getUuid(), t);
+                            String title = getArmorPerkDesc(t);
+                            if (title.contains(":")) title = title.split(":")[0];
+                            player.sendMessage(Text.literal("✦ Set Activado: " + title + " ✦").formatted(Formatting.GOLD, Formatting.BOLD), true);
+                            player.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.8f, 1.4f);
+                        }
+                        applyFullSetPerks(player, t);
+                    }
+                }
+
+                if (!tierCounts.containsKey(tier) || tierCounts.get(tier) < 4) {
+                    if (ACTIVE_SETS.containsKey(player.getUuid()) && ACTIVE_SETS.get(player.getUuid()) == tier) {
+                        ACTIVE_SETS.remove(player.getUuid());
+                    }
+                }
+
+                // Check Active Dash Ability
+                handleDashAbility(player, world);
+            }
+        }
+    }
+
+    private void handleDashAbility(ServerPlayerEntity player, ServerWorld world) {
+        if (player.isSprinting() && player.isSneaking()) {
+            long now = System.currentTimeMillis();
+            long lastDash = DASH_COOLDOWNS.getOrDefault(player.getUuid(), 0L);
+            if (now - lastDash >= 4000) { // 4s cooldown
+                DASH_COOLDOWNS.put(player.getUuid(), now);
+                Vec3d rot = player.getRotationVector();
+                Vec3d dashVelocity = new Vec3d(rot.x * 1.6, 0.25, rot.z * 1.6);
+                player.setVelocity(dashVelocity);
+                player.velocityDirty = true;
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_BREEZE_WIND_BURST, net.minecraft.sound.SoundCategory.PLAYERS, 1.0f, 1.2f);
+                player.sendMessage(Text.literal("⚡ ¡DASH IMPULSO EJECUTADO!").formatted(Formatting.AQUA, Formatting.BOLD), true);
+            }
+        }
+    }
+
+    private void apply2PiecePerk(ServerPlayerEntity player, int tier) {
+        int d = 60;
+        switch (tier) {
+            case 1 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, d, 0, true, false));
+            case 10 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, d, 0, true, false));
+            case 20 -> player.setFrozenTicks(0);
+            case 30 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, d, 0, true, false));
+            case 40 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, d, 0, true, false));
+            case 50 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, d, 0, true, false));
+            case 60 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, d, 0, true, false));
+            case 70 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, d, 0, true, false));
+            case 80 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, d, 0, true, false));
+            case 90 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, d, 0, true, false));
+            case 100, 115, 125, 135, 140, 150 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, d, 1, true, false));
+        }
+    }
+
+    private void apply3PiecePerk(ServerPlayerEntity player, int tier) {
+        int d = 60;
+        switch (tier) {
+            case 1 -> {
+                if (player.fallDistance > 0) player.fallDistance *= 0.5f;
+            }
+            case 10 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, d, 1, true, false));
+            case 20 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.WATER_BREATHING, d, 0, true, false));
+            case 30 -> {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, d, 0, true, false));
+                player.extinguish();
+            }
+            case 40 -> player.setAir(player.getMaxAir());
+            case 50 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, d, 0, true, false));
+            case 60 -> {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, d, 0, true, false));
+                player.fallDistance = 0;
+            }
+            case 70 -> {
+                if (!player.hasStatusEffect(StatusEffects.ABSORPTION)) {
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 200, 0, true, false));
                 }
             }
+            case 80 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, d, 1, true, false));
+            case 90 -> {
+                if (player.hasStatusEffect(StatusEffects.POISON)) player.removeStatusEffect(StatusEffects.POISON);
+                if (player.hasStatusEffect(StatusEffects.WITHER)) player.removeStatusEffect(StatusEffects.WITHER);
+            }
+            case 100, 115, 125, 135, 140, 150 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, d, 1, true, false));
         }
     }
 
@@ -120,24 +261,16 @@ public class ChainArmorItem extends Item {
 
         switch (tier) {
             case 1 -> {
-                // Tier 1 (Cobreprita): Agilidad Conductora
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, duration, 0, true, false));
-                if (player.fallDistance > 0) {
-                    player.fallDistance *= 0.5f;
-                }
+                if (player.fallDistance > 0) player.fallDistance *= 0.5f;
             }
-            case 10 -> {
-                // Tier 10 (Invar): Bastión de Invar
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 0, true, false));
-            }
+            case 10 -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 0, true, false));
             case 20 -> {
-                // Tier 20 (Cero Absoluto): Aislamiento Criogénico
                 player.setFrozenTicks(0);
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, duration, 0, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.WATER_BREATHING, duration, 0, true, false));
             }
             case 30 -> {
-                // Tier 30 (Solarita): Corona Solar
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, duration, 0, true, false));
                 player.extinguish();
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, duration, 0, true, false));
@@ -146,10 +279,8 @@ public class ChainArmorItem extends Item {
                 }
             }
             case 40 -> {
-                // Tier 40 (Clorofita): Fotosíntesis Viva
                 player.setAir(player.getMaxAir());
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, duration, 0, true, false));
-                // Fertilize nearby crops when crouching
                 if (player.isSneaking() && player.getEntityWorld().random.nextInt(25) == 0) {
                     int rx = player.getEntityWorld().random.nextInt(5) - 2;
                     int rz = player.getEntityWorld().random.nextInt(5) - 2;
@@ -164,7 +295,6 @@ public class ChainArmorItem extends Item {
                 }
             }
             case 50 -> {
-                // Tier 50 (Runita): Canalizador Rúnico
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, duration, 1, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, duration, 0, true, false));
                 if (player.getEntityWorld().getTime() % 120 == 0) {
@@ -172,34 +302,27 @@ public class ChainArmorItem extends Item {
                 }
             }
             case 60 -> {
-                // Tier 60 (Mineral del Núcleo): Núcleo Tectónico
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, duration, 1, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, duration, 0, true, false));
                 player.fallDistance = 0;
             }
             case 70 -> {
-                // Tier 70 (Sculk Primordial): Manto del Warden
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, duration, 0, true, false));
                 if (!player.hasStatusEffect(StatusEffects.ABSORPTION)) {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 200, 1, true, false));
                 }
             }
             case 80 -> {
-                // Tier 80 (Núcleo Infernal): Espinas Ígneas
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, duration, 0, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 1, true, false));
                 if (player.getEntityWorld().getTime() % 20 == 0) {
                     Box box = player.getBoundingBox().expand(3.5);
-                    player.getEntityWorld().getEntitiesByClass(HostileEntity.class, box, LivingEntity::isAlive).forEach(mob -> {
-                        mob.setOnFireFor(4);
-                    });
+                    player.getEntityWorld().getEntitiesByClass(HostileEntity.class, box, LivingEntity::isAlive).forEach(mob -> mob.setOnFireFor(4));
                 }
             }
             case 90 -> {
-                // Tier 90 (Gema del Purgatorio): Paso Espectral & Purga de Maldiciones
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, duration, 1, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, duration, 1, true, false));
-                // Cleanses negative effects automatically
                 if (player.hasStatusEffect(StatusEffects.POISON)) player.removeStatusEffect(StatusEffects.POISON);
                 if (player.hasStatusEffect(StatusEffects.WITHER)) player.removeStatusEffect(StatusEffects.WITHER);
                 if (player.hasStatusEffect(StatusEffects.NAUSEA)) player.removeStatusEffect(StatusEffects.NAUSEA);
@@ -208,7 +331,6 @@ public class ChainArmorItem extends Item {
                 if (player.hasStatusEffect(StatusEffects.MINING_FATIGUE)) player.removeStatusEffect(StatusEffects.MINING_FATIGUE);
             }
             case 100 -> {
-                // Tier 100 (Corazón del Nether): Titán Carmesí (+6 corazones) y Berserker
                 if (!player.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 600, 2, true, false));
                 }
@@ -220,16 +342,13 @@ public class ChainArmorItem extends Item {
                 }
             }
             case 115 -> {
-                // Tier 115 (Aliento de Dragón): Planeo Dracónico
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, duration, 2, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, duration, 0, true, false));
                 player.fallDistance = 0;
             }
             case 125 -> {
-                // Tier 125 (Galactita): Escudo Gravitacional y desvío de flechas
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 2, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, duration, 0, true, false));
-
                 Box arrowBox = player.getBoundingBox().expand(3.0);
                 player.getEntityWorld().getEntitiesByClass(PersistentProjectileEntity.class, arrowBox, proj -> proj.getOwner() != player).forEach(proj -> {
                     proj.setVelocity(proj.getVelocity().multiply(-1.2));
@@ -237,7 +356,6 @@ public class ChainArmorItem extends Item {
                 });
             }
             case 135 -> {
-                // Tier 135 (Fragmento Infinito): Bucle Temporal y Rescate del Vacío
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 2, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, duration, 0, true, false));
                 if (player.getY() < -50) {
@@ -249,7 +367,6 @@ public class ChainArmorItem extends Item {
                 }
             }
             case 140 -> {
-                // Tier 140 (Génesis): Árbol de la Vida (+10 corazones, saturación infinita)
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, duration, 1, true, false));
                 player.getHungerManager().setFoodLevel(20);
                 player.getHungerManager().setSaturationLevel(20.0f);
@@ -258,7 +375,6 @@ public class ChainArmorItem extends Item {
                 }
             }
             case 150 -> {
-                // Tier 150 (Metal de los Dioses): ★ ASCENSIÓN DIVINA ★
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 3, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, duration, 2, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, duration, 2, true, false));
@@ -276,7 +392,6 @@ public class ChainArmorItem extends Item {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 600, 6, true, false));
                 }
 
-                // Void Rescue
                 if (player.getY() < -50) {
                     player.requestTeleport(player.getX(), 100, player.getZ());
                     player.setVelocity(0, 0, 0);
@@ -284,7 +399,6 @@ public class ChainArmorItem extends Item {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 200, 0, true, false));
                 }
 
-                // Periodic Holy Radiance (every 40 ticks = 2 seconds)
                 if (player.getEntityWorld().getTime() % 40 == 0) {
                     Box holyBox = player.getBoundingBox().expand(6.0);
                     player.getEntityWorld().getEntitiesByClass(HostileEntity.class, holyBox, LivingEntity::isAlive).forEach(mob -> {

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "PSA",
+    " I ",
+    " H "
+  ],
+  "key": {
+    "P": "chainores:pickaxe_tier_150",
+    "S": "chainores:sword_tier_150",
+    "A": "chainores:axe_tier_150",
+    "H": "chainores:hoe_tier_150",
+    "I": "chainores:ingot_tier_150"
+  },
+  "result": {
+    "id": "chainores:god_omnitool",
+    "count": 1
+  }
+}

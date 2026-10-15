@@ -2,9 +2,16 @@ package com.chainores.registry;
 
 import com.chainores.ChainOresMod;
 import com.chainores.gear.ChainArmorItem;
+import com.chainores.gear.ChainAxeItem;
+import com.chainores.gear.ChainHoeItem;
 import com.chainores.gear.ChainPickaxeItem;
+import com.chainores.gear.ChainShieldItem;
+import com.chainores.gear.ChainShovelItem;
 import com.chainores.gear.ChainSwordItem;
+import com.chainores.gear.DragonBreathBowItem;
+import com.chainores.gear.GalacticCrossbowItem;
 import com.chainores.gear.GearTier;
+import com.chainores.gear.GodOmnitoolItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.equipment.ArmorMaterial;
@@ -22,15 +29,21 @@ public class ModGear {
         public final GearTier tierData;
         public final Item sword;
         public final Item pickaxe;
+        public final Item axe;
+        public final Item shovel;
+        public final Item hoe;
         public final Item helmet;
         public final Item chestplate;
         public final Item leggings;
         public final Item boots;
 
-        public GearSet(GearTier tierData, Item sword, Item pickaxe, Item helmet, Item chestplate, Item leggings, Item boots) {
+        public GearSet(GearTier tierData, Item sword, Item pickaxe, Item axe, Item shovel, Item hoe, Item helmet, Item chestplate, Item leggings, Item boots) {
             this.tierData = tierData;
             this.sword = sword;
             this.pickaxe = pickaxe;
+            this.axe = axe;
+            this.shovel = shovel;
+            this.hoe = hoe;
             this.helmet = helmet;
             this.chestplate = chestplate;
             this.leggings = leggings;
@@ -41,13 +54,19 @@ public class ModGear {
     public static final List<GearTier> TIERS = new ArrayList<>();
     public static final List<GearSet> GEAR_SETS = new ArrayList<>();
 
+    // Legendary Thematic Ranged & Special Weapons
+    public static Item DRAGON_BOW;
+    public static Item GALACTIC_CROSSBOW;
+    public static Item AEGIS_SHIELD;
+    public static Item GOD_OMNITOOL;
+
     static {
         // 16 Progressive Gear Milestone Sets
         addTier(1, "copperite", "Copperite", "Cobreprita", 0xD97843, 350, 6.5f, 3.0f, 2, 5, 4, 1, 0.0f, 0.0f, "Armadura: Agilidad y -50% caída | Espada: Descarga Estática | Pico: Imán de ítems");
         addTier(10, "invar", "Invar", "Invar", 0x7E8582, 600, 7.5f, 4.0f, 2, 6, 5, 2, 0.5f, 0.0f, "Armadura: Resistencia I y Anti-retroceso | Espada: Impacto Contundente | Pico: Impacto acelerado");
         addTier(20, "absolute_zero", "Absolute Zero", "Cero Absoluto", 0x00E1D9, 1000, 8.5f, 5.0f, 3, 7, 5, 3, 1.0f, 0.0f, "Armadura: Anti-congelación y Prisa | Espada: Corte Glacial | Pico: Rompe-Hielo");
         addTier(30, "solarite", "Solarite", "Solarita", 0xFFCC00, 1500, 9.5f, 6.0f, 3, 8, 6, 3, 2.0f, 0.0f, "Armadura: Inmunidad Ígnea y Visión Nocturna | Espada: Llamarada Solar | Pico: Super-Fundición");
-        addTier(40, "chlorophyte", "Chlorophyte", "Clorofita", 0x22E84D, 2000, 10.5f, 7.5f, 3, 8, 6, 3, 2.5f, 0.05f, "Armadura: Fotosíntesis viva y Fertilizante | Espada: Espora Vampírica | Pico: Tala en cadena");
+        addTier(40, "chlorophyte", "Chlorophyte", "Clorofita", 0x22E84D, 2000, 10.5f, 7.5f, 3, 8, 6, 3, 2.5f, 0.05f, "Armadura: Fotosíntesis viva y Fertilizante | Espada: Espora Vampírica | Hacha: TreeCapitator");
         addTier(50, "runite", "Runite", "Runita", 0x24C7BA, 2500, 11.5f, 9.0f, 4, 9, 7, 4, 3.0f, 0.1f, "Armadura: Prisa II, Suerte y Orbes XP | Espada: Cercenador Arcano | Pico: Fortuna Rúnica");
         addTier(60, "coreium", "Coreium", "Mineral del Núcleo", 0xFF5522, 3200, 12.5f, 11.0f, 4, 9, 7, 4, 3.5f, 0.15f, "Armadura: Salto II y Anti-caída | Espada: Onda Tectónica AoE | Pico: Túnel 1x2");
         addTier(70, "primordial_sculk", "Primordial Sculk", "Sculk Primordial", 0x00FFD5, 4000, 14.0f, 13.0f, 5, 10, 8, 4, 4.0f, 0.2f, "Armadura: Absorción II continua y Sigilo Sculk | Espada: Aullido Sónico | Pico: Eco Sónico 3x3");
@@ -86,7 +105,31 @@ public class ModGear {
                     new ChainPickaxeItem(toolMat, tier.tier(), 1.5f, new Item.Settings().registryKey(pickaxeKey).fireproof())
             );
 
-            // 3. Helmet
+            // 3. Axe
+            RegistryKey<Item> axeKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("axe_tier_" + tier.tier()));
+            Item axe = Registry.register(
+                    Registries.ITEM,
+                    axeKey,
+                    new ChainAxeItem(toolMat, tier.tier(), 6.0f, new Item.Settings().registryKey(axeKey).fireproof())
+            );
+
+            // 4. Shovel
+            RegistryKey<Item> shovelKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("shovel_tier_" + tier.tier()));
+            Item shovel = Registry.register(
+                    Registries.ITEM,
+                    shovelKey,
+                    new ChainShovelItem(toolMat, tier.tier(), 1.5f, new Item.Settings().registryKey(shovelKey).fireproof())
+            );
+
+            // 5. Hoe
+            RegistryKey<Item> hoeKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("hoe_tier_" + tier.tier()));
+            Item hoe = Registry.register(
+                    Registries.ITEM,
+                    hoeKey,
+                    new ChainHoeItem(toolMat, tier.tier(), 0.0f, new Item.Settings().registryKey(hoeKey).fireproof())
+            );
+
+            // 6. Helmet
             RegistryKey<Item> helmetKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("helmet_tier_" + tier.tier()));
             Item helmet = Registry.register(
                     Registries.ITEM,
@@ -94,7 +137,7 @@ public class ModGear {
                     new ChainArmorItem(armorMat, EquipmentType.HELMET, tier.tier(), new Item.Settings().registryKey(helmetKey).fireproof())
             );
 
-            // 4. Chestplate
+            // 7. Chestplate
             RegistryKey<Item> chestKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chestplate_tier_" + tier.tier()));
             Item chestplate = Registry.register(
                     Registries.ITEM,
@@ -102,7 +145,7 @@ public class ModGear {
                     new ChainArmorItem(armorMat, EquipmentType.CHESTPLATE, tier.tier(), new Item.Settings().registryKey(chestKey).fireproof())
             );
 
-            // 5. Leggings
+            // 8. Leggings
             RegistryKey<Item> legsKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("leggings_tier_" + tier.tier()));
             Item leggings = Registry.register(
                     Registries.ITEM,
@@ -110,7 +153,7 @@ public class ModGear {
                     new ChainArmorItem(armorMat, EquipmentType.LEGGINGS, tier.tier(), new Item.Settings().registryKey(legsKey).fireproof())
             );
 
-            // 6. Boots
+            // 9. Boots
             RegistryKey<Item> bootsKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("boots_tier_" + tier.tier()));
             Item boots = Registry.register(
                     Registries.ITEM,
@@ -118,9 +161,38 @@ public class ModGear {
                     new ChainArmorItem(armorMat, EquipmentType.BOOTS, tier.tier(), new Item.Settings().registryKey(bootsKey).fireproof())
             );
 
-            GEAR_SETS.add(new GearSet(tier, sword, pickaxe, helmet, chestplate, leggings, boots));
+            GEAR_SETS.add(new GearSet(tier, sword, pickaxe, axe, shovel, hoe, helmet, chestplate, leggings, boots));
         }
 
-        ChainOresMod.LOGGER.info("Registered 96 progressive weapons, tools, and armor items for Chain Ores.");
+        // Register Special Weapons
+        RegistryKey<Item> bowKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("dragon_breath_bow"));
+        DRAGON_BOW = Registry.register(
+                Registries.ITEM,
+                bowKey,
+                new DragonBreathBowItem(new Item.Settings().registryKey(bowKey).fireproof())
+        );
+
+        RegistryKey<Item> xbowKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("galactic_crossbow"));
+        GALACTIC_CROSSBOW = Registry.register(
+                Registries.ITEM,
+                xbowKey,
+                new GalacticCrossbowItem(new Item.Settings().registryKey(xbowKey).fireproof())
+        );
+
+        RegistryKey<Item> shieldKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("aegis_shield"));
+        AEGIS_SHIELD = Registry.register(
+                Registries.ITEM,
+                shieldKey,
+                new ChainShieldItem(new Item.Settings().registryKey(shieldKey).fireproof())
+        );
+
+        RegistryKey<Item> omniKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("god_omnitool"));
+        GOD_OMNITOOL = Registry.register(
+                Registries.ITEM,
+                omniKey,
+                new GodOmnitoolItem(new Item.Settings().registryKey(omniKey).fireproof())
+        );
+
+        ChainOresMod.LOGGER.info("Registered complete progressive arsenal: swords, pickaxes, axes, shovels, hoes, armors, and legendary weapons!");
     }
 }

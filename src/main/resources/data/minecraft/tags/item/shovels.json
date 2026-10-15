@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:shovel_tier_1",
+    "chainores:shovel_tier_10",
+    "chainores:shovel_tier_20",
+    "chainores:shovel_tier_30",
+    "chainores:shovel_tier_40",
+    "chainores:shovel_tier_50",
+    "chainores:shovel_tier_60",
+    "chainores:shovel_tier_70",
+    "chainores:shovel_tier_80",
+    "chainores:shovel_tier_90",
+    "chainores:shovel_tier_100",
+    "chainores:shovel_tier_115",
+    "chainores:shovel_tier_125",
+    "chainores:shovel_tier_135",
+    "chainores:shovel_tier_140",
+    "chainores:shovel_tier_150"
+  ]
+}

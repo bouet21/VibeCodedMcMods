@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:axe_tier_1",
+    "chainores:axe_tier_10",
+    "chainores:axe_tier_20",
+    "chainores:axe_tier_30",
+    "chainores:axe_tier_40",
+    "chainores:axe_tier_50",
+    "chainores:axe_tier_60",
+    "chainores:axe_tier_70",
+    "chainores:axe_tier_80",
+    "chainores:axe_tier_90",
+    "chainores:axe_tier_100",
+    "chainores:axe_tier_115",
+    "chainores:axe_tier_125",
+    "chainores:axe_tier_135",
+    "chainores:axe_tier_140",
+    "chainores:axe_tier_150"
+  ]
+}

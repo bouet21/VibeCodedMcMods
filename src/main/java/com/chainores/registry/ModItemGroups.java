@@ -20,15 +20,22 @@ public class ModItemGroups {
                 .icon(() -> new ItemStack(ModItems.GUIDE_BOOK))
                 .displayName(Text.translatable("itemGroup.chainores.main"))
                 .entries((context, entries) -> {
-                    // First entries: Guide Book & Smithing Template & Prospector Rod
+                    // First entries: Guide Book & Smithing Template & Prospector Rod & Legendary Weapons
                     entries.add(ModItems.GUIDE_BOOK);
                     entries.add(ModItems.CHAIN_SMITHING_TEMPLATE);
                     entries.add(ModItems.PROSPECTOR_ROD);
+                    entries.add(ModGear.GOD_OMNITOOL);
+                    entries.add(ModGear.DRAGON_BOW);
+                    entries.add(ModGear.GALACTIC_CROSSBOW);
+                    entries.add(ModGear.AEGIS_SHIELD);
 
                     // Weapons, Tools, and Armors (Grouped by milestone sets)
                     for (ModGear.GearSet gear : ModGear.GEAR_SETS) {
                         entries.add(gear.sword);
                         entries.add(gear.pickaxe);
+                        entries.add(gear.axe);
+                        entries.add(gear.shovel);
+                        entries.add(gear.hoe);
                         entries.add(gear.helmet);
                         entries.add(gear.chestplate);
                         entries.add(gear.leggings);
@@ -46,6 +53,6 @@ public class ModItemGroups {
                 .build();
 
         Registry.register(Registries.ITEM_GROUP, CHAIN_ORES_GROUP_KEY, group);
-        ChainOresMod.LOGGER.info("Registered Chain Ores Creative Item Group with Tools & Armor.");
+        ChainOresMod.LOGGER.info("Registered Chain Ores Creative Item Group with full progressive arsenal.");
     }
 }

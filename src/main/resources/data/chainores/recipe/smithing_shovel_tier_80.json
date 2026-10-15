@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "chainores:chain_smithing_template",
+  "base": "chainores:shovel_tier_70",
+  "addition": "chainores:ingot_tier_80",
+  "result": {
+    "id": "chainores:shovel_tier_80"
+  }
+}

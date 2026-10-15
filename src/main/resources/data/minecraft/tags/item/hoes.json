@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "chainores:hoe_tier_1",
+    "chainores:hoe_tier_10",
+    "chainores:hoe_tier_20",
+    "chainores:hoe_tier_30",
+    "chainores:hoe_tier_40",
+    "chainores:hoe_tier_50",
+    "chainores:hoe_tier_60",
+    "chainores:hoe_tier_70",
+    "chainores:hoe_tier_80",
+    "chainores:hoe_tier_90",
+    "chainores:hoe_tier_100",
+    "chainores:hoe_tier_115",
+    "chainores:hoe_tier_125",
+    "chainores:hoe_tier_135",
+    "chainores:hoe_tier_140",
+    "chainores:hoe_tier_150"
+  ]
+}
