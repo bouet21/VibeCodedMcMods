@@ -5,6 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
 
@@ -25,6 +26,38 @@ public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
+
+        int gx = this.x;
+        int gy = this.y;
+
+        // Slot Guidance Tooltips when hovering over empty slots
+        if (!this.handler.getSlot(0).hasStack() && isMouseOverArea(mouseX, mouseY, gx + 43, gy + 34, 18, 18)) {
+            context.drawTooltip(this.textRenderer,
+                    Text.literal("Ranura de Equipo Base").formatted(Formatting.AQUA, Formatting.BOLD)
+                            .append(Text.literal("\nColoca aquí tu arma, herramienta o armadura a forjar.").formatted(Formatting.GRAY)),
+                    mouseX, mouseY);
+        } else if (!this.handler.getSlot(1).hasStack() && isMouseOverArea(mouseX, mouseY, gx + 67, gy + 16, 18, 18)) {
+            context.drawTooltip(this.textRenderer,
+                    Text.literal("Ranura de Catalizador").formatted(Formatting.GOLD, Formatting.BOLD)
+                            .append(Text.literal("\nColoca aquí el Lingote, Gema o Catalizador de Jefe.").formatted(Formatting.GRAY)),
+                    mouseX, mouseY);
+        } else if (!this.handler.getSlot(2).hasStack() && isMouseOverArea(mouseX, mouseY, gx + 125, gy + 34, 18, 18)) {
+            context.drawTooltip(this.textRenderer,
+                    Text.literal("Ranura de Salida").formatted(Formatting.GREEN, Formatting.BOLD)
+                            .append(Text.literal("\nAquí aparecerá tu equipamiento mejorado al completar la forja.").formatted(Formatting.GRAY)),
+                    mouseX, mouseY);
+        } else if (isMouseOverArea(mouseX, mouseY, gx + 89, gy + 38, 28, 8)) {
+            int progress = this.handler.getForgeProgress();
+            int total = this.handler.getTotalForgeTime();
+            int pct = total > 0 ? (progress * 100 / total) : 0;
+            context.drawTooltip(this.textRenderer,
+                    Text.literal("Calor de Forja: " + pct + "%").formatted(Formatting.YELLOW, Formatting.BOLD),
+                    mouseX, mouseY);
+        }
+    }
+
+    private boolean isMouseOverArea(int mouseX, int mouseY, int x, int y, int w, int h) {
+        return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
     }
 
     @Override
@@ -33,32 +66,44 @@ public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
         int y = this.y;
 
         // Dark metallic forge base panel
-        context.fill(x, y, x + this.backgroundWidth, y + this.backgroundHeight, 0xFF1F2229);
-        // Bevel borders
-        context.fill(x, y, x + this.backgroundWidth, y + 2, 0xFF4A4E5C);
-        context.fill(x, y, x + 2, y + this.backgroundHeight, 0xFF4A4E5C);
-        context.fill(x + this.backgroundWidth - 2, y, x + this.backgroundWidth, y + this.backgroundHeight, 0xFF121419);
-        context.fill(x, y + this.backgroundHeight - 2, x + this.backgroundWidth, y + this.backgroundHeight, 0xFF121419);
+        context.fill(x, y, x + this.backgroundWidth, y + this.backgroundHeight, 0xFF181B20);
+
+        // Bevel borders with forge bronze accents
+        context.fill(x, y, x + this.backgroundWidth, y + 2, 0xFF5C5248);
+        context.fill(x, y, x + 2, y + this.backgroundHeight, 0xFF5C5248);
+        context.fill(x + this.backgroundWidth - 2, y, x + this.backgroundWidth, y + this.backgroundHeight, 0xFF101216);
+        context.fill(x, y + this.backgroundHeight - 2, x + this.backgroundWidth, y + this.backgroundHeight, 0xFF101216);
 
         // Header plate
-        context.fill(x + 4, y + 4, x + this.backgroundWidth - 4, y + 16, 0xFF2A2E38);
+        context.fill(x + 4, y + 4, x + this.backgroundWidth - 4, y + 16, 0xFF282522);
+        context.fill(x + 5, y + 15, x + this.backgroundWidth - 5, y + 16, 0xFFD4AF37); // Gold accent stripe
 
         // Slot Recesses: Slot 0 (Base), Slot 1 (Catalyst), Slot 2 (Output)
         drawSlotRecess(context, x + 43, y + 34);
         drawSlotRecess(context, x + 67, y + 16);
         drawSlotRecess(context, x + 125, y + 34);
 
-        // Anvil / Forge indicator path
-        context.fill(x + 89, y + 39, x + 117, y + 45, 0xFF2F3440);
+        // Slot Labels
+        context.drawText(this.textRenderer, Text.literal("Base").formatted(Formatting.DARK_GRAY), x + 43, y + 54, 0xFF7A7A7A, false);
+        context.drawText(this.textRenderer, Text.literal("Cat.").formatted(Formatting.DARK_GRAY), x + 68, y + 6, 0xFFD4AF37, false);
+        context.drawText(this.textRenderer, Text.literal("Salida").formatted(Formatting.DARK_GRAY), x + 124, y + 54, 0xFF55FF55, false);
 
-        // Forging Progress Bar (Arrow fill)
+        // Output Slot Gold Glowing Halo
+        context.fill(x + 124, y + 33, x + 144, y + 34, 0xFFFFCC00);
+        context.fill(x + 124, y + 52, x + 144, y + 53, 0xFFFFCC00);
+        context.fill(x + 124, y + 34, x + 125, y + 52, 0xFFFFCC00);
+        context.fill(x + 143, y + 34, x + 144, y + 52, 0xFFFFCC00);
+
+        // Forging Track Path
+        context.fill(x + 89, y + 39, x + 117, y + 45, 0xFF2A2E38);
+
+        // Forging Progress Bar (Glowing Lava Fire Fill)
         int progress = this.handler.getForgeProgress();
         int total = this.handler.getTotalForgeTime();
         if (total > 0 && progress > 0) {
             int arrowWidth = (progress * 28) / total;
-            // Glowing fire progress
-            context.fill(x + 89, y + 39, x + 89 + arrowWidth, y + 45, 0xFFFF7A00);
-            context.fill(x + 89, y + 41, x + 89 + arrowWidth, y + 43, 0xFFFFEA7A);
+            context.fill(x + 89, y + 39, x + 89 + arrowWidth, y + 45, 0xFFFF6A00);
+            context.fill(x + 89, y + 41, x + 89 + arrowWidth, y + 43, 0xFFFFEE88);
         }
 
         // Draw Player Inventory Slot Recesses (3 rows x 9)
@@ -75,11 +120,10 @@ public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
     }
 
     private void drawSlotRecess(DrawContext context, int x, int y) {
-        // Recessed slot with 18x18 dimension
-        context.fill(x, y, x + 18, y + 18, 0xFF14161C);
-        context.fill(x, y, x + 18, y + 1, 0xFF0D0F13);
-        context.fill(x, y, x + 1, y + 18, 0xFF0D0F13);
-        context.fill(x + 17, y, x + 18, y + 18, 0xFF353945);
-        context.fill(x, y + 17, x + 18, y + 18, 0xFF353945);
+        context.fill(x, y, x + 18, y + 18, 0xFF121418);
+        context.fill(x, y, x + 18, y + 1, 0xFF0A0C0E);
+        context.fill(x, y, x + 1, y + 18, 0xFF0A0C0E);
+        context.fill(x + 17, y, x + 18, y + 18, 0xFF323640);
+        context.fill(x, y + 17, x + 18, y + 18, 0xFF323640);
     }
 }

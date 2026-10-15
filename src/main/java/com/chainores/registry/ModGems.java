@@ -1,6 +1,7 @@
 package com.chainores.registry;
 
 import com.chainores.ChainOresMod;
+import com.chainores.item.GemItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -9,22 +10,26 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Rarity;
 
 public class ModGems {
-    public static final Item BLOOD_GEM = register("blood_gem", new Item(
+    public static final Item BLOOD_GEM = register("blood_gem", new GemItem(
+            GemItem.GemType.BLOOD,
             new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("blood_gem")))
     ));
 
-    public static final Item VOID_GEM = register("void_gem", new Item(
+    public static final Item VOID_GEM = register("void_gem", new GemItem(
+            GemItem.GemType.VOID,
             new Item.Settings().maxCount(16).rarity(Rarity.RARE)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("void_gem")))
     ));
 
-    public static final Item CORE_GEM = register("core_gem", new Item(
+    public static final Item CORE_GEM = register("core_gem", new GemItem(
+            GemItem.GemType.CORE,
             new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("core_gem")))
     ));
 
-    public static final Item GENESIS_GEM = register("genesis_gem", new Item(
+    public static final Item GENESIS_GEM = register("genesis_gem", new GemItem(
+            GemItem.GemType.GENESIS,
             new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("genesis_gem")))
     ));
@@ -34,6 +39,6 @@ public class ModGems {
     }
 
     public static void initialize() {
-        ChainOresMod.LOGGER.info("Registered Chain Ores Sockets & Gems.");
+        ChainOresMod.LOGGER.info("Registered Chain Ores Sockets & Gems with rich RPG descriptions.");
     }
 }

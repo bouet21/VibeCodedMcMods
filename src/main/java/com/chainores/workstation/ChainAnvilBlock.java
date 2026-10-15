@@ -95,14 +95,30 @@ public class ChainAnvilBlock extends Block {
                 else if (offhand.isOf(com.chainores.registry.ModGems.GENESIS_GEM)) gemId = com.chainores.modifier.ChainModifiers.GEM_GENESIS;
 
                 if (gemId != null) {
-                    com.chainores.modifier.ChainModifiers.setGem(held, gemId);
+                    int maxSockets = com.chainores.modifier.ChainModifiers.getMaxSockets(held);
+                    if (maxSockets <= 0) {
+                        player.sendMessage(Text.literal("✘ Este equipamiento es demasiado frágil para soportar ranuras de gemas.")
+                                .formatted(Formatting.RED), true);
+                        world.playSound(null, pos, SoundEvents.BLOCK_DISPENSER_FAIL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        return ActionResult.SUCCESS;
+                    }
+                    if (!com.chainores.modifier.ChainModifiers.canAddGem(held)) {
+                        player.sendMessage(Text.literal("✘ Todas las ranuras de gemas están llenas (" + maxSockets + "/" + maxSockets + ").")
+                                .formatted(Formatting.RED), true);
+                        world.playSound(null, pos, SoundEvents.BLOCK_DISPENSER_FAIL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        return ActionResult.SUCCESS;
+                    }
+
+                    com.chainores.modifier.ChainModifiers.addGem(held, gemId);
                     if (!player.getAbilities().creativeMode) offhand.decrement(1);
 
+                    int currentCount = com.chainores.modifier.ChainModifiers.getGems(held).size();
                     world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.2f, 1.3f);
                     world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0f, 1.2f);
                     serverWorld.spawnParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 15, 0.3, 0.3, 0.3, 0.1);
 
-                    player.sendMessage(Text.literal("◆ ¡Gema engarzada con éxito en tu equipamiento!").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD), true);
+                    player.sendMessage(Text.literal("◆ ¡Gema engarzada con éxito! Ranuras: [" + currentCount + "/" + maxSockets + "]")
+                            .formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD), true);
                     return ActionResult.SUCCESS;
                 }
             }

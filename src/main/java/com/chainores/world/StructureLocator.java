@@ -97,24 +97,30 @@ public class StructureLocator {
             }
         }
 
-        // Generate ~160 blocks offset from player in a safe chunk
-        int targetX = ((playerPos.getX() >> 4) + 10) * 16 + 8;
-        int targetZ = ((playerPos.getZ() >> 4) + 10) * 16 + 8;
+        // Generate ~140 blocks offset from player in a safe chunk
+        int targetX = ((playerPos.getX() >> 4) + 8) * 16 + 8;
+        int targetZ = ((playerPos.getZ() >> 4) + 8) * 16 + 8;
         int targetY;
 
+        BlockPos targetPos;
         if (type.equals(TYPE_FORGE)) {
             targetY = -35;
+            targetPos = new BlockPos(targetX, targetY, targetZ);
+            com.chainores.world.feature.AbandonedForgeFeature.buildStructure(world, targetPos, world.random);
         } else if (type.equals(TYPE_SHRINE)) {
             targetY = 48;
+            targetPos = new BlockPos(targetX, targetY, targetZ);
+            com.chainores.world.feature.NetherShrineFeature.buildStructure(world, targetPos, world.random);
         } else {
             targetY = 60;
+            targetPos = new BlockPos(targetX, targetY, targetZ);
+            com.chainores.world.feature.CosmicAltarFeature.buildStructure(world, targetPos, world.random);
         }
 
-        BlockPos targetPos = new BlockPos(targetX, targetY, targetZ);
         StructureEntry entry = new StructureEntry(type, dimId, targetX, targetY, targetZ);
         ENTRIES.add(entry);
         saveToFile(world);
-        ChainOresMod.LOGGER.info("Registered structure anchor for {} at {} in {}", type, targetPos, dimId);
+        ChainOresMod.LOGGER.info("Registered and constructed guaranteed structure for {} at {} in {}", type, targetPos, dimId);
         return entry;
     }
 

@@ -72,6 +72,7 @@ public class ChainArmorItem extends Item {
                 .append(Text.literal(getArmorPerkDesc(tier)).formatted(Formatting.YELLOW)));
         textConsumer.accept(Text.literal("⚡ Habilidad Activa: ").formatted(Formatting.LIGHT_PURPLE)
                 .append(Text.literal("Esprintar + Agacharse activa Dash Impulso (CD: 4s)").formatted(Formatting.GRAY, Formatting.ITALIC)));
+        com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, textConsumer);
     }
 
     public static String getArmor2PieceDesc(int tier) {
@@ -212,23 +213,40 @@ public class ChainArmorItem extends Item {
     }
 
     private void applyGemAndReforgeArmorBuffs(ServerPlayerEntity player, ItemStack stack) {
-        String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
-        if (gem != null) {
+        java.util.List<String> gems = com.chainores.modifier.ChainModifiers.getGems(stack);
+        int bloodCount = 0;
+        int voidCount = 0;
+        int coreCount = 0;
+        int genesisCount = 0;
+
+        for (String gem : gems) {
             switch (gem) {
-                case com.chainores.modifier.ChainModifiers.GEM_BLOOD ->
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 40, 0, true, false));
-                case com.chainores.modifier.ChainModifiers.GEM_VOID -> {
-                    if (player.fallDistance > 2.0f && !player.isOnGround()) {
-                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 40, 0, true, false));
-                    }
-                }
-                case com.chainores.modifier.ChainModifiers.GEM_CORE ->
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, 0, true, false));
-                case com.chainores.modifier.ChainModifiers.GEM_GENESIS -> {
-                    if (!player.hasStatusEffect(StatusEffects.ABSORPTION)) {
-                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1, true, false));
-                    }
-                }
+                case com.chainores.modifier.ChainModifiers.GEM_BLOOD -> bloodCount++;
+                case com.chainores.modifier.ChainModifiers.GEM_VOID -> voidCount++;
+                case com.chainores.modifier.ChainModifiers.GEM_CORE -> coreCount++;
+                case com.chainores.modifier.ChainModifiers.GEM_GENESIS -> genesisCount++;
+            }
+        }
+
+        if (bloodCount > 0) {
+            int amp = Math.min(bloodCount - 1, 2);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 40, amp, true, false));
+        }
+        if (voidCount > 0) {
+            if (player.fallDistance > 1.5f && !player.isOnGround()) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 40, 0, true, false));
+                player.fallDistance = 0;
+            }
+        }
+        if (coreCount > 0) {
+            int amp = Math.min(coreCount - 1, 2);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, amp, true, false));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 40, 0, true, false));
+        }
+        if (genesisCount > 0) {
+            if (!player.hasStatusEffect(StatusEffects.ABSORPTION)) {
+                int amp = Math.min(genesisCount, 3);
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, amp, true, false));
             }
         }
 

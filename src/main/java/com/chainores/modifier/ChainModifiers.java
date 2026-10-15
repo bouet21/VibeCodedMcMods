@@ -1,16 +1,28 @@
 package com.chainores.modifier;
 
+import com.chainores.gear.ChainArmorItem;
+import com.chainores.gear.ChainAxeItem;
+import com.chainores.gear.ChainHoeItem;
+import com.chainores.gear.ChainPickaxeItem;
+import com.chainores.gear.ChainShovelItem;
+import com.chainores.gear.ChainSwordItem;
+import com.chainores.gear.GodOmnitoolItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.random.Random;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ChainModifiers {
     public static final String KEY_GEM = "chainores_gem";
+    public static final String KEY_GEM_COUNT = "chainores_gem_count";
     public static final String KEY_REFORGE = "chainores_reforge";
 
     // Gem IDs
@@ -20,25 +32,127 @@ public class ChainModifiers {
     public static final String GEM_GENESIS = "genesis_gem";
 
     // Reforge Prefix IDs
+    public static final String REFORGE_DIVINE = "divine";
     public static final String REFORGE_LEGENDARY = "legendary";
     public static final String REFORGE_FIERCE = "fierce";
     public static final String REFORGE_SWIFT = "swift";
     public static final String REFORGE_TITANIC = "titanic";
-    public static final String REFORGE_DIVINE = "divine";
 
-    public static String getGem(ItemStack stack) {
-        if (stack.isEmpty()) return null;
+    public static int getMaxSockets(ItemStack stack) {
+        if (stack.isEmpty()) return 0;
+        Item item = stack.getItem();
+
+        if (item instanceof ChainArmorItem armor) {
+            int t = armor.getTier();
+            if (t <= 1) return 0;       // T1: Demasiado débil para gemas
+            if (t <= 30) return 1;      // T10 - T30: 1 slot
+            if (t <= 70) return 2;      // T40 - T70: 2 slots
+            if (t <= 115) return 3;     // T80 - T115: 3 slots
+            return 4;                   // T125, T135, T140, T150 (Las mejores): 4 slots
+        }
+
+        if (item instanceof ChainSwordItem sword) {
+            int t = sword.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof ChainPickaxeItem pickaxe) {
+            int t = pickaxe.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof ChainAxeItem axe) {
+            int t = axe.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof ChainShovelItem shovel) {
+            int t = shovel.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof ChainHoeItem hoe) {
+            int t = hoe.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof GodOmnitoolItem) {
+            return 4;
+        }
+
+        return 0;
+    }
+
+    public static List<String> getGems(ItemStack stack) {
+        List<String> list = new ArrayList<>();
+        if (stack.isEmpty()) return list;
+
         NbtComponent custom = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (custom == null) return null;
+        if (custom == null) return list;
         NbtCompound nbt = custom.copyNbt();
-        return nbt.contains(KEY_GEM) ? nbt.getString(KEY_GEM).orElse(null) : null;
+
+        int count = nbt.getInt(KEY_GEM_COUNT).orElse(0);
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                nbt.getString("chainores_gem_" + i).ifPresent(list::add);
+            }
+        } else if (nbt.contains(KEY_GEM)) {
+            nbt.getString(KEY_GEM).ifPresent(list::add);
+        }
+        return list;
+    }
+
+    public static boolean canAddGem(ItemStack stack) {
+        int max = getMaxSockets(stack);
+        if (max <= 0) return false;
+        return getGems(stack).size() < max;
+    }
+
+    public static boolean addGem(ItemStack stack, String gemId) {
+        if (stack.isEmpty() || gemId == null) return false;
+        int max = getMaxSockets(stack);
+        List<String> list = getGems(stack);
+        if (list.size() >= max) return false;
+
+        list.add(gemId);
+        NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> {
+            nbt.putInt(KEY_GEM_COUNT, list.size());
+            for (int i = 0; i < list.size(); i++) {
+                nbt.putString("chainores_gem_" + i, list.get(i));
+            }
+            nbt.putString(KEY_GEM, list.get(0));
+        });
+        return true;
     }
 
     public static void setGem(ItemStack stack, String gemId) {
+        // Clear previous and set single gem
         if (stack.isEmpty()) return;
         NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> {
+            nbt.putInt(KEY_GEM_COUNT, 1);
+            nbt.putString("chainores_gem_0", gemId);
             nbt.putString(KEY_GEM, gemId);
         });
+    }
+
+    public static String getGem(ItemStack stack) {
+        List<String> gems = getGems(stack);
+        return gems.isEmpty() ? null : gems.get(0);
     }
 
     public static String getReforge(ItemStack stack) {
@@ -80,9 +194,11 @@ public class ChainModifiers {
 
     public static float getMiningSpeedMultiplier(ItemStack stack) {
         float mult = 1.0f;
-        String gem = getGem(stack);
-        if (GEM_CORE.equals(gem)) mult += 0.35f;
-        if (GEM_GENESIS.equals(gem)) mult += 0.50f;
+        List<String> gems = getGems(stack);
+        for (String gem : gems) {
+            if (GEM_CORE.equals(gem)) mult += 0.35f;
+            if (GEM_GENESIS.equals(gem)) mult += 0.50f;
+        }
 
         String reforge = getReforge(stack);
         if (reforge != null) {
@@ -94,6 +210,14 @@ public class ChainModifiers {
             }
         }
         return mult;
+    }
+
+    public static void appendModifierTooltips(ItemStack stack, Consumer<Text> textConsumer) {
+        List<Text> lines = new ArrayList<>();
+        appendModifierTooltips(stack, lines);
+        for (Text line : lines) {
+            textConsumer.accept(line);
+        }
     }
 
     public static void appendModifierTooltips(ItemStack stack, List<Text> tooltip) {
@@ -112,18 +236,31 @@ public class ChainModifiers {
             }
         }
 
-        String gem = getGem(stack);
-        if (gem != null) {
-            Text gemText = switch (gem) {
-                case GEM_BLOOD -> Text.translatable("gem.chainores.blood").formatted(Formatting.DARK_RED, Formatting.ITALIC);
-                case GEM_VOID -> Text.translatable("gem.chainores.void").formatted(Formatting.DARK_PURPLE, Formatting.ITALIC);
-                case GEM_CORE -> Text.translatable("gem.chainores.core").formatted(Formatting.GOLD, Formatting.ITALIC);
-                case GEM_GENESIS -> Text.translatable("gem.chainores.genesis").formatted(Formatting.LIGHT_PURPLE, Formatting.ITALIC);
-                default -> Text.empty();
-            };
-            if (!gemText.getString().isEmpty()) {
-                tooltip.add(Text.literal("◆ ").formatted(Formatting.LIGHT_PURPLE).append(gemText));
+        int maxSockets = getMaxSockets(stack);
+        if (maxSockets <= 0) {
+            tooltip.add(Text.literal("Ranuras de Gemas: ").formatted(Formatting.GRAY)
+                    .append(Text.literal("[Sin Ranuras]").formatted(Formatting.DARK_GRAY))
+                    .append(Text.literal(" (Material demasiado débil)").formatted(Formatting.DARK_RED, Formatting.ITALIC)));
+        } else {
+            List<String> gems = getGems(stack);
+            tooltip.add(Text.literal("Ranuras de Gemas [" + gems.size() + "/" + maxSockets + "]:").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
+
+            MutableText socketLine = Text.literal("  ");
+            for (int i = 0; i < maxSockets; i++) {
+                if (i < gems.size()) {
+                    String g = gems.get(i);
+                    switch (g) {
+                        case GEM_BLOOD -> socketLine.append(Text.literal("[◆ Carmesí] ").formatted(Formatting.DARK_RED, Formatting.BOLD));
+                        case GEM_VOID -> socketLine.append(Text.literal("[◆ Vacío] ").formatted(Formatting.DARK_PURPLE, Formatting.BOLD));
+                        case GEM_CORE -> socketLine.append(Text.literal("[◆ Núcleo] ").formatted(Formatting.GOLD, Formatting.BOLD));
+                        case GEM_GENESIS -> socketLine.append(Text.literal("[◆ Génesis] ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
+                        default -> socketLine.append(Text.literal("[◆ Gema] ").formatted(Formatting.AQUA));
+                    }
+                } else {
+                    socketLine.append(Text.literal("[◇ Vacío] ").formatted(Formatting.DARK_GRAY));
+                }
             }
+            tooltip.add(socketLine);
         }
     }
 }

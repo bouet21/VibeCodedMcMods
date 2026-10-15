@@ -75,6 +75,7 @@ public class ChainPickaxeItem extends Item {
             textConsumer.accept(Text.literal("✦ Habilidad Especial: ").formatted(Formatting.AQUA)
                     .append(Text.literal(perk).formatted(Formatting.GREEN)));
         }
+        com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, textConsumer);
     }
 
     public static String getPickaxePerkDesc(int tier) {

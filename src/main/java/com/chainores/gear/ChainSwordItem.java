@@ -41,6 +41,7 @@ public class ChainSwordItem extends Item {
             textConsumer.accept(Text.literal("Habilidad de Combate: ").formatted(Formatting.RED)
                     .append(Text.literal(perk).formatted(Formatting.GOLD)));
         }
+        com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, textConsumer);
     }
 
     public static String getSwordPerkDesc(int tier) {
@@ -72,21 +73,25 @@ public class ChainSwordItem extends Item {
         if (attacker.getEntityWorld().isClient()) return;
         ServerWorld world = (ServerWorld) attacker.getEntityWorld();
 
-        // Gem Modifiers
-        String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
-        if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
-            attacker.heal(3.0f); // 1.5 hearts lifesteal
-            world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
-        } else if (com.chainores.modifier.ChainModifiers.GEM_GENESIS.equals(gem)) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.TRIGGERED);
-            if (lightning != null) {
-                lightning.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
-                lightning.setCosmetic(true);
-                world.spawnEntity(lightning);
+        // Multi-Gem Modifiers
+        java.util.List<String> gems = com.chainores.modifier.ChainModifiers.getGems(stack);
+        for (String gem : gems) {
+            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
+                attacker.heal(3.0f); // 1.5 hearts lifesteal
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_GENESIS.equals(gem)) {
+                LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.TRIGGERED);
+                if (lightning != null) {
+                    lightning.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
+                    lightning.setCosmetic(true);
+                    world.spawnEntity(lightning);
+                }
+                target.damage(world, attacker.getDamageSources().magic(), 20.0f);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_VOID.equals(gem)) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 40, 1));
+            } else if (com.chainores.modifier.ChainModifiers.GEM_CORE.equals(gem)) {
+                target.setOnFireFor(8);
             }
-            target.damage(world, attacker.getDamageSources().magic(), 25.0f);
-        } else if (com.chainores.modifier.ChainModifiers.GEM_VOID.equals(gem)) {
-            target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 40, 1));
         }
 
         // Reforge Damage Multiplier

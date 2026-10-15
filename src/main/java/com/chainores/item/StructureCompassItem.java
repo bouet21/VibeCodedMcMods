@@ -57,10 +57,10 @@ public class StructureCompassItem extends Item {
 
     public static String getModeName(int mode) {
         return switch (mode) {
-            case 1 -> "FORJA ABANDONADA";
-            case 2 -> "SANTUARIO DEL NETHER";
-            case 3 -> "ALTAR CÓSMICO";
-            default -> "AUTO (SEGÚN DIMENSIÓN)";
+            case 1 -> "FORJA ABANDONADA (OVERWORLD)";
+            case 2 -> "SANTUARIO DEL NETHER (NETHER)";
+            case 3 -> "ALTAR CÓSMICO (THE END)";
+            default -> "AUTOMÁTICO (SEGÚN DIMENSIÓN ACTUAL)";
         };
     }
 
@@ -89,12 +89,27 @@ public class StructureCompassItem extends Item {
             ServerWorld serverWorld = (ServerWorld) world;
             BlockPos playerPos = player.getBlockPos();
 
-            // Shift-click cycles mode or displays full chat coordinates
+            // Shift-click cycles mode with prominent visual and audio feedback
             if (player.isSneaking()) {
                 cycleTargetMode(stack);
                 int newMode = getTargetMode(stack);
-                player.sendMessage(Text.literal("🧭 Brújula sintonizada a: [" + getModeName(newMode) + "]").formatted(Formatting.GOLD, Formatting.BOLD), true);
-                player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.8f, 1.4f);
+                String modeName = getModeName(newMode);
+
+                // Action Bar
+                player.sendMessage(Text.literal("🧭 Brújula sintonizada a: ").formatted(Formatting.GOLD)
+                        .append(Text.literal("[" + modeName + "]").formatted(Formatting.AQUA, Formatting.BOLD)), true);
+
+                // Chat Message
+                player.sendMessage(Text.literal("🧭 [BRÚJULA RÚNICA] Objetivo seleccionado: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                        .append(Text.literal("[" + modeName + "]").formatted(Formatting.AQUA, Formatting.BOLD)), false);
+                player.sendMessage(Text.literal("   ➥ Haz clic derecho normal para activar el sonar y fijar coordenadas.").formatted(Formatting.YELLOW, Formatting.ITALIC), false);
+
+                // Sound & Particles
+                player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 1.2f, 1.4f);
+                player.playSound(SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, 0.7f, 1.8f);
+                serverWorld.spawnParticles(ParticleTypes.ENCHANT, player.getX(), player.getY() + 1.0, player.getZ(), 20, 0.4, 0.4, 0.4, 0.2);
+                serverWorld.spawnParticles(ParticleTypes.GLOW, player.getX(), player.getY() + 1.0, player.getZ(), 8, 0.3, 0.3, 0.3, 0.05);
+
                 return ActionResult.SUCCESS;
             }
 
