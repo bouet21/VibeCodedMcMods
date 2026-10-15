@@ -33,26 +33,35 @@ public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
         // Slot Guidance Tooltips when hovering over empty slots
         if (!this.handler.getSlot(0).hasStack() && isMouseOverArea(mouseX, mouseY, gx + 43, gy + 34, 18, 18)) {
             context.drawTooltip(this.textRenderer,
-                    Text.literal("Ranura de Equipo Base").formatted(Formatting.AQUA, Formatting.BOLD)
-                            .append(Text.literal("\nColoca aquí tu arma, herramienta o armadura a forjar.").formatted(Formatting.GRAY)),
+                    Text.literal("Ranura de Forja").formatted(Formatting.AQUA, Formatting.BOLD)
+                            .append(Text.literal("\nColoca tu lingote, mena cruda, equipamiento o gema.").formatted(Formatting.GRAY))
+                            .append(Text.literal("\n(Ranuras de entrada 100% intercambiables)").formatted(Formatting.DARK_GRAY, Formatting.ITALIC)),
                     mouseX, mouseY);
         } else if (!this.handler.getSlot(1).hasStack() && isMouseOverArea(mouseX, mouseY, gx + 67, gy + 16, 18, 18)) {
             context.drawTooltip(this.textRenderer,
                     Text.literal("Ranura de Catalizador").formatted(Formatting.GOLD, Formatting.BOLD)
-                            .append(Text.literal("\nColoca aquí el Lingote, Gema o Catalizador de Jefe.").formatted(Formatting.GRAY)),
+                            .append(Text.literal("\nColoca aquí el lingote/mena superior, catalizador o plantilla.").formatted(Formatting.GRAY))
+                            .append(Text.literal("\n(Ranuras de entrada 100% intercambiables)").formatted(Formatting.DARK_GRAY, Formatting.ITALIC)),
                     mouseX, mouseY);
         } else if (!this.handler.getSlot(2).hasStack() && isMouseOverArea(mouseX, mouseY, gx + 125, gy + 34, 18, 18)) {
             context.drawTooltip(this.textRenderer,
                     Text.literal("Ranura de Salida").formatted(Formatting.GREEN, Formatting.BOLD)
-                            .append(Text.literal("\nAquí aparecerá tu equipamiento mejorado al completar la forja.").formatted(Formatting.GRAY)),
+                            .append(Text.literal("\nAquí aparecerá tu lingote o equipamiento mejorado al instante.").formatted(Formatting.GRAY)),
                     mouseX, mouseY);
         } else if (isMouseOverArea(mouseX, mouseY, gx + 89, gy + 38, 28, 8)) {
             int progress = this.handler.getForgeProgress();
             int total = this.handler.getTotalForgeTime();
             int pct = total > 0 ? (progress * 100 / total) : 0;
-            context.drawTooltip(this.textRenderer,
-                    Text.literal("Calor de Forja: " + pct + "%").formatted(Formatting.YELLOW, Formatting.BOLD),
-                    mouseX, mouseY);
+            if (progress > 0) {
+                context.drawTooltip(this.textRenderer,
+                        Text.literal("Forjando: " + pct + "%").formatted(Formatting.GOLD, Formatting.BOLD),
+                        mouseX, mouseY);
+            } else {
+                context.drawTooltip(this.textRenderer,
+                        Text.literal("Forja de Cadena").formatted(Formatting.YELLOW, Formatting.BOLD)
+                                .append(Text.literal("\nCombina lingotes, menas crudas, gemas o equipamiento.").formatted(Formatting.GRAY)),
+                        mouseX, mouseY);
+            }
         }
     }
 
