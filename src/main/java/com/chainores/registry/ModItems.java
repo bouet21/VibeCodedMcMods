@@ -39,7 +39,7 @@ public class ModItems {
             Item oreBlockItem = Registry.register(
                     Registries.ITEM,
                     oreBlockItemKey,
-                    new BlockItem(ore.oreBlock, new Item.Settings().registryKey(oreBlockItemKey))
+                    new BlockItem(ore.oreBlock, new Item.Settings().registryKey(oreBlockItemKey).useBlockPrefixedTranslationKey())
             );
             ore.oreBlockItem = oreBlockItem;
 
@@ -47,7 +47,7 @@ public class ModItems {
             Item storageBlockItem = Registry.register(
                     Registries.ITEM,
                     storageBlockItemKey,
-                    new BlockItem(ore.storageBlock, new Item.Settings().registryKey(storageBlockItemKey))
+                    new BlockItem(ore.storageBlock, new Item.Settings().registryKey(storageBlockItemKey).useBlockPrefixedTranslationKey())
             );
             ore.storageBlockItem = storageBlockItem;
 

@@ -473,12 +473,16 @@ public class AssetGenerator {
 
             // 8. Lang
             enLang.append("  \"block.chainores.").append(oreBlockId).append("\": \"T").append(ore.tier).append(" ").append(ore.enName).append(" Ore\",\n");
+            enLang.append("  \"item.chainores.").append(oreBlockId).append("\": \"T").append(ore.tier).append(" ").append(ore.enName).append(" Ore\",\n");
             enLang.append("  \"block.chainores.").append(storageBlockId).append("\": \"Block of ").append(ore.enName).append("\",\n");
+            enLang.append("  \"item.chainores.").append(storageBlockId).append("\": \"Block of ").append(ore.enName).append("\",\n");
             enLang.append("  \"item.chainores.").append(rawItemId).append("\": \"Raw ").append(ore.enName).append("\",\n");
             enLang.append("  \"item.chainores.").append(ingotItemId).append("\": \"").append(ore.enName).append(" Ingot\"");
 
             esLang.append("  \"block.chainores.").append(oreBlockId).append("\": \"T").append(ore.tier).append(" Mineral de ").append(ore.esName).append("\",\n");
+            esLang.append("  \"item.chainores.").append(oreBlockId).append("\": \"T").append(ore.tier).append(" Mineral de ").append(ore.esName).append("\",\n");
             esLang.append("  \"block.chainores.").append(storageBlockId).append("\": \"Bloque de ").append(ore.esName).append("\",\n");
+            esLang.append("  \"item.chainores.").append(storageBlockId).append("\": \"Bloque de ").append(ore.esName).append("\",\n");
             esLang.append("  \"item.chainores.").append(rawItemId).append("\": \"").append(ore.esName).append(" en Bruto\",\n");
             esLang.append("  \"item.chainores.").append(ingotItemId).append("\": \"Lingote de ").append(ore.esName).append("\"");
 
