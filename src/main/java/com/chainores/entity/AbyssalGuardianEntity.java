@@ -29,13 +29,19 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class AbyssalGuardianEntity extends HostileEntity {
     private final ServerBossBar bossBar;
     private int sonicCooldown = 100;
     private int chargeTimer = 0;
+    private int slamCooldown = 120;
+    private int dashCooldown = 80;
+    private boolean isEnraged = false;
 
     public AbyssalGuardianEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -45,25 +51,25 @@ public class AbyssalGuardianEntity extends HostileEntity {
                 BossBar.Style.NOTCHED_10
         );
         this.bossBar.setDarkenSky(true);
-        this.experiencePoints = 500;
+        this.experiencePoints = 800;
     }
 
     public static DefaultAttributeContainer.Builder createAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.MAX_HEALTH, 400.0)
-                .add(EntityAttributes.MOVEMENT_SPEED, 0.28)
-                .add(EntityAttributes.ATTACK_DAMAGE, 24.0)
-                .add(EntityAttributes.ARMOR, 15.0)
-                .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.85)
-                .add(EntityAttributes.FOLLOW_RANGE, 36.0);
+                .add(EntityAttributes.MAX_HEALTH, 650.0)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.32)
+                .add(EntityAttributes.ATTACK_DAMAGE, 32.0)
+                .add(EntityAttributes.ARMOR, 20.0)
+                .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.95)
+                .add(EntityAttributes.FOLLOW_RANGE, 48.0);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.25, false));
+        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.3, false));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 12.0f));
+        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 16.0f));
         this.goalSelector.add(7, new LookAroundGoal(this));
 
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
@@ -75,8 +81,13 @@ public class AbyssalGuardianEntity extends HostileEntity {
         boolean success = super.tryAttack(world, target);
         if (success && target instanceof LivingEntity living) {
             living.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 200, 0), this);
-            living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 1), this);
-            world.playSound(null, target.getBlockPos(), SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, SoundCategory.HOSTILE, 1.2f, 0.8f);
+            living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, 1), this);
+            world.playSound(null, target.getBlockPos(), SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, SoundCategory.HOSTILE, 1.4f, 0.8f);
+
+            // Lifesteal: heals 25% of attack damage
+            float lifesteal = (float) (this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE) * 0.25);
+            this.heal(lifesteal);
+            world.spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY() + 1.2, this.getZ(), 8, 0.4, 0.5, 0.4, 0.05);
         }
         return success;
     }
@@ -97,8 +108,43 @@ public class AbyssalGuardianEntity extends HostileEntity {
         }
 
         // Ambient sculk particles
-        if (world.random.nextInt(4) == 0) {
+        if (world.random.nextInt(3) == 0) {
             world.spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY() + 0.5, this.getZ(), 2, 0.4, 0.4, 0.4, 0.02);
+        }
+
+        // Passive Sculk Regeneration (continuous healing in combat or ambient)
+        if (this.age % 20 == 0 && this.getHealth() < this.getMaxHealth()) {
+            float regen = isEnraged ? 6.0f : 3.0f;
+            this.heal(regen);
+            if (this.age % 40 == 0) {
+                world.spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY() + 1.0, this.getZ(), 3, 0.3, 0.3, 0.3, 0.03);
+            }
+        }
+
+        // Constant Status Buffs (Resistance & Strength, enhanced in Enrage)
+        if (this.age % 20 == 0) {
+            if (isEnraged) {
+                this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 1, false, false, true)); // Resistance II (-40% damage)
+                this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 40, 1, false, false, true));   // Strength II
+                this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, 1, false, false, true));      // Speed II
+            } else {
+                this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 0, false, false, true)); // Resistance I (-20% damage)
+                this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 40, 0, false, false, true));   // Strength I
+            }
+        }
+
+        // Enrage Trigger at 50% health
+        if (!isEnraged && this.getHealth() < this.getMaxHealth() * 0.5f) {
+            isEnraged = true;
+            world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_ANGRY, SoundCategory.HOSTILE, 2.5f, 0.7f);
+            world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_ROAR, SoundCategory.HOSTILE, 2.0f, 0.8f);
+            world.spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY() + 1.5, this.getZ(), 50, 0.8, 1.2, 0.8, 0.1);
+
+            Text enrageMsg = Text.literal("⚡ ¡El Guardián Abisal se enfurece! Ruge con furia sónica, aumentando su velocidad, resistencia y fuerza.")
+                    .formatted(Formatting.DARK_AQUA, Formatting.BOLD);
+            for (ServerPlayerEntity p : this.bossBar.getPlayers()) {
+                p.sendMessage(enrageMsg, false);
+            }
         }
 
         LivingEntity target = this.getTarget();
@@ -108,23 +154,86 @@ public class AbyssalGuardianEntity extends HostileEntity {
         if (target != null && target.isAlive()) {
             double distanceSq = this.squaredDistanceTo(target);
 
+            // 1. Sonic Shockwave Beam (Distance 5 - 22 blocks)
+            int effectiveSonicCd = isEnraged ? 60 : 120;
             if (sonicCooldown > 0) {
                 sonicCooldown--;
-            } else if (distanceSq > 16.0 && distanceSq < 400.0) { // between 4 and 20 blocks
+            } else if (distanceSq > 25.0 && distanceSq < 484.0) {
                 chargeTimer++;
                 if (chargeTimer == 1) {
-                    world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_SONIC_CHARGE, SoundCategory.HOSTILE, 1.5f, 1.0f);
-                } else if (chargeTimer >= 25) {
-                    // Fire Sonic Shockwave
+                    world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_SONIC_CHARGE, SoundCategory.HOSTILE, 1.6f, 1.0f);
+                } else if (chargeTimer >= (isEnraged ? 15 : 25)) {
                     fireSonicWave(world, target);
                     chargeTimer = 0;
-                    sonicCooldown = 120; // 6 seconds cooldown
+                    sonicCooldown = effectiveSonicCd;
                 }
             } else {
                 chargeTimer = 0;
             }
+
+            // 2. Abyssal Ground Slam (Close Range AOE within 7 blocks)
+            if (slamCooldown > 0) {
+                slamCooldown--;
+            } else if (distanceSq <= 49.0) {
+                executeGroundSlam(world);
+                slamCooldown = isEnraged ? 70 : 120; // 3.5s or 6s cooldown
+            }
+
+            // 3. Shadow Surge / Gap Closer (When target is far: 9 to 24 blocks)
+            if (dashCooldown > 0) {
+                dashCooldown--;
+            } else if (distanceSq > 81.0 && distanceSq < 576.0) {
+                executeShadowDash(world, target);
+                dashCooldown = isEnraged ? 60 : 100;
+            }
         } else {
             chargeTimer = 0;
+        }
+    }
+
+    private void executeGroundSlam(ServerWorld world) {
+        world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, SoundCategory.HOSTILE, 2.0f, 0.7f);
+        world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.HOSTILE, 1.4f, 1.2f);
+
+        // Ring of sculk soul particles
+        for (int angle = 0; angle < 360; angle += 15) {
+            double rad = Math.toRadians(angle);
+            double px = this.getX() + Math.cos(rad) * 5.0;
+            double pz = this.getZ() + Math.sin(rad) * 5.0;
+            world.spawnParticles(ParticleTypes.SCULK_SOUL, px, this.getY() + 0.3, pz, 3, 0.2, 0.3, 0.2, 0.04);
+            world.spawnParticles(ParticleTypes.SONIC_BOOM, px, this.getY() + 0.5, pz, 1, 0, 0, 0, 0);
+        }
+
+        Box aoe = this.getBoundingBox().expand(6.0, 3.0, 6.0);
+        List<LivingEntity> enemies = world.getEntitiesByClass(LivingEntity.class, aoe, e -> e != this && e.isAlive());
+        for (LivingEntity enemy : enemies) {
+            if (!(enemy instanceof AbyssalGuardianEntity)) {
+                enemy.damage(world, this.getDamageSources().magic(), 24.0f);
+                enemy.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 160, 0), this);
+                enemy.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2), this);
+                enemy.addVelocity(0.0, 0.65, 0.0);
+                enemy.velocityDirty = true;
+            }
+        }
+    }
+
+    private void executeShadowDash(ServerWorld world, LivingEntity target) {
+        Vec3d origin = this.getEyePos();
+        Vec3d targetPos = target.getEyePos();
+        Vec3d dir = targetPos.subtract(origin).normalize();
+
+        world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_ROAR, SoundCategory.HOSTILE, 1.8f, 1.1f);
+        this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, 2, false, false, true));
+
+        // Burst forward
+        this.setVelocity(dir.x * 1.4, 0.25, dir.z * 1.4);
+        this.velocityDirty = true;
+
+        for (int i = 0; i < 20; i++) {
+            world.spawnParticles(ParticleTypes.SCULK_SOUL, this.getX() + (world.random.nextDouble() - 0.5) * 1.5,
+                    this.getY() + world.random.nextDouble() * 2.0,
+                    this.getZ() + (world.random.nextDouble() - 0.5) * 1.5,
+                    1, 0, 0, 0, 0.05);
         }
     }
 
@@ -137,15 +246,15 @@ public class AbyssalGuardianEntity extends HostileEntity {
 
         // Particle beam
         double distance = origin.distanceTo(targetPos);
-        for (int i = 1; i <= Math.min((int) distance, 20); i++) {
+        for (int i = 1; i <= Math.min((int) distance, 24); i++) {
             Vec3d point = origin.add(direction.multiply(i));
             world.spawnParticles(ParticleTypes.SONIC_BOOM, point.x, point.y, point.z, 1, 0, 0, 0, 0);
         }
 
         // Deal damage and knockback
         DamageSource source = this.getDamageSources().magic();
-        target.damage(world, source, 32.0f);
-        target.addVelocity(direction.x * 1.5, 0.6, direction.z * 1.5);
+        target.damage(world, source, isEnraged ? 42.0f : 32.0f);
+        target.addVelocity(direction.x * 1.6, 0.65, direction.z * 1.6);
         target.velocityDirty = true;
     }
 

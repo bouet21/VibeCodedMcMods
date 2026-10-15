@@ -551,7 +551,7 @@ public class ChainOresGuideScreen extends Screen {
                             .append(Text.literal("Drop: Singularidad.").formatted(Formatting.GOLD)),
                     cx + 22, cy + 102, 0xFFFFFFFF, false);
 
-            context.drawText(this.textRenderer, "★ Pasa el ratón por los iconos para ver sus recetas e info.", cx, cy + 118, 0xFFAAAAAA, false);
+            context.drawText(this.textRenderer, "⚠ ¡CUIDADO! Poseen regeneración, resistencia, furia <50% y devoran almas.", cx, cy + 118, 0xFFFF7777, false);
 
             checkTooltip(context, eye, cx, cy + 14, mouseX, mouseY);
             checkTooltip(context, heart, cx, cy + 40, mouseX, mouseY);
