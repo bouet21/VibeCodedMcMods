@@ -70,21 +70,21 @@ public class ModWorkstations {
         CHAIN_FORGE_ITEM = Registry.register(
                 Registries.ITEM,
                 forgeItemKey,
-                new BlockItem(CHAIN_FORGE_BLOCK, new Item.Settings().registryKey(forgeItemKey))
+                new BlockItem(CHAIN_FORGE_BLOCK, new Item.Settings().registryKey(forgeItemKey).useBlockPrefixedTranslationKey())
         );
 
         RegistryKey<Item> anvilItemKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chain_anvil"));
         CHAIN_ANVIL_ITEM = Registry.register(
                 Registries.ITEM,
                 anvilItemKey,
-                new BlockItem(CHAIN_ANVIL_BLOCK, new Item.Settings().registryKey(anvilItemKey))
+                new BlockItem(CHAIN_ANVIL_BLOCK, new Item.Settings().registryKey(anvilItemKey).useBlockPrefixedTranslationKey())
         );
 
         RegistryKey<Item> smelterItemKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("cosmic_smelter"));
         COSMIC_SMELTER_ITEM = Registry.register(
                 Registries.ITEM,
                 smelterItemKey,
-                new BlockItem(COSMIC_SMELTER_BLOCK, new Item.Settings().registryKey(smelterItemKey))
+                new BlockItem(COSMIC_SMELTER_BLOCK, new Item.Settings().registryKey(smelterItemKey).useBlockPrefixedTranslationKey())
         );
 
         // C. Register Block Entities
