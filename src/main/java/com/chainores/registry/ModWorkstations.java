@@ -48,7 +48,7 @@ public class ModWorkstations {
         CHAIN_FORGE_BLOCK = Registry.register(
                 Registries.BLOCK,
                 forgeKey,
-                new ChainForgeBlock(AbstractBlock.Settings.copy(Blocks.BLAST_FURNACE).registryKey(forgeKey).requiresTool().strength(5.0f, 6.0f))
+                new ChainForgeBlock(AbstractBlock.Settings.copy(Blocks.IRON_BLOCK).registryKey(forgeKey).requiresTool().strength(5.0f, 6.0f))
         );
 
         RegistryKey<Block> anvilKey = RegistryKey.of(RegistryKeys.BLOCK, ChainOresMod.id("chain_anvil"));
