@@ -4,14 +4,18 @@ import com.chainores.block.ChainOreBlock;
 import com.chainores.ore.OreRegistryData;
 import com.chainores.ore.OreTier;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -28,26 +32,70 @@ public class ProspectorRodItem extends Item {
         super(settings);
     }
 
+    public static int getRadarMode(ItemStack stack) {
+        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
+        if (comp == null) return 0;
+        NbtCompound nbt = comp.copyNbt();
+        return nbt.contains("radar_mode") ? nbt.getInt("radar_mode").orElse(0) : 0;
+    }
+
+    public static void cycleRadarMode(ItemStack stack) {
+        int current = getRadarMode(stack);
+        int next = (current + 1) % 3;
+        NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> {
+            nbt.putInt("radar_mode", next);
+        });
+    }
+
+    public static String getModeName(int mode) {
+        return switch (mode) {
+            case 1 -> "VETA DE MAYOR TIER";
+            case 2 -> "SONAR GEOLÓGICO PROFUNDO";
+            default -> "PROXIMIDAD (MÁS CERCANA)";
+        };
+    }
+
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         super.appendTooltip(stack, context, displayComponent, textConsumer, type);
-        textConsumer.accept(Text.literal("✦ Radar de Prospección Subterránea ✦").formatted(Formatting.GOLD, Formatting.BOLD));
-        textConsumer.accept(Text.literal("Clic derecho: Escanea un radio de 24 bloques buscando vetas").formatted(Formatting.GRAY));
-        textConsumer.accept(Text.literal("Indica distancia, dirección cardinal y altura").formatted(Formatting.DARK_GRAY));
+        textConsumer.accept(Text.literal("✦ Radar de Prospección Subterránea Avanzado ✦").formatted(Formatting.GOLD, Formatting.BOLD));
+        textConsumer.accept(Text.literal("• Clic derecho: Escanea vetas en el área").formatted(Formatting.YELLOW));
+        textConsumer.accept(Text.literal("• Shift + Clic derecho: Cambiar modo de escáner").formatted(Formatting.AQUA));
+
+        int mode = getRadarMode(stack);
+        Formatting col = switch (mode) {
+            case 1 -> Formatting.LIGHT_PURPLE;
+            case 2 -> Formatting.GREEN;
+            default -> Formatting.AQUA;
+        };
+        textConsumer.accept(Text.literal("Modo actual: ").formatted(Formatting.GRAY)
+                .append(Text.literal("[" + getModeName(mode) + "]").formatted(col, Formatting.BOLD)));
     }
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
 
+        if (user.isSneaking()) {
+            cycleRadarMode(stack);
+            int newMode = getRadarMode(stack);
+            if (!world.isClient()) {
+                user.sendMessage(Text.literal("⚡ Radar sintonizado a: [" + getModeName(newMode) + "]").formatted(Formatting.GOLD, Formatting.BOLD), true);
+            }
+            user.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.8f, 1.4f);
+            return ActionResult.SUCCESS;
+        }
+
         if (!world.isClient() && user instanceof ServerPlayerEntity player) {
             ServerWorld serverWorld = (ServerWorld) world;
             BlockPos playerPos = player.getBlockPos();
-            int radius = 24;
 
-            BlockPos closestPos = null;
+            int mode = getRadarMode(stack);
+            int radius = (mode == 2) ? 48 : (mode == 1 ? 36 : 28);
+
+            BlockPos targetPos = null;
             double closestDistSq = Double.MAX_VALUE;
-            int foundTier = -1;
+            int bestTier = -1;
 
             // Search radius around player
             for (int dx = -radius; dx <= radius; dx++) {
@@ -60,28 +108,39 @@ public class ProspectorRodItem extends Item {
                         BlockState state = serverWorld.getBlockState(checkPos);
 
                         if (state.getBlock() instanceof ChainOreBlock oreBlock) {
-                            if (distSq < closestDistSq) {
-                                closestDistSq = distSq;
-                                closestPos = checkPos;
-                                foundTier = oreBlock.getTier();
+                            int t = oreBlock.getTier();
+                            if (mode == 1) {
+                                // Prioritize highest tier
+                                if (t > bestTier || (t == bestTier && distSq < closestDistSq)) {
+                                    bestTier = t;
+                                    closestDistSq = distSq;
+                                    targetPos = checkPos;
+                                }
+                            } else {
+                                // Prioritize closest distance
+                                if (distSq < closestDistSq) {
+                                    closestDistSq = distSq;
+                                    targetPos = checkPos;
+                                    bestTier = t;
+                                }
                             }
                         }
                     }
                 }
             }
 
-            if (closestPos != null && foundTier > 0) {
+            if (targetPos != null && bestTier > 0) {
                 int dist = (int) Math.sqrt(closestDistSq);
-                OreTier oreData = (foundTier <= OreRegistryData.TIERS.size()) ? OreRegistryData.TIERS.get(foundTier - 1) : null;
-                String oreName = oreData != null ? ("#" + foundTier + " " + oreData.esName) : ("Tier " + foundTier);
+                OreTier oreData = (bestTier <= OreRegistryData.TIERS.size()) ? OreRegistryData.TIERS.get(bestTier - 1) : null;
+                String oreName = oreData != null ? ("#" + bestTier + " " + oreData.esName) : ("Tier " + bestTier);
 
-                String directionStr = getCardinalDirection(playerPos, closestPos);
-                int yDiff = closestPos.getY() - playerPos.getY();
-                String heightStr = yDiff < 0 ? (Math.abs(yDiff) + " bloques abajo") : yDiff > 0 ? (yDiff + " bloques arriba") : "a tu misma altura";
+                String directionStr = getCardinalDirection(playerPos, targetPos);
+                int yDiff = targetPos.getY() - playerPos.getY();
+                String heightStr = yDiff < 0 ? (Math.abs(yDiff) + "m abajo") : yDiff > 0 ? (yDiff + "m arriba") : "misma altura";
 
                 // Action bar ping
                 player.sendMessage(
-                        Text.literal("✦ Veta detectada: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                        Text.literal("✦ Eco detectado: ").formatted(Formatting.GOLD, Formatting.BOLD)
                                 .append(Text.literal(oreName).formatted(Formatting.YELLOW, Formatting.BOLD))
                                 .append(Text.literal(" a " + dist + "m al " + directionStr + " (" + heightStr + ")").formatted(Formatting.AQUA)),
                         true
@@ -89,25 +148,25 @@ public class ProspectorRodItem extends Item {
 
                 // Closer = higher pitch sound
                 float pitch = Math.clamp(2.0f - ((float) dist / radius) * 1.2f, 0.8f, 2.0f);
-                player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), 0.9f, pitch);
+                player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), 1.0f, pitch);
 
                 // Particle trail pointing to the vein
                 Vec3d start = player.getEyePos();
-                Vec3d target = closestPos.toCenterPos();
+                Vec3d target = targetPos.toCenterPos();
                 Vec3d dir = target.subtract(start).normalize();
-                for (int i = 1; i <= 6; i++) {
-                    Vec3d p = start.add(dir.multiply(i * 0.7));
+                for (int i = 1; i <= 8; i++) {
+                    Vec3d p = start.add(dir.multiply(i * 0.8));
                     serverWorld.spawnParticles(ParticleTypes.WAX_ON, p.x, p.y, p.z, 2, 0.05, 0.05, 0.05, 0.01);
                 }
 
-                player.getItemCooldownManager().set(stack, 25);
+                player.getItemCooldownManager().set(stack, 20);
             } else {
                 player.sendMessage(
-                        Text.literal("✖ No se detectaron vetas de Chain Ores en un radio de 24 bloques.").formatted(Formatting.RED),
+                        Text.literal("✖ No se detectaron vetas en un radio de " + radius + " bloques.").formatted(Formatting.RED),
                         true
                 );
                 player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), 0.7f, 0.6f);
-                player.getItemCooldownManager().set(stack, 20);
+                player.getItemCooldownManager().set(stack, 15);
             }
         }
 

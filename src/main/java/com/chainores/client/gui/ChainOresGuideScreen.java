@@ -2,7 +2,11 @@ package com.chainores.client.gui;
 
 import com.chainores.ore.OreRegistryData;
 import com.chainores.ore.OreTier;
+import com.chainores.registry.ModBossItems;
+import com.chainores.registry.ModGear;
+import com.chainores.registry.ModGems;
 import com.chainores.registry.ModItems;
+import com.chainores.registry.ModWorkstations;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -10,11 +14,28 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChainOresGuideScreen extends Screen {
 
+    public enum Tab {
+        MINERALS("Minerales"),
+        ARSENAL("Arsenal"),
+        WORKSTATIONS("Estaciones"),
+        BOSSES("Jefes y Mundo"),
+        MODIFIERS("Gemas y Reforje");
+
+        public final String title;
+        Tab(String title) {
+            this.title = title;
+        }
+    }
+
+    private Tab currentTab = Tab.MINERALS;
     private int pageIndex = 0;
     private final int totalPages = OreRegistryData.TIERS.size();
+    private int subPage = 0; // for tabs with multiple pages
 
     public ChainOresGuideScreen() {
         this(0);
@@ -28,46 +49,85 @@ public class ChainOresGuideScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        int panelWidth = 330;
-        int panelHeight = 224;
+        int panelWidth = 340;
+        int panelHeight = 230;
         int x = (this.width - panelWidth) / 2;
         int y = (this.height - panelHeight) / 2;
 
         this.clearChildren();
 
-        // Prev & Next Buttons
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("< Anterior"), button -> {
-            if (pageIndex > 0) {
-                pageIndex--;
+        // 1. Navigation Tab Buttons at the very top
+        int tabW = 60;
+        int tabSpacing = 4;
+        int tabStartX = x + 10;
+        Tab[] tabs = Tab.values();
+        for (int i = 0; i < tabs.length; i++) {
+            Tab t = tabs[i];
+            boolean active = (t == currentTab);
+            Text label = Text.literal((active ? "▶ " : "") + t.title)
+                    .formatted(active ? Formatting.GOLD : Formatting.GRAY, active ? Formatting.BOLD : Formatting.RESET);
+
+            this.addDrawableChild(ButtonWidget.builder(label, button -> {
+                this.currentTab = t;
+                this.subPage = 0;
                 playPageTurnSound();
                 init();
-            }
-        }).dimensions(x + 10, y + panelHeight - 24, 75, 18).build());
-
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("Siguiente >"), button -> {
-            if (pageIndex < totalPages - 1) {
-                pageIndex++;
-                playPageTurnSound();
-                init();
-            }
-        }).dimensions(x + panelWidth - 85, y + panelHeight - 24, 75, 18).build());
-
-        // Quick Stage Jump Buttons
-        int jumpY = y + panelHeight - 44;
-        addStageJumpButton(x + 10, jumpY, 30, "T1", 0);
-        addStageJumpButton(x + 43, jumpY, 30, "T11", 10);
-        addStageJumpButton(x + 76, jumpY, 30, "T21", 20);
-        addStageJumpButton(x + 109, jumpY, 30, "T31", 30);
-        addStageJumpButton(x + 142, jumpY, 30, "T41", 40);
-        addStageJumpButton(x + 175, jumpY, 30, "T61", 60);
-        addStageJumpButton(x + 208, jumpY, 30, "T71", 70);
-        addStageJumpButton(x + 241, jumpY, 30, "T91", 90);
-        addStageJumpButton(x + 274, jumpY, 30, "T106", 105);
-        addStageJumpButton(x + 307, jumpY, 23, "T136", 135);
+            }).dimensions(tabStartX + i * (tabW + tabSpacing), y + 6, tabW, 16).build());
+        }
 
         // Close Button
         this.addDrawableChild(ButtonWidget.builder(Text.literal("✕"), button -> this.close())
-                .dimensions(x + panelWidth - 22, y + 4, 18, 16).build());
+                .dimensions(x + panelWidth - 22, y + 6, 16, 16).build());
+
+        // Tab-specific controls
+        if (currentTab == Tab.MINERALS) {
+            // Prev & Next Buttons
+            this.addDrawableChild(ButtonWidget.builder(Text.literal("< Anterior"), button -> {
+                if (pageIndex > 0) {
+                    pageIndex--;
+                    playPageTurnSound();
+                    init();
+                }
+            }).dimensions(x + 10, y + panelHeight - 22, 75, 16).build());
+
+            this.addDrawableChild(ButtonWidget.builder(Text.literal("Siguiente >"), button -> {
+                if (pageIndex < totalPages - 1) {
+                    pageIndex++;
+                    playPageTurnSound();
+                    init();
+                }
+            }).dimensions(x + panelWidth - 85, y + panelHeight - 22, 75, 16).build());
+
+            // Quick Stage Jump Buttons
+            int jumpY = y + panelHeight - 40;
+            addStageJumpButton(x + 10, jumpY, 28, "T1", 0);
+            addStageJumpButton(x + 40, jumpY, 28, "T11", 10);
+            addStageJumpButton(x + 70, jumpY, 28, "T21", 20);
+            addStageJumpButton(x + 100, jumpY, 28, "T31", 30);
+            addStageJumpButton(x + 130, jumpY, 28, "T41", 40);
+            addStageJumpButton(x + 160, jumpY, 28, "T61", 60);
+            addStageJumpButton(x + 190, jumpY, 28, "T71", 70);
+            addStageJumpButton(x + 220, jumpY, 28, "T91", 90);
+            addStageJumpButton(x + 250, jumpY, 34, "T106", 105);
+            addStageJumpButton(x + 286, jumpY, 34, "T136", 135);
+        } else if (currentTab == Tab.ARSENAL || currentTab == Tab.BOSSES) {
+            // Sub-page controls for content-rich tabs
+            this.addDrawableChild(ButtonWidget.builder(Text.literal("< Pág Ant."), button -> {
+                if (subPage > 0) {
+                    subPage--;
+                    playPageTurnSound();
+                    init();
+                }
+            }).dimensions(x + 10, y + panelHeight - 22, 75, 16).build());
+
+            this.addDrawableChild(ButtonWidget.builder(Text.literal("Pág Sig. >"), button -> {
+                if (subPage < 1) {
+                    subPage++;
+                    playPageTurnSound();
+                    init();
+                }
+            }).dimensions(x + panelWidth - 85, y + panelHeight - 22, 75, 16).build());
+        }
     }
 
     private void addStageJumpButton(int bx, int by, int bw, String label, int targetIndex) {
@@ -75,7 +135,7 @@ public class ChainOresGuideScreen extends Screen {
             this.pageIndex = targetIndex;
             playPageTurnSound();
             init();
-        }).dimensions(bx, by, bw, 16).build());
+        }).dimensions(bx, by, bw, 15).build());
     }
 
     private void playPageTurnSound() {
@@ -87,78 +147,79 @@ public class ChainOresGuideScreen extends Screen {
     private void drawCustomBorder(DrawContext context, int x, int y, int w, int h, int color) {
         context.fill(x, y, x + w, y + 1, color);
         context.fill(x, y + h - 1, x + w, y + h, color);
-        context.fill(x, y, x + 1, y + h, color);
-        context.fill(x + w - 1, y, x + w, y + h, color);
+        context.fill(x, y + 1, x + 1, y + h - 1, color);
+        context.fill(x + w - 1, y + 1, x + w, y + h - 1, color);
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        int panelWidth = 330;
-        int panelHeight = 224;
+        int panelWidth = 340;
+        int panelHeight = 230;
         int x = (this.width - panelWidth) / 2;
         int y = (this.height - panelHeight) / 2;
 
-        OreTier ore = OreRegistryData.TIERS.get(pageIndex);
-
-        // 1. Outer Box & Background
-        context.fill(x, y, x + panelWidth, y + panelHeight, 0xF21C1815);
-        // Outer Gold Border
+        // Outer Box & Background
+        context.fill(x, y, x + panelWidth, y + panelHeight, 0xF4181410);
         drawCustomBorder(context, x, y, panelWidth, panelHeight, 0xFFD4AF37);
         drawCustomBorder(context, x + 1, y + 1, panelWidth - 2, panelHeight - 2, 0xFF5C4718);
 
-        // Header Background
-        context.fill(x + 2, y + 2, x + panelWidth - 2, y + 22, 0xFF2A221A);
-        context.drawText(this.textRenderer, Text.literal("✦ CÓDICE DE MINERALES EN CADENA ✦").formatted(Formatting.GOLD, Formatting.BOLD),
-                x + 10, y + 7, 0xFFE6C65A, false);
+        // Content Area Background
+        int contentY = y + 26;
+        int contentH = panelHeight - 54;
+        context.fill(x + 6, contentY, x + panelWidth - 6, contentY + contentH, 0x88000000);
+        drawCustomBorder(context, x + 6, contentY, panelWidth - 12, contentH, 0xFF4A3E31);
 
+        switch (currentTab) {
+            case MINERALS -> renderMineralsTab(context, x, y, mouseX, mouseY);
+            case ARSENAL -> renderArsenalTab(context, x, y, mouseX, mouseY);
+            case WORKSTATIONS -> renderWorkstationsTab(context, x, y, mouseX, mouseY);
+            case BOSSES -> renderBossesTab(context, x, y, mouseX, mouseY);
+            case MODIFIERS -> renderModifiersTab(context, x, y, mouseX, mouseY);
+        }
+    }
+
+    private void renderMineralsTab(DrawContext context, int x, int y, int mouseX, int mouseY) {
+        OreTier ore = OreRegistryData.TIERS.get(pageIndex);
+
+        // Subheader Info
         String pageNumText = "Tier " + (pageIndex + 1) + " / " + totalPages;
         context.drawText(this.textRenderer, Text.literal(pageNumText).formatted(Formatting.YELLOW),
-                x + panelWidth - 95, y + 7, 0xFFFFF1A8, false);
+                x + 340 - 90, y + 30, 0xFFFFF1A8, false);
 
-        // 2. Left Column: Visual Showcase (Icons / Pictures)
-        int leftW = 105;
-        context.fill(x + 8, y + 26, x + 8 + leftW, y + 176, 0x80000000);
-        drawCustomBorder(context, x + 8, y + 26, leftW, 150, 0xFF544436);
+        // 1. Left Showcase: Ore, Raw, Ingot, Block
+        int leftW = 100;
+        int leftX = x + 10;
+        int topY = y + 28;
 
         context.drawText(this.textRenderer, Text.literal("MUESTRAS:").formatted(Formatting.AQUA, Formatting.BOLD),
-                x + 14, y + 32, 0xFF55FFFF, false);
+                leftX + 4, topY + 4, 0xFF55FFFF, false);
 
-        // Item 1: Ore Block
         ItemStack oreStack = new ItemStack(ore.oreBlockItem);
-        context.drawItem(oreStack, x + 14, y + 46);
-        context.drawText(this.textRenderer, "Mineral", x + 36, y + 50, 0xFFFFFFFF, false);
+        context.drawItem(oreStack, leftX + 4, topY + 16);
+        context.drawText(this.textRenderer, "Mineral", leftX + 24, topY + 20, 0xFFFFFFFF, false);
 
-        // Item 2: Raw Material
         ItemStack rawStack = new ItemStack(ore.rawItem);
-        context.drawItem(rawStack, x + 14, y + 78);
-        context.drawText(this.textRenderer, "Crudo", x + 36, y + 82, 0xFFE0E0E0, false);
+        context.drawItem(rawStack, leftX + 4, topY + 42);
+        context.drawText(this.textRenderer, "Crudo", leftX + 24, topY + 46, 0xFFE0E0E0, false);
 
-        // Item 3: Refined Ingot
         ItemStack ingotStack = new ItemStack(ore.ingotItem);
-        context.drawItem(ingotStack, x + 14, y + 110);
-        context.drawText(this.textRenderer, "Lingote", x + 36, y + 114, 0xFFFFD700, false);
+        context.drawItem(ingotStack, leftX + 4, topY + 68);
+        context.drawText(this.textRenderer, "Lingote", leftX + 24, topY + 72, 0xFFFFD700, false);
 
-        // Item 4: Storage Block
         ItemStack storageStack = new ItemStack(ore.storageBlockItem);
-        context.drawItem(storageStack, x + 14, y + 142);
-        context.drawText(this.textRenderer, "Bloque", x + 36, y + 146, 0xFFAAAAAA, false);
+        context.drawItem(storageStack, leftX + 4, topY + 94);
+        context.drawText(this.textRenderer, "Bloque", leftX + 24, topY + 98, 0xFFAAAAAA, false);
 
-        // 3. Right Column: Location & Crafting Information
-        int rightX = x + 118;
-        int rightW = panelWidth - 126;
-        context.fill(rightX, y + 26, rightX + rightW, y + 176, 0x80000000);
-        drawCustomBorder(context, rightX, y + 26, rightW, 150, 0xFF544436);
+        // 2. Right Column: Detailed Location and Crafting Info
+        int rightX = x + 115;
+        int rightW = 215;
 
-        // Title of Ore
         String oreTitle = "#" + ore.tier + " " + ore.esName;
         context.drawText(this.textRenderer, Text.literal(oreTitle).formatted(Formatting.GOLD, Formatting.BOLD),
-                rightX + 6, y + 32, 0xFFFFCC00, false);
-        context.drawText(this.textRenderer, Text.literal("(" + ore.enName + ")").formatted(Formatting.DARK_GRAY),
-                rightX + 6 + this.textRenderer.getWidth(oreTitle) + 6, y + 32, 0xFFAAAAAA, false);
+                rightX, topY + 4, 0xFFFFCC00, false);
 
-        // Dimension
         String dimName = switch (ore.dimension) {
             case OVERWORLD -> "Overworld";
             case NETHER -> "El Nether";
@@ -169,73 +230,181 @@ public class ChainOresGuideScreen extends Screen {
             case NETHER -> 0xFFFF5555;
             case END -> 0xFFFF55FF;
         };
-        context.drawText(this.textRenderer, "Dimensión: ", rightX + 6, y + 46, 0xFFCCCCCC, false);
-        context.drawText(this.textRenderer, dimName, rightX + 66, y + 46, dimColor, false);
+        context.drawText(this.textRenderer, "Dimensión: " + dimName, rightX, topY + 18, dimColor, false);
+        context.drawText(this.textRenderer, "Biomas: " + getBiomeDescription(ore.biomeGroup), rightX, topY + 30, 0xFFFFFF88, false);
+        context.drawText(this.textRenderer, "Y: " + ore.minY + " a " + ore.maxY + " (Veta: " + ore.veinSize + ")", rightX, topY + 42, 0xFFE0E0E0, false);
+        context.drawText(this.textRenderer, "Pico mín.: " + getToolDescription(ore.harvestLevel), rightX, topY + 54, 0xFF55FFFF, false);
 
-        // Biomes
-        context.drawText(this.textRenderer, "Biomas:", rightX + 6, y + 58, 0xFFCCCCCC, false);
-        String biomeDesc = getBiomeDescription(ore.biomeGroup);
-        context.drawText(this.textRenderer, biomeDesc, rightX + 48, y + 58, 0xFFFFFF88, false);
-
-        // Heights & Tool
-        context.drawText(this.textRenderer, "Altura: ", rightX + 6, y + 70, 0xFFCCCCCC, false);
-        context.drawText(this.textRenderer, "Y: " + ore.minY + " a " + ore.maxY + " (Veta: " + ore.veinSize + ")",
-                rightX + 50, y + 70, 0xFFE0E0E0, false);
-
-        context.drawText(this.textRenderer, "Pico mín.: ", rightX + 6, y + 82, 0xFFCCCCCC, false);
-        context.drawText(this.textRenderer, getToolDescription(ore.harvestLevel), rightX + 60, y + 82, 0xFF55FFFF, false);
-
-        // 4. Smithing Upgrade Section
-        drawCustomBorder(context, rightX + 4, y + 96, rightW - 8, 48, 0xFF665544);
-        context.drawText(this.textRenderer, Text.literal("Receta en Mesa de Herrería:").formatted(Formatting.LIGHT_PURPLE),
-                rightX + 8, y + 100, 0xFFFF77FF, false);
+        // Smithing Upgrade Recipe Box
+        int recBoxY = topY + 68;
+        drawCustomBorder(context, rightX, recBoxY, rightW, 44, 0xFF5A4938);
+        context.drawText(this.textRenderer, Text.literal("Receta en Mesa de Herrería / Forja:").formatted(Formatting.LIGHT_PURPLE),
+                rightX + 4, recBoxY + 3, 0xFFFF77FF, false);
 
         ItemStack templateStack = new ItemStack(ModItems.CHAIN_SMITHING_TEMPLATE);
         ItemStack prevStack = (ore.tier == 1)
                 ? new ItemStack(Items.COPPER_INGOT)
                 : new ItemStack(OreRegistryData.TIERS.get(ore.tier - 2).ingotItem);
 
-        int recY = y + 116;
-        context.drawItem(templateStack, rightX + 12, recY);
-        context.drawText(this.textRenderer, "+", rightX + 34, recY + 4, 0xFFFFFFFF, false);
+        int recItemY = recBoxY + 18;
+        context.drawItem(templateStack, rightX + 6, recItemY);
+        context.drawText(this.textRenderer, "+", rightX + 26, recItemY + 4, 0xFFFFFFFF, false);
+        context.drawItem(prevStack, rightX + 34, recItemY);
+        context.drawText(this.textRenderer, "+", rightX + 54, recItemY + 4, 0xFFFFFFFF, false);
+        context.drawItem(rawStack, rightX + 62, recItemY);
+        context.drawText(this.textRenderer, "➔", rightX + 82, recItemY + 4, 0xFF55FF55, false);
+        context.drawItem(ingotStack, rightX + 96, recItemY);
+        context.drawText(this.textRenderer, "Lingote T" + ore.tier, rightX + 116, recItemY + 4, 0xFFFFD700, false);
 
-        context.drawItem(prevStack, rightX + 44, recY);
-        context.drawText(this.textRenderer, "+", rightX + 66, recY + 4, 0xFFFFFFFF, false);
+        // Check Tooltips
+        checkTooltip(context, oreStack, leftX + 4, topY + 16, mouseX, mouseY);
+        checkTooltip(context, rawStack, leftX + 4, topY + 42, mouseX, mouseY);
+        checkTooltip(context, ingotStack, leftX + 4, topY + 68, mouseX, mouseY);
+        checkTooltip(context, storageStack, leftX + 4, topY + 94, mouseX, mouseY);
+        checkTooltip(context, templateStack, rightX + 6, recItemY, mouseX, mouseY);
+        checkTooltip(context, prevStack, rightX + 34, recItemY, mouseX, mouseY);
+        checkTooltip(context, ingotStack, rightX + 96, recItemY, mouseX, mouseY);
+    }
 
-        context.drawItem(rawStack, rightX + 76, recY);
-        context.drawText(this.textRenderer, "➔", rightX + 98, recY + 4, 0xFF55FF55, false);
+    private void renderArsenalTab(DrawContext context, int x, int y, int mouseX, int mouseY) {
+        int cx = x + 14;
+        int cy = y + 32;
 
-        context.drawItem(ingotStack, rightX + 114, recY);
+        if (subPage == 0) {
+            context.drawText(this.textRenderer, Text.literal("✦ ARSENAL COMPLETO Y ARMAS ESPECIALES ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+                    cx, cy, 0xFFFFD700, false);
 
-        context.drawText(this.textRenderer, "Lingote T" + ore.tier, rightX + 136, recY + 4, 0xFFFFD700, false);
+            context.drawText(this.textRenderer, "• Hachas de Tala (TreeCapitator):", cx, cy + 14, 0xFF55FF55, false);
+            context.drawText(this.textRenderer, "  Talan bosques completos al agacharse (hasta 256 bloques en T150).", cx, cy + 24, 0xFFE0E0E0, false);
 
-        // 5. Gear Milestone Showcase (if available for this tier)
-        com.chainores.registry.ModGear.GearSet gear = com.chainores.registry.ModGear.GEAR_SETS.stream()
-                .filter(g -> g.tierData.tier() == ore.tier).findFirst().orElse(null);
-        if (gear != null) {
-            ItemStack swordStack = new ItemStack(gear.sword);
-            ItemStack pickStack = new ItemStack(gear.pickaxe);
-            ItemStack chestStack = new ItemStack(gear.chestplate);
-            int gearY = y + 150;
-            context.drawItem(swordStack, rightX + 6, gearY);
-            context.drawItem(pickStack, rightX + 24, gearY);
-            context.drawItem(chestStack, rightX + 42, gearY);
-            context.drawText(this.textRenderer, Text.literal("⚔ Set Habilidades").formatted(Formatting.GOLD), rightX + 62, gearY + 4, 0xFFFFDD55, false);
-            checkTooltip(context, swordStack, rightX + 6, gearY, mouseX, mouseY);
-            checkTooltip(context, pickStack, rightX + 24, gearY, mouseX, mouseY);
-            checkTooltip(context, chestStack, rightX + 42, gearY, mouseX, mouseY);
+            context.drawText(this.textRenderer, "• Palas de Excavación 3x3 y Azadas de Cultivo 9x9:", cx, cy + 38, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, "  Nivelan áreas instantáneamente y aran/hidratan campos masivos.", cx, cy + 48, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "• Arco del Aliento de Dragón (T115):", cx, cy + 62, 0xFFFF55FF, false);
+            context.drawText(this.textRenderer, "  Flechas explosivas teledirigidas con fuego cósmico persistente.", cx, cy + 72, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "• Ballesta Galáctica (T125) y Escudo Égida (T100):", cx, cy + 86, 0xFFFFAA00, false);
+            context.drawText(this.textRenderer, "  Multidisparo estelar quíntuple y bloqueo con aturdimiento.", cx, cy + 96, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "★ HERRAMIENTA UNIVERSAL DE LOS DIOSES (T150):", cx, cy + 112, 0xFFFFD700, false);
+            context.drawText(this.textRenderer, "  Combina pico 5x5, hacha, pala y azada. 120 daño sagrado y rayo.", cx, cy + 122, 0xFFFFFF55, false);
+
+            // Icon Showcase
+            context.drawItem(new ItemStack(ModGear.DRAGON_BOW), cx + 240, cy + 58);
+            context.drawItem(new ItemStack(ModGear.GALACTIC_CROSSBOW), cx + 260, cy + 58);
+            context.drawItem(new ItemStack(ModGear.AEGIS_SHIELD), cx + 280, cy + 58);
+            context.drawItem(new ItemStack(ModGear.GOD_OMNITOOL), cx + 300, cy + 58);
+        } else {
+            context.drawText(this.textRenderer, Text.literal("✦ SISTEMA DE SETS DE ARMADURA Y DASH ✦").formatted(Formatting.AQUA, Formatting.BOLD),
+                    cx, cy, 0xFF55FFFF, false);
+
+            context.drawText(this.textRenderer, "• Bonus Parcial (2/4 Piezas):", cx, cy + 14, 0xFF55FF55, false);
+            context.drawText(this.textRenderer, "  Otorga movilidad, prisa, visión nocturna y resistencia basal.", cx, cy + 24, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "• Bonus Parcial (3/4 Piezas):", cx, cy + 40, 0xFFFFAA00, false);
+            context.drawText(this.textRenderer, "  Inmunidad a daño de caída, fuego, purga de venenos y suerte.", cx, cy + 50, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "★ Set Completo (4/4 Piezas):", cx, cy + 68, 0xFFFFD700, false);
+            context.drawText(this.textRenderer, "  Habilidad suprema: Manto del Warden (T70), Rescate del Vacío (T135),", cx, cy + 78, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "  y Ascensión Divina (T150) con corazones masivos y omnipotencia.", cx, cy + 88, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "⚡ Habilidad Activa Universal (Dash Impulso):", cx, cy + 104, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, "  Esprintar + Agacharse ejecuta un impulso sónico en el aire (CD: 4s).", cx, cy + 114, 0xFFFFF1A8, false);
         }
+    }
 
-        // Tooltip hover rendering
-        checkTooltip(context, oreStack, x + 14, y + 46, mouseX, mouseY);
-        checkTooltip(context, rawStack, x + 14, y + 78, mouseX, mouseY);
-        checkTooltip(context, ingotStack, x + 14, y + 110, mouseX, mouseY);
-        checkTooltip(context, storageStack, x + 14, y + 142, mouseX, mouseY);
+    private void renderWorkstationsTab(DrawContext context, int x, int y, int mouseX, int mouseY) {
+        int cx = x + 14;
+        int cy = y + 32;
 
-        checkTooltip(context, templateStack, rightX + 12, recY, mouseX, mouseY);
-        checkTooltip(context, prevStack, rightX + 44, recY, mouseX, mouseY);
-        checkTooltip(context, rawStack, rightX + 76, recY, mouseX, mouseY);
-        checkTooltip(context, ingotStack, rightX + 114, recY, mouseX, mouseY);
+        context.drawText(this.textRenderer, Text.literal("✦ ESTACIONES DE TRABAJO ESPECIALIZADAS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+                cx, cy, 0xFFFFD700, false);
+
+        // Workstation 1: Chain Forge
+        context.drawItem(new ItemStack(ModWorkstations.CHAIN_FORGE_ITEM), cx, cy + 14);
+        context.drawText(this.textRenderer, "Forja en Cadena (Chain Forge):", cx + 22, cy + 14, 0xFFFFCC00, false);
+        context.drawText(this.textRenderer, "Mesa de forja con interfaz GUI y combustible de calor.", cx + 22, cy + 24, 0xFFE0E0E0, false);
+        context.drawText(this.textRenderer, "Mejora equipamiento nivel a nivel y requiere Catalizadores de Jefes.", cx + 22, cy + 34, 0xFFAAAAAA, false);
+
+        // Workstation 2: Indestructible Anvil
+        context.drawItem(new ItemStack(ModWorkstations.CHAIN_ANVIL_ITEM), cx, cy + 50);
+        context.drawText(this.textRenderer, "Yunque en Cadena (Indestructible):", cx + 22, cy + 50, 0xFF55FF55, false);
+        context.drawText(this.textRenderer, "¡Nunca se rompe! Repara ítems al 100% sin penalización de XP.", cx + 22, cy + 60, 0xFFE0E0E0, false);
+        context.drawText(this.textRenderer, "Templado (+50 durabilidad), engarce de gemas y reforjado.", cx + 22, cy + 70, 0xFFAAAAAA, false);
+
+        // Workstation 3: Cosmic Smelter
+        context.drawItem(new ItemStack(ModWorkstations.COSMIC_SMELTER_ITEM), cx, cy + 86);
+        context.drawText(this.textRenderer, "Fundidor Cósmico (Cosmic Smelter):", cx + 22, cy + 86, 0xFFFF55FF, false);
+        context.drawText(this.textRenderer, "Cuadruplica (x4) los lingotes producidos por cada mineral crudo.", cx + 22, cy + 96, 0xFFE0E0E0, false);
+        context.drawText(this.textRenderer, "35% de probabilidad de transmutar al tier inmediatamente superior.", cx + 22, cy + 106, 0xFFFFFF55, false);
+    }
+
+    private void renderBossesTab(DrawContext context, int x, int y, int mouseX, int mouseY) {
+        int cx = x + 14;
+        int cy = y + 32;
+
+        if (subPage == 0) {
+            context.drawText(this.textRenderer, Text.literal("✦ JEFES SUPREMOS DE DIMENSIÓN ✦").formatted(Formatting.RED, Formatting.BOLD),
+                    cx, cy, 0xFFFF5555, false);
+
+            context.drawItem(new ItemStack(ModBossItems.ABYSSAL_EYE), cx, cy + 14);
+            context.drawText(this.textRenderer, "1. Guardián del Abismo (Tier 70 - Deep Dark):", cx + 22, cy + 14, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, "Invócalo con el Ojo del Abismo. Dropea el Catalizador del Abismo.", cx + 22, cy + 24, 0xFFE0E0E0, false);
+
+            context.drawItem(new ItemStack(ModBossItems.FLAME_HEART), cx, cy + 42);
+            context.drawText(this.textRenderer, "2. Behemoth del Nether (Tier 105 - Nether):", cx + 22, cy + 42, 0xFFFF5555, false);
+            context.drawText(this.textRenderer, "Invócalo con el Corazón Ígneo. Dropea el Núcleo del Nether.", cx + 22, cy + 52, 0xFFE0E0E0, false);
+
+            context.drawItem(new ItemStack(ModBossItems.VOID_BEACON), cx, cy + 70);
+            context.drawText(this.textRenderer, "3. Coloso del Vacío (Tier 135 - The End):", cx + 22, cy + 70, 0xFFFF55FF, false);
+            context.drawText(this.textRenderer, "Invócalo con la Baliza del Vacío. Dropea el Fragmento del Vacío.", cx + 22, cy + 80, 0xFFE0E0E0, false);
+
+            context.drawItem(new ItemStack(ModBossItems.COSMIC_ALTAR_CORE), cx, cy + 98);
+            context.drawText(this.textRenderer, "4. Soberano Cósmico (Tier 150 - Dimensión Cósmica):", cx + 22, cy + 98, 0xFFFFD700, false);
+            context.drawText(this.textRenderer, "Jefe final invocado con el Altar Cósmico. Dropea la Singularidad.", cx + 22, cy + 108, 0xFFFFF1A8, false);
+        } else {
+            context.drawText(this.textRenderer, Text.literal("✦ ESTRUCTURAS EN EL MUNDO ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+                    cx, cy, 0xFFFFD700, false);
+
+            context.drawText(this.textRenderer, "• Forjas Abandonadas (Overworld):", cx, cy + 16, 0xFF55FF55, false);
+            context.drawText(this.textRenderer, "  Ruinas subterráneas con Yunque en Cadena y plantillas de herrería.", cx, cy + 26, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "• Cámaras Selladas de Netherita (Nether):", cx, cy + 46, 0xFFFF5555, false);
+            context.drawText(this.textRenderer, "  Fortalezas protegidas por lava con minerales de tier Nether.", cx, cy + 56, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "• Templos Cósmicos (The End):", cx, cy + 76, 0xFFFF55FF, false);
+            context.drawText(this.textRenderer, "  Torres flotantes con cofres de lingotes cósmicos y altares arcanos.", cx, cy + 86, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "ℹ Estas estructuras contienen cofres con loot exclusivo de progresión.", cx, cy + 110, 0xFFFFAA00, false);
+        }
+    }
+
+    private void renderModifiersTab(DrawContext context, int x, int y, int mouseX, int mouseY) {
+        int cx = x + 14;
+        int cy = y + 32;
+
+        context.drawText(this.textRenderer, Text.literal("✦ GEMAS, REFORJADO Y ENCANTAMIENTOS ✦").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD),
+                cx, cy, 0xFFFF77FF, false);
+
+        // 4 Gems
+        context.drawItem(new ItemStack(ModGems.BLOOD_GEM), cx, cy + 14);
+        context.drawText(this.textRenderer, "Gema de Sangre: Robo de Vida (+2.5♥) y Regeneración pasiva.", cx + 20, cy + 18, 0xFFFF5555, false);
+
+        context.drawItem(new ItemStack(ModGems.VOID_GEM), cx, cy + 34);
+        context.drawText(this.textRenderer, "Gema del Vacío: Levitación enemiga y Antigravedad al caer.", cx + 20, cy + 38, 0xFFFF55FF, false);
+
+        context.drawItem(new ItemStack(ModGems.CORE_GEM), cx, cy + 54);
+        context.drawText(this.textRenderer, "Gema del Núcleo: +35% Prisa minera extrema y Velocidad I.", cx + 20, cy + 58, 0xFFFFAA00, false);
+
+        context.drawItem(new ItemStack(ModGems.GENESIS_GEM), cx, cy + 74);
+        context.drawText(this.textRenderer, "Gema del Génesis: Rayo celestial, escudo de Absorción y +50% poder.", cx + 20, cy + 78, 0xFF55FFFF, false);
+
+        // Reforge Prefixes info
+        context.drawText(this.textRenderer, "⚡ Prefijos en Yunque (con Amatista):", cx, cy + 98, 0xFFFFD700, false);
+        context.drawText(this.textRenderer, "[DIVINO] (+50%), [LEGENDARIO] (+25%), [FEROZ], [VELOZ], [TITÁNICO].", cx, cy + 108, 0xFFFFF1A8, false);
+
+        // Enchantments
+        context.drawText(this.textRenderer, "✦ Encantamientos: Desintegración en Cadena, Drenaje del Vacío, Radiancia.", cx, cy + 122, 0xFF88FF88, false);
     }
 
     private void checkTooltip(DrawContext context, ItemStack stack, int itemX, int itemY, int mouseX, int mouseY) {

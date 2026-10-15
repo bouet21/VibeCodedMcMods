@@ -1,149 +1,230 @@
-# ⛏️ Chain Ores (Minerales en Cadena)
+# ⛏️ Chain Ores: Enhanced Edition (Minerales en Cadena)
 
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.1%20%2F%201.21.11-brightgreen.svg?logo=minecraft)](https://fabricmc.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.2%20%2F%201.21.11-brightgreen.svg?logo=minecraft)](https://fabricmc.net/)
 [![Fabric Loader](https://img.shields.io/badge/Fabric-0.16%2B-blue.svg)](https://fabricmc.net/)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg?logo=openjdk)](https://adoptium.net/)
+[![GitHub Branch](https://img.shields.io/badge/Branch-extendido-purple.svg?logo=github)](https://github.com/bouet21/VibeCodedMcMods/tree/extendido)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Un mod de progresión profunda y titánica para **Minecraft Fabric 1.21.x** que introduce una cadena evolutiva de **150 minerales consecutivos**, herramientas, armas legendarias, y sets de armadura 3D completos con mecánicas y perks únicos.
+Un mod masivo de progresión y aventura épica para **Minecraft Fabric 1.21.x** que transforma la minería y el equipamiento en una odisea de **150 minerales consecutivos**, jefes dimensionales, estaciones de trabajo especializadas, gemas engarzables, reforjado con prefijos y un arsenal legendario con habilidades activas y pasivas.
 
-Inspirado en la transición de diamante a netherita, pero llevado a un viaje masivo que cruza el **Overworld**, el **Nether**, el **End** y los **Picos Cósmicos**.
-
----
-
-## 🌟 Características Destacadas
-
-### 🌋 150 Minerales Interconectados
-- Cada mineral requiere el anterior para ser refinado o forjado (con lingotes, formas crudas, bloques decorativos y generación en el mundo).
-- **Progresión por Dimensiones:**
-  - 🌲 **Overworld (Tiers 1 - 70):** Desde *Cobreprita*, *Invar*, *Cero Absoluto*, *Solarita*, *Clorofita*, *Runita*, *Mineral del Núcleo* hasta *Sculk Primordial*.
-  - 🔥 **Nether (Tiers 71 - 105):** Desde *Bismuto del Nether*, *Núcleo Infernal*, *Gema del Purgatorio* hasta *Corazón del Nether*.
-  - 🌌 **The End (Tiers 106 - 135):** Desde *Enderio*, *Aliento de Dragón*, *Galactita* hasta *Fragmento Infinito*.
-  - ✨ **Trascendencia Cósmica (Tiers 136 - 150):** Desde *Singularidad*, *Génesis* hasta el legendario *Metal de los Dioses (Infinitum)*.
-- **Generación natural según biomas:** Llanuras, cumbres nevadas, desiertos, selvas tropicales, cavernas de pizarra profunda, el Deep Dark, valles de almas, deltas de basalto e islas exteriores del vacío.
+> 🌐 **Repositorio Oficial de GitHub:** [bouet21/VibeCodedMcMods](https://github.com/bouet21/VibeCodedMcMods)  
+> 🌿 **Rama Activa de Desarrollo (Enhanced Edition):** [`extendido`](https://github.com/bouet21/VibeCodedMcMods/tree/extendido)  
+> 📌 *Nota:* La rama `main` contiene la versión base, mientras que la rama `extendido` incorpora las 5 Fases completas de expansión.
 
 ---
 
-### 🛡️ 16 Sets de Armadura Completos (Efecto de Set 4/4)
-Cada conjunto cuenta con modelado y textura en 3D para tercera persona (sistema nativo de *Equipment Assets* de Minecraft 1.21) y otorga una habilidad temática exclusiva cuando llevas las **4 piezas equipadas** (Casco, Pechera, Pantalones y Botas):
+## 📑 Tabla de Contenidos
+1. [🌟 Resumen de las 5 Fases de Expansión](#-resumen-de-las-5-fases-de-expansión)
+2. [🌋 Los 150 Minerales y Progresión por Dimensiones](#-los-150-minerales-y-progresión-por-dimensiones)
+3. [⚔️ Arsenal Completo y Armas Especiales (Fase 1)](#️-arsenal-completo-y-armas-especiales-fase-1)
+4. [🛡️ Armaduras 3D, Bonus Parciales y Dash Impulso (Fase 1)](#️-armaduras-3d-bonus-parciales-y-dash-impulso-fase-1)
+5. [🔨 Estaciones de Trabajo Especializadas (Fase 2)](#-estaciones-de-trabajo-especializadas-fase-2)
+6. [👹 Jefes Supremos, Invocadores y Estructuras (Fase 3)](#-jefes-supremos-invocadores-y-estructuras-fase-3)
+7. [💎 Gemas Engarzables, Reforjado y Encantamientos (Fase 4)](#-gemas-engarzables-reforjado-y-encantamientos-fase-4)
+8. [📡 Calidad de Vida, Radar de Vetas, Auras y Comandos (Fase 5)](#-calidad-de-vida-radar-de-vetas-auras-y-comandos-fase-5)
+9. [📖 Códice Guía In-Game Interactivo](#-códice-guía-in-game-interactivo)
+10. [📦 Instalación y Compilación](#-instalación-y-compilación)
 
-| Tier | Armadura | 🛡️ Efecto Pasivo de Set Completo (4/4) |
+---
+
+## 🌟 Resumen de las 5 Fases de Expansión
+
+| Fase | Título | Características Principales |
 |:---:|:---|:---|
-| **T1** | **Cobreprita** | **Agilidad Conductora:** Velocidad I continua y -50% de daño por caída |
-| **T10** | **Invar** | **Bastión de Acero:** Resistencia I e inmunidad al retroceso (*Knockback Resistance*) |
-| **T20** | **Cero Absoluto** | **Aislamiento Criogénico:** Inmunidad a congelación (nieve polvo), Prisa y Respiración Acuática |
-| **T30** | **Solarita** | **Corona Solar:** Inmunidad total a fuego/lava, Visión Nocturna y Regeneración diurna al aire libre |
-| **T40** | **Clorofita** | **Fotosíntesis Viva:** Regeneración continua, respiración ilimitada y fertiliza cultivos cercanos al agacharse |
-| **T50** | **Runita** | **Canalizador Rúnico:** Prisa Minera II, Suerte I y generación pasiva de orbes de experiencia |
-| **T60** | **Mineral del Núcleo** | **Núcleo Tectónico:** Salto Potenciado II, Caída Lenta y 0 daño de caída |
-| **T70** | **Sculk Primordial** | **Manto del Warden:** Escudo de Absorción II continuo, Visión Nocturna y sigilo absoluto ante sensores Sculk |
-| **T80** | **Núcleo Infernal** | **Espinas Ígneas:** Resistencia II y quema defensiva automática a todo enemigo hostil cercano |
-| **T90** | **Gema del Purgatorio** | **Paso Espectral:** Velocidad II, Regeneración II y **purga instantánea** de todo veneno, wither, náusea o lentitud |
-| **T100** | **Corazón del Nether** | **Titán Carmesí:** **+6 Corazones extra permanentemente** y Oleada Berserker (Fuerza II y Resistencia II si la vida baja del 50%) |
-| **T115** | **Aliento de Dragón** | **Planeo Dracónico:** Salto Aéreo III y planeo suave con Caída Lenta continua (0 daño de impacto) |
-| **T125** | **Galactita** | **Escudo Gravitacional:** Resistencia III, Fuerza I y **desvío cinético de flechas y proyectiles enemigos** |
-| **T135** | **Fragmento Infinito** | **Bucle Temporal:** Resistencia III y **Rescate del Vacío** (si caes a Y < -50 te teletransporta a salvo a la superficie) |
-| **T140** | **Génesis** | **Árbol de la Vida:** **+10 Corazones extra**, Saturación infinita (**sin hambre nunca**) y Regeneración vital |
-| **T150** | **Metal de los Dioses** | **★ ASCENSIÓN DIVINA ★:** **+14 Corazones extra**, Resistencia IV, Fuerza III, Regeneración III, Velocidad II, Prisa II, Inmunidad Total y Castigo Sagrado periódico a enemigos hostiles |
+| **Fase 1** | **Arsenal y Progresión Completa** | 16 hachas con *TreeCapitator*, 16 palas 3x3, 16 azadas 9x9, Arco de Dragón, Ballesta Galáctica, Escudo Égida, Herramienta Omnipotente T150, bonus de armadura 2/4, 3/4, 4/4 y Dash Impulso. |
+| **Fase 2** | **Estaciones de Trabajo** | Forja en Cadena con GUI animada, combustible y progreso; Yunque en Cadena 100% indestructible sin coste acumulado ni penalización; Fundidor Cósmico con duplicación x4 y transmutación 35%. |
+| **Fase 3** | **Jefes y Mundo** | 4 Jefes Supremos con barras de vida de jefe personalizadas (Guardián del Abismo, Behemoth del Nether, Coloso del Vacío, Soberano Cósmico), Invocadores, 3 Estructuras en mundo y Catalizadores obligatorios de transición. |
+| **Fase 4** | **Gemas, Sockets y Reforjado** | Sistema NBT de engarce de 4 Gemas legendarias (Sangre, Vacío, Núcleo, Génesis), 5 Prefijos aleatorios de reforjado (`[DIVINO]`, `[LEGENDARIO]`, etc.) y 3 Encantamientos exclusivos de tier alto. |
+| **Fase 5** | **Calidad de Vida y Códice** | Radar Prospector con 3 modos de escaneo sonar, Auras celestiales y efectos de partículas, comandos `/chainores` y el Códice Guía interactivo de 5 pestañas. |
 
 ---
 
-### ⚔️ 16 Espadas Legendarias (Habilidades de Combate On-Hit)
-Ninguna espada comparte mecánicas. Cada una tiene un impacto decisivo en combate:
+## 🌋 Los 150 Minerales y Progresión por Dimensiones
 
-- **T1 (Cobreprita):** *Descarga Estática* — Ralentiza al enemigo y otorga un estallido de Velocidad I al jugador.
-- **T10 (Invar):** *Impacto Contundente* — Empuje violento y desarme con Debilidad I.
-- **T20 (Cero Absoluto):** *Corte Glacial* — Congela en un bloque de escarcha (200 ticks) y aplica Lentitud III.
-- **T30 (Solarita):** *Llamarada Solar* — Quema durante 6s (12s a pleno sol) y revela con Brillo radiante.
-- **T40 (Clorofita):** *Espora Vampírica* — Drena vitalidad (cura 1 corazón) e infecta con Veneno II.
-- **T50 (Runita):** *Cercenador Arcano* — Aplica Debilidad II y Fatiga Minera, expulsando orbes de experiencia en cada impacto.
-- **T60 (Mineral del Núcleo):** *Onda Tectónica* — Onda de choque expansiva que daña y repele a todos los mobs hostiles en 4 bloques.
-- **T70 (Sculk Primordial):** *Aullido Sónico* — Ceguera, Oscuridad profunda y Lentitud IV.
-- **T80 (Núcleo Infernal):** *Fuego del Averno* — Quema infernal de 15 segundos y Wither (daña incluso a criaturas inmunes al fuego).
-- **T90 (Gema del Purgatorio):** *Cosecha de Almas* — Inflige Wither II, sana vitalidad y sacia el hambre del jugador.
-- **T100 (Corazón del Nether):** *Desangrado Carmesí* — Hemorragia prolongada y activa Furia Carmesí (Fuerza I).
-- **T115 (Aliento de Dragón):** *Vuelo Dracónico* — Lanza al objetivo 14 bloques hacia el cielo provocando caída catastrófica.
-- **T125 (Galactita):** *Rayo Orbital* — Descarga un rayo cósmico directo y suspende al enemigo en gravedad cero con Levitación.
-- **T135 (Fragmento Infinito):** *Falla Temporal* — Detiene al enemigo en el tiempo con Lentitud V extrema y Debilidad III.
-- **T140 (Génesis):** *Resonancia Génesis* — Cura 3 corazones completos, otorga Absorción y ciega a los atacantes.
-- **T150 (Metal de los Dioses):** *★ JUICIO DIVINO ★* — Rayos destructores, Wither IV, curación masiva (+5 corazones) y **ejecución instantánea** si el enemigo tiene menos del 25% de vida.
+Cada mineral requiere el lingote anterior para forjarse, creando una escalera ininterrumpida desde el nivel inicial hasta el metal divino:
+
+- 🌲 **Overworld (Tiers 1 al 70):**
+  - Comienza en *Cobreprita* (Tier 1) y avanza por *Invar* (10), *Cero Absoluto* (20), *Solarita* (30), *Clorofita* (40), *Runita* (50), *Mineral del Núcleo* (60) hasta alcanzar el peligroso *Sculk Primordial* (70).
+  - Distribuidos por biomas característicos: llanuras, picos helados, desiertos, junglas tropicales, profundidades de pizarra y el Deep Dark.
+- 🔥 **El Nether (Tiers 71 al 105):**
+  - Inicia tras derrotar al Guardián del Abismo con el *Bismuto del Nether* (Tier 71), avanzando por *Núcleo Infernal* (80), *Gema del Purgatorio* (90) hasta el *Corazón del Nether* (100) y *Obsidiana Fundida* (105).
+  - Generados en tierras baldías del Nether, valles de arena de almas, deltas de basalto y bosques carmesí/deformados.
+- 🌌 **The End (Tiers 106 al 135):**
+  - Desbloqueado con el Núcleo del Nether: desde *Enderio Refinado* (Tier 106), *Aliento de Dragón* (115), *Galactita* (125) hasta el *Fragmento Infinito* (135).
+  - Generados en islas exteriores, picos de coros y rocas flotantes del vacío.
+- ✨ **Trascendencia Cósmica (Tiers 136 al 150):**
+  - Desbloqueado al vencer al Coloso del Vacío: desde *Singularidad* (Tier 136), *Génesis* (140) hasta el mítico **Metal de los Dioses (Tier 150 - Infinitum)**.
 
 ---
 
-### ⛏️ 16 Picos de Minería con Habilidades Especiales
-- **T1:** *Magnetismo* — Atrae ítems sueltos directamente al inventario.
-- **T10:** *Impacto Rápido* — Tritura roca y pizarra profunda a gran velocidad.
-- **T20:** *Corte Criogénico* — Doble velocidad en hielo, hielo azul y obsidiana.
-- **T30:** *Super-Fundición* — Auto-funde roca en piedra lisa y arena en cristal.
-- **T40:** *Tala Silvestre* — Picar un tronco de árbol tala el árbol entero en cadena.
-- **T50:** *Fortuna Rúnica* — 35% de probabilidad de duplicar minerales y gemas.
-- **T60:** *Túnel Tectónico* — Excava automáticamente en túnel vertical 1x2 hacia adelante.
-- **T70:** *Eco Sónico* — Minería en cubo 3x3 al picar agachado (*Shift*).
-- **T80:** *Extinción Ígnea* — Apaga y solidifica la lava circundante en obsidiana al picar.
-- **T90:** *Cosechador Espectral* — Otorga el doble de experiencia por bloque minado.
-- **T100:** *Martillo del Coloso* — Minería 3x3 reforzada con velocidad titánica.
-- **T115:** *Vínculo de Ender* — Teletransporta los drops directamente a tus pies para evitar que caigan al vacío o lava.
-- **T125:** *Agujero Negro* — Minería 3x3 hiperveloz con succión gravitatoria de ítems.
-- **T135:** *Falla Dimensional* — Minería masiva en cubo 5x5 al picar agachado.
-- **T140:** *Toque de la Creación* — 20% de probabilidad de transmutar el bloque minado a una gema valiosa.
-- **T150:** *★ MARTILLO DE LOS DIOSES ★* — Minería 5x5 instantánea, Auto-Smelt, Imán de drops y Fortuna Divina.
+## ⚔️ Arsenal Completo y Armas Especiales (Fase 1)
+
+### Herramientas Avanzadas
+- **Hachas de Tala Forestal (TreeCapitator):** Al agacharse al talar un tronco, derriban el árbol completo (de 16 bloques en T1 hasta **256 bloques masivos** en T150), re-plantando brotes y soltando manzanas doradas.
+- **Palas de Excavación 3x3:** Aplanan y excavan áreas cuadradas de tierra, arena, grava o nieve instantáneamente. Cuentan con auto-fundición de arena en cristal y arcilla en ladrillos.
+- **Azadas de Cultivo del Edén 9x9:** Convierten tierra en campos de cultivo fértiles e hidratados en radio 9x9 de un solo uso y cosechan cultivos maduros replantándolos automáticamente.
+
+### Armas Temáticas Especiales
+1. **Arco del Aliento de Dragón (Tier 115):** Dispara flechas teledirigidas envueltas en llamas dracónicas persistentes que generan nubes de daño de área.
+2. **Ballesta Galáctica (Tier 125):** Disparo estelar en abanico de 5 proyectiles a velocidad de la luz con recarga ultrarrápida.
+3. **Escudo Égida de Esculcro (Tier 100):** Escudo reforzado que otorga Absorción ante impactos pesados, absorbe flechas y aturde a atacantes cuerpo a cuerpo.
+4. **★ HERRAMIENTA UNIVERSAL DE LOS DIOSES (Tier 150):**
+   - Fusiona pico 5x5, hacha forestal, pala y azada.
+   - Mina **cualquier bloque del juego** a velocidad 65.
+   - Inflige **120 de daño sagrado**, invoca rayos y sana al portador.
 
 ---
 
-### 📖 Códice de Minerales en Cadena (Guía In-Game)
-- Al entrar por primera vez al mundo recibes el **Códice de Minerales en Cadena** (`chainores:guide_book`).
-- Si lo pierdes, puedes craftearlo con 1 libro + 1 lingote de cobreprita.
-- **Características de la Guía:**
-  - Fotos e iconos renderizados de la muestra de mineral, forma cruda, lingote refinado y bloque.
-  - Dimensión y biomas de aparición exactos.
-  - Rangos de altura Y mínimos y máximos y nivel de pico requerido.
-  - Previsualización de la receta en Mesa de Herrería.
-  - Expositor de armamento: consulta la espada, el pico y la armadura del hito con tooltips interactivos de sus habilidades.
+## 🛡️ Armaduras 3D, Bonus Parciales y Dash Impulso (Fase 1)
+
+Cada set dispone de texturas 3D exclusivas para el sistema de *Equipment Assets* de Minecraft 1.21.2+.
+
+### Sistema de Bonificaciones Escalonadas
+- **Bonus Parcial (2/4 Piezas):** Otorga mejoras de supervivencia temprana (Velocidad I, Resistencia I, Inmunidad a congelación, Visión Nocturna o Regeneración).
+- **Bonus Parcial (3/4 Piezas):** Inmunidad a daño de caída, resistencia al fuego, purga automática de venenos y absorción extra.
+- **Set Completo (4/4 Piezas):**
+  - **T70 (Manto del Warden):** Escudo de absorción continuo y sigilo ante sensores sculk.
+  - **T100 (Titán Carmesí):** **+6 Corazones permanentes** y modo berserker bajo el 50% de vida.
+  - **T135 (Bucle Temporal):** **Rescate del Vacío** (si caes por debajo de Y=-50 te teletransporta a la superficie).
+  - **T140 (Árbol de la Vida):** **+10 Corazones** y saturación infinita (hambre desactivada).
+  - **T150 (★ ASCENSIÓN DIVINA ★):** **+14 Corazones**, Resistencia IV, Fuerza III, Regeneración III, Velocidad II, Prisa II, Inmunidad absoluta a efectos negativos y aura de partículas celestiales.
+- **⚡ Habilidad Activa Universal (Dash Impulso):** Al esprintar y presionar agacharse (*Shift*), ejecutas un impulso sónico en el aire hacia la dirección de la cámara (Cooldown: 4s).
 
 ---
 
-## 🔨 Sistema de Crafteo y Progresión
+## 🔨 Estaciones de Trabajo Especializadas (Fase 2)
 
-El mod ofrece **3 métodos alternativos** para obtener y mejorar tu equipamiento:
+```
+        ┌────────────────────────────────────────────────────────┐
+        │                 ESTACIONES DE CHAIN ORES               │
+        ├────────────────────┬───────────────────┬───────────────┤
+        │  Forja en Cadena   │ Yunque en Cadena  │Fundidor Cósmic│
+        │   (Chain Forge)    │(Indestructible)   │(Cosmic Smelter│
+        ├────────────────────┼───────────────────┼───────────────┤
+        │ • GUI interactiva  │ • 0% rotura       │ • Lingotes x4 │
+        │ • Mejora tier a tie│ • Sin coste límite│ • 35% transm. │
+        │ • Catalizadores jfe│ • Engarce y reforj│ • Alta energí.│
+        └────────────────────┴───────────────────┴───────────────┘
+```
 
-1. **Mesa de Crafteo Directa (Vanilla Crafting):**
-   - Fabrica directamente cualquier pieza con los lingotes del tier correspondiente (Casco = 5, Pechera = 8, Pantalones = 7, Botas = 4, Espada = 2 lingotes + 1 palo, Pico = 3 lingotes + 2 palos).
-2. **Mejora Rápida sin Mesa de Herrería (Shapeless Upgrade):**
-   - Coloca la pieza del tier anterior + 1 lingote del nuevo tier en cualquier cuadrícula de crafteo para actualizarla de inmediato.
-3. **Mesa de Herrería (Smithing Transform):**
-   - Utiliza la **Plantilla de Mejora en Cadena** (`chainores:chain_smithing_template`) + pieza anterior + lingote del nuevo tier.
-   - La plantilla se craftea con cobre y roca, y se duplica igual que la plantilla de netherita vanilla.
+1. **Forja en Cadena (`chainores:chain_forge`):**
+   - Cuenta con interfaz gráfica personalizada, animación de fuego y barra de progreso.
+   - Utiliza carbón, lava u otros combustibles para calentar la forja.
+   - Permite mejorar armas, herramientas y armaduras de un tier al siguiente. En hitos de transición exige los catalizadores de jefe para romper el límite dimensional.
+2. **Yunque en Cadena (`chainores:chain_anvil`):**
+   - **Indestructible:** No se desgasta ni se rompe jamás.
+   - **Reparación sin límite:** Repara cualquier pieza de Chain Ores utilizando un lingote de su tier sin penalización de experiencia ("Demasiado caro").
+   - **Templado:** Al reparar una pieza al 100%, añade un bonus de **+50 de durabilidad templada**.
+   - **Mesa de Modificaciones:** Permite engarzar gemas y reforjar prefijos.
+3. **Fundidor Cósmico (`chainores:cosmic_smelter`):**
+   - Estación de fundición de ultra-alta temperatura.
+   - **Cuadruplica (x4)** los lingotes refinados producidos a partir de mineral crudo.
+   - Cuenta con un **35% de probabilidad** de transmutar el lingote resultante al tier inmediatamente superior.
 
 ---
 
-## 📦 Instalación
+## 👹 Jefes Supremos, Invocadores y Estructuras (Fase 3)
 
-1. Descarga e instala **Minecraft 1.21.1** (o 1.21.x compatible).
-2. Instala **Fabric Loader** (0.16.0 o superior).
-3. Asegúrate de tener **Fabric API** en tu carpeta `.minecraft/mods/`.
-4. Coloca el archivo `chainores-1.0.0.jar` dentro de la carpeta `mods`.
-5. ¡Inicia el juego y comienza tu viaje a través de los 150 minerales!
+### Los 4 Jefes de Dimensión
+
+| Jefe | Dimensión / Tier | Invocador | Catalizador de Transición | Drops Especiales |
+|:---|:---:|:---|:---|:---|
+| **Guardián del Abismo** | Deep Dark / T70 | Ojo del Abismo | **Catalizador del Abismo** | Lingotes T70, experiencia pura |
+| **Behemoth del Nether** | Nether / T105 | Corazón Ígneo | **Núcleo del Nether** | Lingotes T100-T105, cabezas de wither |
+| **Coloso del Vacío** | The End / T135 | Baliza del Vacío | **Fragmento del Vacío** | Lingotes T135, alitas de élytra |
+| **Soberano Cósmico** | Cósmica / T150 | Altar Cósmico | **Singularidad Cósmica** | **Trofeo Cósmico**, Lingotes T150 |
+
+### Estructuras Generadas en el Mundo
+- **Forjas Abandonadas (Overworld):** Ruinas subterráneas con cofres de botín, plantillas de herrería y un Yunque en Cadena intacto.
+- **Cámaras Selladas de Netherita (Nether):** Fortalezas rodeadas de lava que albergan minerales raros del Nether y cofres blindados.
+- **Templos Cósmicos (The End):** Torres flotantes en las islas exteriores con cofres de lingotes cósmicos y altares arcanos.
 
 ---
 
-## ⚙️ Compilación desde el Código Fuente
+## 💎 Gemas Engarzables, Reforjado y Encantamientos (Fase 4)
 
-Requisitos: **Java 21 JDK**.
+### Gemas Engarzables (Sockets)
+Se pueden colocar en cualquier arma, herramienta o armadura usando el Yunque en Cadena o la Forja:
+- 🩸 **Gema de Sangre (`blood_gem`):** Robo de Vida en ataques (+2.5♥ por golpe) y Regeneración pasiva en armadura.
+- 🌌 **Gema del Vacío (`void_gem`):** Aplica Levitación a los enemigos y Caída Lenta continua al portador si cae en picado.
+- ⚡ **Gema del Núcleo (`core_gem`):** Otorga **+35% Prisa y velocidad de minado**, además de Velocidad I pasiva.
+- ☀️ **Gema del Génesis (`genesis_gem`):** Descarga Rayos Celestiales (+25 daño mágico), escudo de Absorción y **+50% de poder general**.
+
+### Prefijos de Reforjado (RNG con Amatista)
+Al hacer clic derecho agachado sobre el Yunque en Cadena con un Fragmento de Amatista o Lapislázuli, se re-tira el prefijo del ítem:
+- **`[DIVINO]` (8% prob):** +50% daño/velocidad, Resistencia pasiva.
+- **`[LEGENDARIO]` (14% prob):** +25% daño, +30% velocidad, Suerte pasiva.
+- **`[FEROZ]` (25% prob):** +35% daño, Fuerza pasiva.
+- **`[VELOZ]` (26% prob):** +40% velocidad minera, Rapidez pasiva.
+- **`[TITÁNICO]` (27% prob):** +10% daño, armadura y resistencia al empuje.
+
+### Encantamientos Exclusivos (1.21.2+ Data-Driven)
+- **Desintegración en Cadena (`chainores:chain_shatter`):** Las herramientas rompen bloques en ondas expansivas.
+- **Drenaje del Vacío (`chainores:void_leech`):** Convierte el daño infligido a enemigos en saciedad y salud.
+- **Radiancia Celestial (`chainores:celestial_radiance`):** Ciega y calcina a todo atacante cercano que intente dañarte.
+
+---
+
+## 📡 Calidad de Vida, Radar de Vetas, Auras y Comandos (Fase 5)
+
+### Radar de Prospección Subterránea (`chainores:prospector_rod`)
+El bastón de prospección cuenta con 3 modos de rastreo seleccionables con **Shift + Clic derecho**:
+1. **Modo Proximidad:** Detecta la veta más cercana en 28 bloques indicando distancia, dirección cardinal y diferencia de altura.
+2. **Modo Mayor Tier:** Escanea un radio de 36 bloques y prioriza la veta con el mayor tier de mineral encontrado.
+3. **Sonar Geológico Profundo:** Escanea hasta 48 bloques en profundidad con estela de partículas y pitido de sonar afinado según cercanía.
+
+### Auras Cósmicas y Efectos Pasivos
+- Portar el set completo de Tier 140 o Tier 150 genera automáticamente un aura de partículas de varas del End y chispas celestiales.
+- El minado en cadena (*Vein Mining*) incluye destellos de campana rúnica y sonido de campana de amatista al recolectar.
+
+### Comandos In-Game
+- `/chainores guide` — Otorga o abre directamente el Códice de Progresión.
+- `/chainores info <1-150>` — Muestra en el chat las coordenadas Y, bioma, dimensión, nivel de pico y drops de cualquier tier.
+- `/chainores reforge` — (Admin) Reforja instantáneamente el ítem en la mano con un nuevo prefijo aleatorio.
+
+---
+
+## 📖 Códice Guía In-Game Interactivo
+
+Al entrar por primera vez al mundo recibes el **Códice de Minerales en Cadena** (`chainores:guide_book`), o puedes abrirlo con `/chainores guide`.
+
+Cuenta con **5 pestañas interactivas:**
+1. **`[Minerales]`**: Enciclopedia completa de los 150 tiers con renderizado 3D de muestras, recetas en herrería, alturas y biomas.
+2. **`[Arsenal]`**: Guía de hachas TreeCapitator, palas 3x3, azadas 9x9, armas especiales y tabla de bonificaciones de armadura 2/4, 3/4 y 4/4 con Dash.
+3. **`[Estaciones]`**: Instrucciones de uso de la Forja en Cadena, Yunque Indestructible y Fundidor Cósmico.
+4. **`[Jefes y Mundo]`**: Invocación de los 4 jefes supremos, catalizadores de transición y localización de estructuras.
+5. **`[Gemas y Reforje]`**: Guía de efectos de las 4 gemas, prefijos de reforjado y encantamientos.
+
+---
+
+## 📦 Instalación y Compilación
+
+### Requisitos
+- **Minecraft:** `1.21.2` / `1.21.11`
+- **Fabric Loader:** `0.16.0` o superior
+- **Fabric API:** Compatible con 1.21.2+
+- **Java:** `21` (JDK 21)
+
+### Compilar desde Código Fuente
+Para compilar la versión extendida desde el repositorio de GitHub:
 
 ```bash
-# Clonar el repositorio
+# 1. Clonar el repositorio
 git clone https://github.com/bouet21/VibeCodedMcMods.git
 cd VibeCodedMcMods
 
-# Compilar con Gradle
+# 2. Cambiar a la rama extendida
+git checkout extendido
+
+# 3. Compilar el archivo .jar con Gradle
 ./gradlew build
 ```
 
-El archivo compilado se generará en:
-`build/libs/chainores-1.0.0.jar`
+El archivo `.jar` listo para instalar se encontrará en `build/libs/chainores-<version>.jar`.
 
 ---
 
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+## 📜 Licencia
+Este proyecto está bajo la Licencia **MIT**. Consulta el archivo `LICENSE` para más información.
+Desarrollado y mantenido con pasión por **bouet21**.

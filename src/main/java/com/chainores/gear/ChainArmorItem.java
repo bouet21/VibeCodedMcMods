@@ -428,6 +428,10 @@ public class ChainArmorItem extends Item {
                 player.setFrozenTicks(0);
                 player.extinguish();
                 player.getHungerManager().setFoodLevel(20);
+                if (player.getEntityWorld() instanceof ServerWorld sw && player.age % 10 == 0) {
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.END_ROD, player.getX(), player.getY() + 1.0, player.getZ(), 5, 0.4, 0.6, 0.4, 0.02);
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.WAX_ON, player.getX(), player.getY() + 0.5, player.getZ(), 3, 0.3, 0.4, 0.3, 0.02);
+                }
                 player.getHungerManager().setSaturationLevel(20.0f);
 
                 if (!player.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {

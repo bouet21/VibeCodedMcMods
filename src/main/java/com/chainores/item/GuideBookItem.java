@@ -1,5 +1,6 @@
 package com.chainores.item;
 
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,6 +18,14 @@ public class GuideBookItem extends Item {
 
     public GuideBookItem(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        super.appendTooltip(stack, context, displayComponent, textConsumer, type);
+        textConsumer.accept(Text.literal("✦ Códice de Progresión de Chain Ores ✦").formatted(Formatting.GOLD, Formatting.BOLD));
+        textConsumer.accept(Text.literal("Clic derecho: Abre la enciclopedia interactiva de 5 secciones.").formatted(Formatting.YELLOW));
+        textConsumer.accept(Text.literal("Guía de 150 minerales, arsenal, forjas, jefes y gemas.").formatted(Formatting.GRAY));
     }
 
     @Override
