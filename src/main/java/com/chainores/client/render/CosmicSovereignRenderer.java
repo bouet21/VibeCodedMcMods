@@ -14,7 +14,7 @@ public class CosmicSovereignRenderer extends BipedEntityRenderer<CosmicSovereign
     private static final Identifier TEXTURE = ChainOresMod.id("textures/entity/cosmic_sovereign.png");
 
     public CosmicSovereignRenderer(EntityRendererFactory.Context context) {
-        super(context, new BipedEntityModel<>(context.getPart(EntityModelLayers.WITHER_SKELETON)), 1.8f);
+        super(context, new BipedEntityModel<>(context.getPart(EntityModelLayers.ZOMBIE)), 1.8f);
     }
 
     @Override

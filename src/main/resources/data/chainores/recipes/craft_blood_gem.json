@@ -7,8 +7,8 @@
     " R "
   ],
   "key": {
-    "R": { "item": "minecraft:redstone_block" },
-    "N": { "item": "minecraft:netherite_ingot" }
+    "R": "minecraft:redstone_block",
+    "N": "minecraft:netherite_ingot"
   },
   "result": {
     "id": "chainores:blood_gem",

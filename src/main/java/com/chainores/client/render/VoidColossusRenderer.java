@@ -14,7 +14,7 @@ public class VoidColossusRenderer extends BipedEntityRenderer<VoidColossusEntity
     private static final Identifier TEXTURE = ChainOresMod.id("textures/entity/void_colossus.png");
 
     public VoidColossusRenderer(EntityRendererFactory.Context context) {
-        super(context, new BipedEntityModel<>(context.getPart(EntityModelLayers.WITHER_SKELETON)), 1.5f);
+        super(context, new BipedEntityModel<>(context.getPart(EntityModelLayers.ZOMBIE)), 1.5f);
     }
 
     @Override

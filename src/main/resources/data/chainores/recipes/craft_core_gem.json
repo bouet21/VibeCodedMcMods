@@ -7,8 +7,8 @@
     " M "
   ],
   "key": {
-    "M": { "item": "minecraft:magma_block" },
-    "N": { "item": "minecraft:netherite_ingot" }
+    "M": "minecraft:magma_block",
+    "N": "minecraft:netherite_ingot"
   },
   "result": {
     "id": "chainores:core_gem",

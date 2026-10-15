@@ -140,6 +140,9 @@ public class CosmicSovereignEntity extends HostileEntity {
         }
 
         LivingEntity target = this.getTarget();
+        if (target instanceof ServerPlayerEntity player && player.isDead()) {
+            healToFull(world);
+        }
         if (target != null && target.isAlive()) {
             // 1. Divine Lightning Strike
             if (thunderCooldown > 0) {
@@ -220,6 +223,29 @@ public class CosmicSovereignEntity extends HostileEntity {
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
         this.bossBar.clearPlayers();
+    }
+
+    @Override
+    public boolean onKilledOther(ServerWorld world, LivingEntity other, DamageSource damageSource) {
+        boolean result = super.onKilledOther(world, other, damageSource);
+        if (other instanceof ServerPlayerEntity) {
+            healToFull(world);
+        }
+        return result;
+    }
+
+    public void healToFull(ServerWorld world) {
+        if (this.getHealth() < this.getMaxHealth()) {
+            this.setHealth(this.getMaxHealth());
+            world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, this.getX(), this.getY() + 1.5, this.getZ(), 60, 0.8, 1.2, 0.8, 0.25);
+            world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.HOSTILE, 1.5f, 0.7f);
+            Text msg = Text.literal("☠ ¡Has caído ante ").formatted(Formatting.DARK_RED, Formatting.BOLD)
+                    .append(this.getName())
+                    .append(Text.literal("! Ha devorado tu alma y restaurado el 100% de su vida.").formatted(Formatting.RED, Formatting.BOLD));
+            for (ServerPlayerEntity p : this.bossBar.getPlayers()) {
+                p.sendMessage(msg, false);
+            }
+        }
     }
 
     @Override

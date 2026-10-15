@@ -7,7 +7,7 @@
     "show_toast": true,
     "announce_to_chat": true
   },
-  "parent": "chainores:tier_105",
+  "parent": "chainores:tier_100",
   "criteria": {
     "has_core": {
       "trigger": "minecraft:inventory_changed",
