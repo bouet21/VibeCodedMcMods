@@ -54,9 +54,26 @@ public class StructureLocator {
         ChainOresMod.LOGGER.info("Tracked {} at [{}, {}, {}] in {}", type, pos.getX(), pos.getY(), pos.getZ(), dimId);
     }
 
+    public static boolean isValidDimensionForType(ServerWorld world, String type) {
+        if (type == null || type.isEmpty()) return true;
+        if (type.equalsIgnoreCase(TYPE_FORGE)) {
+            return world.getRegistryKey().equals(World.OVERWORLD);
+        } else if (type.equalsIgnoreCase(TYPE_SHRINE)) {
+            return world.getRegistryKey().equals(World.NETHER);
+        } else if (type.equalsIgnoreCase(TYPE_ALTAR)) {
+            return world.getRegistryKey().equals(World.END);
+        }
+        return false;
+    }
+
     public static synchronized Optional<StructureEntry> findNearest(ServerWorld world, BlockPos origin, String targetType) {
         if (world == null || origin == null) return Optional.empty();
         ensureLoaded(world);
+
+        // Check if target type is valid for current dimension
+        if (targetType != null && !targetType.isEmpty() && !isValidDimensionForType(world, targetType)) {
+            return Optional.empty();
+        }
 
         String dimId = world.getRegistryKey().getValue().toString();
         StructureEntry closest = null;
@@ -87,7 +104,7 @@ public class StructureLocator {
     private static StructureEntry generateFallback(ServerWorld world, BlockPos playerPos, String targetType) {
         String dimId = world.getRegistryKey().getValue().toString();
         String type = targetType;
-        if (type == null || type.isEmpty()) {
+        if (type == null || type.isEmpty() || !isValidDimensionForType(world, type)) {
             if (world.getRegistryKey().equals(World.OVERWORLD)) {
                 type = TYPE_FORGE;
             } else if (world.getRegistryKey().equals(World.NETHER)) {
@@ -104,7 +121,8 @@ public class StructureLocator {
 
         BlockPos targetPos;
         if (type.equals(TYPE_FORGE)) {
-            targetY = -35;
+            int surfaceY = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, targetX, targetZ);
+            targetY = (surfaceY < 60) ? 64 : surfaceY;
             targetPos = new BlockPos(targetX, targetY, targetZ);
             com.chainores.world.feature.AbandonedForgeFeature.buildStructure(world, targetPos, world.random);
         } else if (type.equals(TYPE_SHRINE)) {
@@ -112,7 +130,8 @@ public class StructureLocator {
             targetPos = new BlockPos(targetX, targetY, targetZ);
             com.chainores.world.feature.NetherShrineFeature.buildStructure(world, targetPos, world.random);
         } else {
-            targetY = 60;
+            int endY = world.getTopY(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, targetX, targetZ);
+            targetY = (endY < 45) ? 60 : endY;
             targetPos = new BlockPos(targetX, targetY, targetZ);
             com.chainores.world.feature.CosmicAltarFeature.buildStructure(world, targetPos, world.random);
         }
@@ -136,7 +155,14 @@ public class StructureLocator {
                     if (list != null) {
                         ENTRIES.clear();
                         ENTRIES.addAll(list);
-                        ChainOresMod.LOGGER.info("Loaded {} custom structures from save.", ENTRIES.size());
+                        // Cleanse corrupted cross-dimension entries
+                        ENTRIES.removeIf(entry -> {
+                            if (entry.type().equals(TYPE_SHRINE) && !entry.dimension().contains("the_nether")) return true;
+                            if (entry.type().equals(TYPE_ALTAR) && !entry.dimension().contains("the_end")) return true;
+                            if (entry.type().equals(TYPE_FORGE) && !entry.dimension().contains("overworld")) return true;
+                            return false;
+                        });
+                        ChainOresMod.LOGGER.info("Loaded {} validated custom structures from save.", ENTRIES.size());
                     }
                 }
             }

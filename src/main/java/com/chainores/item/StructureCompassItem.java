@@ -114,8 +114,23 @@ public class StructureCompassItem extends Item {
             }
 
             int mode = getTargetMode(stack);
-            String targetType = getTargetTypeFromMode(mode, world);
+            if (mode == 1 && !world.getRegistryKey().equals(World.OVERWORLD)) {
+                player.sendMessage(Text.literal("⚠ La Forja Abandonada solo se encuentra en el Overworld. ¡Regresa al Overworld para rastrearla!").formatted(Formatting.RED), true);
+                player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
+                return ActionResult.SUCCESS;
+            }
+            if (mode == 2 && !world.getRegistryKey().equals(World.NETHER)) {
+                player.sendMessage(Text.literal("⚠ El Santuario del Nether solo se encuentra en el Nether. ¡Cruza un portal para rastrearlo!").formatted(Formatting.RED), true);
+                player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
+                return ActionResult.SUCCESS;
+            }
+            if (mode == 3 && !world.getRegistryKey().equals(World.END)) {
+                player.sendMessage(Text.literal("⚠ El Altar Cósmico solo se encuentra en The End. ¡Cruza al Fin para rastrearlo!").formatted(Formatting.LIGHT_PURPLE), true);
+                player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
+                return ActionResult.SUCCESS;
+            }
 
+            String targetType = getTargetTypeFromMode(mode, world);
             Optional<StructureLocator.StructureEntry> result = StructureLocator.findNearest(serverWorld, playerPos, targetType);
 
             if (result.isPresent()) {

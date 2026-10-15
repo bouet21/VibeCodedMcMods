@@ -19,7 +19,7 @@ public class ModWorldGen {
         // 1. Structure Features
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInOverworld(),
-                GenerationStep.Feature.UNDERGROUND_STRUCTURES,
+                GenerationStep.Feature.SURFACE_STRUCTURES,
                 ModFeatures.ABANDONED_FORGE_PLACED
         );
         BiomeModifications.addFeature(

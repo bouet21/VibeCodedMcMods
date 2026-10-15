@@ -117,6 +117,17 @@ public class ChainOresCommands {
             }
         }
 
+        if (targetType != null && !com.chainores.world.StructureLocator.isValidDimensionForType(world, targetType)) {
+            if (targetType.equals(com.chainores.world.StructureLocator.TYPE_FORGE)) {
+                source.sendMessage(Text.literal("⚠ La Forja Abandonada solo se encuentra en el Overworld.").formatted(Formatting.RED));
+            } else if (targetType.equals(com.chainores.world.StructureLocator.TYPE_SHRINE)) {
+                source.sendMessage(Text.literal("⚠ El Santuario del Nether solo se encuentra en el Nether.").formatted(Formatting.RED));
+            } else {
+                source.sendMessage(Text.literal("⚠ El Altar Cósmico solo se encuentra en The End.").formatted(Formatting.LIGHT_PURPLE));
+            }
+            return 0;
+        }
+
         var result = com.chainores.world.StructureLocator.findNearest(world, origin, targetType);
         if (result.isPresent()) {
             var entry = result.get();
