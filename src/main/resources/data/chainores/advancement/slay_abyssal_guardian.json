@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {"id": "chainores:abyssal_catalyst"},
+    "title": {"translate": "advancements.chainores.slay_abyssal_guardian.title"},
+    "description": {"translate": "advancements.chainores.slay_abyssal_guardian.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:tier_70",
+  "criteria": {
+    "has_catalyst": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["chainores:abyssal_catalyst"]}]
+      }
+    }
+  }
+}

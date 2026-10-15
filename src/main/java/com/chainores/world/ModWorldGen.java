@@ -14,6 +14,26 @@ import java.util.function.Predicate;
 public class ModWorldGen {
 
     public static void initialize() {
+        ModFeatures.initialize();
+
+        // 1. Structure Features
+        BiomeModifications.addFeature(
+                BiomeSelectors.foundInOverworld(),
+                GenerationStep.Feature.UNDERGROUND_STRUCTURES,
+                ModFeatures.ABANDONED_FORGE_PLACED
+        );
+        BiomeModifications.addFeature(
+                BiomeSelectors.foundInTheNether(),
+                GenerationStep.Feature.SURFACE_STRUCTURES,
+                ModFeatures.NETHER_SHRINE_PLACED
+        );
+        BiomeModifications.addFeature(
+                BiomeSelectors.foundInTheEnd(),
+                GenerationStep.Feature.SURFACE_STRUCTURES,
+                ModFeatures.COSMIC_ALTAR_PLACED
+        );
+
+        // 2. All 150 Ore Features
         for (OreTier ore : OreRegistryData.TIERS) {
             Predicate<BiomeSelectionContext> selector = getSelectorFor(ore);
             BiomeModifications.addFeature(
@@ -23,7 +43,7 @@ public class ModWorldGen {
             );
         }
 
-        ChainOresMod.LOGGER.info("Registered world generation features for all 150 ores across biomes and dimensions.");
+        ChainOresMod.LOGGER.info("Registered world generation features for all 150 ores and 3 custom structures across biomes and dimensions.");
     }
 
     private static Predicate<BiomeSelectionContext> getSelectorFor(OreTier ore) {

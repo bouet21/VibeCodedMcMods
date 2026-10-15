@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {"id": "chainores:cosmic_singularity"},
+    "title": {"translate": "advancements.chainores.slay_cosmic_sovereign.title"},
+    "description": {"translate": "advancements.chainores.slay_cosmic_sovereign.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:tier_150",
+  "criteria": {
+    "has_singularity": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["chainores:cosmic_singularity"]}]
+      }
+    }
+  }
+}

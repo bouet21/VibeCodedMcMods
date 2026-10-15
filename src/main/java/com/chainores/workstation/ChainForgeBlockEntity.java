@@ -155,9 +155,33 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
         for (int i = 0; i < OreRegistryData.TIERS.size(); i++) {
             OreTier ore = OreRegistryData.TIERS.get(i);
             if (input.isOf(ore.ingotItem)) {
-                if (isTemplate || catalyst.isOf(ore.ingotItem)) {
-                    if (i + 1 < OreRegistryData.TIERS.size()) {
-                        return new ItemStack(OreRegistryData.TIERS.get(i + 1).ingotItem);
+                int nextIndex = i + 1;
+                if (nextIndex < OreRegistryData.TIERS.size()) {
+                    // Milestone dimension boss gates
+                    if (i == 69) { // T70 -> T71 requires Abyssal Catalyst
+                        if (catalyst.isOf(com.chainores.registry.ModBossItems.ABYSSAL_CATALYST)) {
+                            return new ItemStack(OreRegistryData.TIERS.get(nextIndex).ingotItem);
+                        }
+                        return ItemStack.EMPTY;
+                    } else if (i == 104) { // T105 -> T106 requires Nether Core
+                        if (catalyst.isOf(com.chainores.registry.ModBossItems.NETHER_CORE)) {
+                            return new ItemStack(OreRegistryData.TIERS.get(nextIndex).ingotItem);
+                        }
+                        return ItemStack.EMPTY;
+                    } else if (i == 134) { // T135 -> T136 requires Void Shard
+                        if (catalyst.isOf(com.chainores.registry.ModBossItems.VOID_SHARD)) {
+                            return new ItemStack(OreRegistryData.TIERS.get(nextIndex).ingotItem);
+                        }
+                        return ItemStack.EMPTY;
+                    } else if (i == 148) { // T149 -> T150 requires Cosmic Singularity
+                        if (catalyst.isOf(com.chainores.registry.ModBossItems.COSMIC_SINGULARITY)) {
+                            return new ItemStack(OreRegistryData.TIERS.get(nextIndex).ingotItem);
+                        }
+                        return ItemStack.EMPTY;
+                    }
+
+                    if (isTemplate || catalyst.isOf(ore.ingotItem)) {
+                        return new ItemStack(OreRegistryData.TIERS.get(nextIndex).ingotItem);
                     }
                 }
             }
@@ -169,18 +193,30 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
             ModGear.GearSet next = ModGear.GEAR_SETS.get(i + 1);
             OreTier nextOre = OreRegistryData.TIERS.get(next.tierData.tier() - 1);
 
-            boolean validCatalyst = isTemplate || catalyst.isOf(nextOre.ingotItem);
-            if (validCatalyst) {
-                if (input.isOf(current.sword)) return new ItemStack(next.sword);
-                if (input.isOf(current.pickaxe)) return new ItemStack(next.pickaxe);
-                if (input.isOf(current.axe)) return new ItemStack(next.axe);
-                if (input.isOf(current.shovel)) return new ItemStack(next.shovel);
-                if (input.isOf(current.hoe)) return new ItemStack(next.hoe);
-                if (input.isOf(current.helmet)) return new ItemStack(next.helmet);
-                if (input.isOf(current.chestplate)) return new ItemStack(next.chestplate);
-                if (input.isOf(current.leggings)) return new ItemStack(next.leggings);
-                if (input.isOf(current.boots)) return new ItemStack(next.boots);
+            // Boss milestone gates for gear sets
+            int nextTier = next.tierData.tier();
+            if (nextTier > 70 && current.tierData.tier() <= 70) {
+                if (!catalyst.isOf(com.chainores.registry.ModBossItems.ABYSSAL_CATALYST)) return ItemStack.EMPTY;
+            } else if (nextTier > 105 && current.tierData.tier() <= 105) {
+                if (!catalyst.isOf(com.chainores.registry.ModBossItems.NETHER_CORE)) return ItemStack.EMPTY;
+            } else if (nextTier > 135 && current.tierData.tier() <= 135) {
+                if (!catalyst.isOf(com.chainores.registry.ModBossItems.VOID_SHARD)) return ItemStack.EMPTY;
+            } else if (nextTier == 150) {
+                if (!catalyst.isOf(com.chainores.registry.ModBossItems.COSMIC_SINGULARITY)) return ItemStack.EMPTY;
+            } else {
+                boolean validCatalyst = isTemplate || catalyst.isOf(nextOre.ingotItem);
+                if (!validCatalyst) continue;
             }
+
+            if (input.isOf(current.sword)) return new ItemStack(next.sword);
+            if (input.isOf(current.pickaxe)) return new ItemStack(next.pickaxe);
+            if (input.isOf(current.axe)) return new ItemStack(next.axe);
+            if (input.isOf(current.shovel)) return new ItemStack(next.shovel);
+            if (input.isOf(current.hoe)) return new ItemStack(next.hoe);
+            if (input.isOf(current.helmet)) return new ItemStack(next.helmet);
+            if (input.isOf(current.chestplate)) return new ItemStack(next.chestplate);
+            if (input.isOf(current.leggings)) return new ItemStack(next.leggings);
+            if (input.isOf(current.boots)) return new ItemStack(next.boots);
         }
 
         // 3. Special Weapons
@@ -192,6 +228,9 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
         }
         if (input.isOf(net.minecraft.item.Items.SHIELD) && catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem)) {
             return new ItemStack(ModGear.AEGIS_SHIELD);
+        }
+        if (input.isOf(ModGear.GEAR_SETS.get(ModGear.GEAR_SETS.size() - 1).sword) && catalyst.isOf(com.chainores.registry.ModBossItems.COSMIC_SINGULARITY)) {
+            return new ItemStack(ModGear.GOD_OMNITOOL);
         }
 
         return ItemStack.EMPTY;

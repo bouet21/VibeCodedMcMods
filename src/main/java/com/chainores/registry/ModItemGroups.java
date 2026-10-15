@@ -32,6 +32,17 @@ public class ModItemGroups {
                     entries.add(ModWorkstations.CHAIN_ANVIL_ITEM);
                     entries.add(ModWorkstations.COSMIC_SMELTER_ITEM);
 
+                    // Boss Summoners and Milestone Transition Catalysts
+                    entries.add(ModBossItems.ABYSSAL_EYE);
+                    entries.add(ModBossItems.ABYSSAL_CATALYST);
+                    entries.add(ModBossItems.FLAME_HEART);
+                    entries.add(ModBossItems.NETHER_CORE);
+                    entries.add(ModBossItems.VOID_BEACON);
+                    entries.add(ModBossItems.VOID_SHARD);
+                    entries.add(ModBossItems.COSMIC_ALTAR_CORE);
+                    entries.add(ModBossItems.COSMIC_SINGULARITY);
+                    entries.add(ModBossItems.COSMIC_TROPHY);
+
                     // Weapons, Tools, and Armors (Grouped by milestone sets)
                     for (ModGear.GearSet gear : ModGear.GEAR_SETS) {
                         entries.add(gear.sword);

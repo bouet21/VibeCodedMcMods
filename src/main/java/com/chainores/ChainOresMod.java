@@ -31,6 +31,8 @@ public class ChainOresMod implements ModInitializer {
         ModItems.initialize();
         ModGear.initialize();
         com.chainores.registry.ModWorkstations.initialize();
+        com.chainores.registry.ModEntities.initialize();
+        com.chainores.registry.ModBossItems.initialize();
         ModItemGroups.initialize();
         ModWorldGen.initialize();
 

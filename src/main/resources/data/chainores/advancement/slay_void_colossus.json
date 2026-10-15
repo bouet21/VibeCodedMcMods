@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {"id": "chainores:void_shard"},
+    "title": {"translate": "advancements.chainores.slay_void_colossus.title"},
+    "description": {"translate": "advancements.chainores.slay_void_colossus.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:tier_135",
+  "criteria": {
+    "has_shard": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["chainores:void_shard"]}]
+      }
+    }
+  }
+}

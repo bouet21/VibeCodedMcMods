@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "CSC",
+    " I "
+  ],
+  "key": {
+    "C": "minecraft:end_crystal",
+    "S": "minecraft:nether_star",
+    "I": "chainores:ingot_tier_149"
+  },
+  "result": {
+    "id": "chainores:cosmic_altar_core",
+    "count": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "SES",
+    " I "
+  ],
+  "key": {
+    "S": "minecraft:sculk",
+    "E": "minecraft:ender_eye",
+    "I": "chainores:ingot_tier_70"
+  },
+  "result": {
+    "id": "chainores:abyssal_eye",
+    "count": 1
+  }
+}

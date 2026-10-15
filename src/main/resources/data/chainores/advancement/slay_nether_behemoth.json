@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {"id": "chainores:nether_core"},
+    "title": {"translate": "advancements.chainores.slay_nether_behemoth.title"},
+    "description": {"translate": "advancements.chainores.slay_nether_behemoth.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:tier_105",
+  "criteria": {
+    "has_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["chainores:nether_core"]}]
+      }
+    }
+  }
+}
