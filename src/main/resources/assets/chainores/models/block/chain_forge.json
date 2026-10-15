@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "chainores:block/chain_forge_top",
+    "front": "chainores:block/chain_forge_front",
+    "side": "chainores:block/chain_forge_side",
+    "bottom": "chainores:block/chain_forge_bottom"
+  }
+}

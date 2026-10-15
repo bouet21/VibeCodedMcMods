@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": {"model": "chainores:block/chain_forge"},
+    "facing=south": {"model": "chainores:block/chain_forge", "y": 180},
+    "facing=west": {"model": "chainores:block/chain_forge", "y": 270},
+    "facing=east": {"model": "chainores:block/chain_forge", "y": 90}
+  }
+}

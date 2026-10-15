@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/anvil",
+  "textures": {
+    "body": "chainores:block/chain_anvil",
+    "top": "chainores:block/chain_anvil"
+  }
+}

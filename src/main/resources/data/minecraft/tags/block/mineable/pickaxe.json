@@ -301,5 +301,9 @@
     "chainores:block_tier_149",
     "chainores:ore_tier_150",
     "chainores:block_tier_150"
+  ,
+    "chainores:chain_forge",
+    "chainores:chain_anvil",
+    "chainores:cosmic_smelter"
   ]
 }

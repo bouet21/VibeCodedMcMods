@@ -1055,4 +1055,10 @@
   "item.chainores.galactic_crossbow": "Ballesta de Galactita",
   "item.chainores.aegis_shield": "Escudo de la Égida Cósmica",
   "item.chainores.god_omnitool": "Omnitool Divina de la Creación"
+,
+  "block.chainores.chain_forge": "Forja en Cadena",
+  "block.chainores.chain_anvil": "Yunque en Cadena",
+  "block.chainores.cosmic_smelter": "Fundidor Cósmico",
+  "container.chainores.chain_forge": "Forja en Cadena",
+  "container.chainores.cosmic_smelter": "Fundidor Cósmico"
 }

@@ -1,0 +1,199 @@
+package com.chainores.workstation;
+
+import com.chainores.gear.GearTier;
+import com.chainores.ore.OreRegistryData;
+import com.chainores.ore.OreTier;
+import com.chainores.registry.ModGear;
+import com.chainores.registry.ModItems;
+import com.chainores.registry.ModWorkstations;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
+    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
+    public static final int INPUT_SLOT = 0;
+    public static final int CATALYST_SLOT = 1;
+    public static final int OUTPUT_SLOT = 2;
+
+    private int forgeProgress = 0;
+    private final int totalForgeTime = 60; // 3 seconds
+
+    protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> forgeProgress;
+                case 1 -> totalForgeTime;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == 0) forgeProgress = value;
+        }
+
+        @Override
+        public int size() {
+            return 2;
+        }
+    };
+
+    public ChainForgeBlockEntity(BlockPos pos, BlockState state) {
+        super(ModWorkstations.CHAIN_FORGE_BLOCK_ENTITY, pos, state);
+    }
+
+    @Override
+    protected Text getContainerName() {
+        return Text.translatable("container.chainores.chain_forge");
+    }
+
+    @Override
+    protected DefaultedList<ItemStack> getHeldStacks() {
+        return this.inventory;
+    }
+
+    @Override
+    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+        this.inventory = inventory;
+    }
+
+    @Override
+    public int size() {
+        return 3;
+    }
+
+    @Override
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new ChainForgeScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
+    }
+
+    @Override
+    protected void readData(ReadView readView) {
+        super.readData(readView);
+        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+        Inventories.readData(readView, this.inventory);
+        this.forgeProgress = readView.getInt("ForgeProgress", 0);
+    }
+
+    @Override
+    protected void writeData(WriteView writeView) {
+        super.writeData(writeView);
+        Inventories.writeData(writeView, this.inventory);
+        writeView.putInt("ForgeProgress", this.forgeProgress);
+    }
+
+    public static void tick(World world, BlockPos pos, BlockState state, ChainForgeBlockEntity entity) {
+        if (world.isClient()) return;
+
+        ItemStack input = entity.inventory.get(INPUT_SLOT);
+        ItemStack catalyst = entity.inventory.get(CATALYST_SLOT);
+        ItemStack outputSlot = entity.inventory.get(OUTPUT_SLOT);
+
+        ItemStack recipeResult = entity.calculateForgeResult(input, catalyst);
+
+        if (!recipeResult.isEmpty() && canInsertOutput(outputSlot, recipeResult)) {
+            entity.forgeProgress++;
+
+            if (entity.forgeProgress % 15 == 0) {
+                world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 0.7f, 1.3f);
+            }
+
+            if (entity.forgeProgress >= entity.totalForgeTime) {
+                // Craft item
+                input.decrement(1);
+                catalyst.decrement(1);
+
+                if (outputSlot.isEmpty()) {
+                    entity.inventory.set(OUTPUT_SLOT, recipeResult.copy());
+                } else if (ItemStack.areItemsAndComponentsEqual(outputSlot, recipeResult)) {
+                    outputSlot.increment(recipeResult.getCount());
+                }
+
+                entity.forgeProgress = 0;
+                world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.BLOCKS, 0.9f, 1.2f);
+                world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.8f, 1.5f);
+                markDirty(world, pos, state);
+            }
+        } else {
+            if (entity.forgeProgress > 0) {
+                entity.forgeProgress = Math.max(0, entity.forgeProgress - 2);
+                markDirty(world, pos, state);
+            }
+        }
+    }
+
+    private static boolean canInsertOutput(ItemStack outputSlot, ItemStack result) {
+        if (outputSlot.isEmpty()) return true;
+        if (!ItemStack.areItemsAndComponentsEqual(outputSlot, result)) return false;
+        return outputSlot.getCount() + result.getCount() <= outputSlot.getMaxCount();
+    }
+
+    private ItemStack calculateForgeResult(ItemStack input, ItemStack catalyst) {
+        if (input.isEmpty() || catalyst.isEmpty()) return ItemStack.EMPTY;
+
+        // Catalyst must be Chain Smithing Template or an ingot
+        boolean isTemplate = catalyst.isOf(ModItems.CHAIN_SMITHING_TEMPLATE);
+
+        // 1. Ingot Upgrades (Tier N -> Tier N+1)
+        for (int i = 0; i < OreRegistryData.TIERS.size(); i++) {
+            OreTier ore = OreRegistryData.TIERS.get(i);
+            if (input.isOf(ore.ingotItem)) {
+                if (isTemplate || catalyst.isOf(ore.ingotItem)) {
+                    if (i + 1 < OreRegistryData.TIERS.size()) {
+                        return new ItemStack(OreRegistryData.TIERS.get(i + 1).ingotItem);
+                    }
+                }
+            }
+        }
+
+        // 2. Weapon & Tool Upgrades between the 16 milestones
+        for (int i = 0; i < ModGear.GEAR_SETS.size() - 1; i++) {
+            ModGear.GearSet current = ModGear.GEAR_SETS.get(i);
+            ModGear.GearSet next = ModGear.GEAR_SETS.get(i + 1);
+            OreTier nextOre = OreRegistryData.TIERS.get(next.tierData.tier() - 1);
+
+            boolean validCatalyst = isTemplate || catalyst.isOf(nextOre.ingotItem);
+            if (validCatalyst) {
+                if (input.isOf(current.sword)) return new ItemStack(next.sword);
+                if (input.isOf(current.pickaxe)) return new ItemStack(next.pickaxe);
+                if (input.isOf(current.axe)) return new ItemStack(next.axe);
+                if (input.isOf(current.shovel)) return new ItemStack(next.shovel);
+                if (input.isOf(current.hoe)) return new ItemStack(next.hoe);
+                if (input.isOf(current.helmet)) return new ItemStack(next.helmet);
+                if (input.isOf(current.chestplate)) return new ItemStack(next.chestplate);
+                if (input.isOf(current.leggings)) return new ItemStack(next.leggings);
+                if (input.isOf(current.boots)) return new ItemStack(next.boots);
+            }
+        }
+
+        // 3. Special Weapons
+        if (input.isOf(net.minecraft.item.Items.BOW) && catalyst.isOf(OreRegistryData.TIERS.get(114).ingotItem)) {
+            return new ItemStack(ModGear.DRAGON_BOW);
+        }
+        if (input.isOf(net.minecraft.item.Items.CROSSBOW) && catalyst.isOf(OreRegistryData.TIERS.get(124).ingotItem)) {
+            return new ItemStack(ModGear.GALACTIC_CROSSBOW);
+        }
+        if (input.isOf(net.minecraft.item.Items.SHIELD) && catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem)) {
+            return new ItemStack(ModGear.AEGIS_SHIELD);
+        }
+
+        return ItemStack.EMPTY;
+    }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TTT",
+    "TBT",
+    "SSS"
+  ],
+  "key": {
+    "T": "chainores:ingot_tier_10",
+    "B": "minecraft:blast_furnace",
+    "S": "minecraft:smooth_stone"
+  },
+  "result": {
+    "id": "chainores:chain_forge",
+    "count": 1
+  }
+}

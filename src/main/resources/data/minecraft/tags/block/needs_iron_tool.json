@@ -47,5 +47,9 @@
     "chainores:block_tier_35",
     "chainores:ore_tier_36",
     "chainores:block_tier_36"
+  ,
+    "chainores:chain_forge",
+    "chainores:chain_anvil",
+    "chainores:cosmic_smelter"
   ]
 }

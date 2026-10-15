@@ -28,6 +28,9 @@ public class ModItemGroups {
                     entries.add(ModGear.DRAGON_BOW);
                     entries.add(ModGear.GALACTIC_CROSSBOW);
                     entries.add(ModGear.AEGIS_SHIELD);
+                    entries.add(ModWorkstations.CHAIN_FORGE_ITEM);
+                    entries.add(ModWorkstations.CHAIN_ANVIL_ITEM);
+                    entries.add(ModWorkstations.COSMIC_SMELTER_ITEM);
 
                     // Weapons, Tools, and Armors (Grouped by milestone sets)
                     for (ModGear.GearSet gear : ModGear.GEAR_SETS) {

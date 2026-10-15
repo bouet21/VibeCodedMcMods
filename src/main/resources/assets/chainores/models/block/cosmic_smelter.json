@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "chainores:block/cosmic_smelter_top",
+    "front": "chainores:block/cosmic_smelter_front",
+    "side": "chainores:block/cosmic_smelter_side",
+    "bottom": "chainores:block/cosmic_smelter_bottom"
+  }
+}
