@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "CSC",
+    " C "
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "S": "minecraft:cobblestone"
+  },
+  "result": {
+    "id": "chainores:chain_smithing_template",
+    "count": 1
+  }
+}

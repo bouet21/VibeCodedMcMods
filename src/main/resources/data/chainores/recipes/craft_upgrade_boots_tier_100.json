@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "chainores:boots_tier_90",
+    "chainores:ingot_tier_100"
+  ],
+  "result": {
+    "id": "chainores:boots_tier_100",
+    "count": 1
+  }
+}

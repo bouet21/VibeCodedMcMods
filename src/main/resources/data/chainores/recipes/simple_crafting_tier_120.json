@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "chainores:ingot_tier_119",
+    "chainores:raw_tier_120"
+  ],
+  "result": {
+    "id": "chainores:ingot_tier_120",
+    "count": 1
+  }
+}

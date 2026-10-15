@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " R ",
+    "RPR",
+    " R "
+  ],
+  "key": {
+    "P": "chainores:ingot_tier_126",
+    "R": "chainores:raw_tier_127"
+  },
+  "result": {
+    "id": "chainores:ingot_tier_127",
+    "count": 1
+  }
+}

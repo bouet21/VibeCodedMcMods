@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "chainores:ingot_tier_62"
+  },
+  "result": {
+    "id": "chainores:block_tier_62",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "I I",
+    "III",
+    "III"
+  ],
+  "key": {
+    "I": "chainores:ingot_tier_50"
+  },
+  "result": {
+    "id": "chainores:chestplate_tier_50",
+    "count": 1
+  }
+}

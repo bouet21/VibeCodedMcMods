@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "chainores:armor_tier_90"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "chainores:armor_tier_90"
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "chainores:helmet_tier_60",
+    "chainores:ingot_tier_70"
+  ],
+  "result": {
+    "id": "chainores:helmet_tier_70",
+    "count": 1
+  }
+}

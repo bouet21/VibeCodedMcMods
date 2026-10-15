@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "chainores",
+	"version": "${version}",
+	"name": "Chain Ores",
+	"description": "An epic progression tree of 150 unique ores chained together with biome and dimension specific worldgen!",
+	"authors": [
+		"Bou & Antigravity"
+	],
+	"contact": {},
+	"license": "MIT",
+	"icon": "assets/chainores/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.chainores.ChainOresMod"
+		],
+		"client": [
+			"com.chainores.client.ChainOresClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": ">=1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

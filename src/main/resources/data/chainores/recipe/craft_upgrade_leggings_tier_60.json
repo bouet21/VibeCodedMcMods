@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "chainores:leggings_tier_50",
+    "chainores:ingot_tier_60"
+  ],
+  "result": {
+    "id": "chainores:leggings_tier_60",
+    "count": 1
+  }
+}

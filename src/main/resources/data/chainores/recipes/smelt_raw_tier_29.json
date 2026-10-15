@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "ingredient": "chainores:raw_tier_29",
+  "result": {
+    "id": "chainores:ingot_tier_29"
+  }
+}
