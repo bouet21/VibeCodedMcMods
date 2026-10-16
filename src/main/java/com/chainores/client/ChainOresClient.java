@@ -78,12 +78,23 @@ public class ChainOresClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (DASH_KEY.wasPressed()) {
                 if (client.player != null && !client.player.isSpectator()) {
-                    ItemStack chest = client.player.getEquippedStack(EquipmentSlot.CHEST);
-                    if (chest.getItem() instanceof ChainArmorItem) {
+                    if (ChainArmorItem.hasAnyChainArmor(client.player)) {
                         long now = System.currentTimeMillis();
                         long cdMillis = ChainOresConfig.get().dashCooldownSeconds * 1000L;
                         if (now - clientLastDashTime >= cdMillis) {
                             clientLastDashTime = now;
+
+                            // Immediate client-side movement prediction for zero-latency feel
+                            net.minecraft.util.math.Vec3d look = client.player.getRotationVector();
+                            net.minecraft.util.math.Vec3d horizontal = new net.minecraft.util.math.Vec3d(look.x, 0, look.z);
+                            if (horizontal.lengthSquared() < 0.001) {
+                                horizontal = net.minecraft.util.math.Vec3d.fromPolar(0, client.player.getYaw());
+                            }
+                            horizontal = horizontal.normalize();
+                            net.minecraft.util.math.Vec3d dashVelocity = new net.minecraft.util.math.Vec3d(horizontal.x * 1.85, 0.32, horizontal.z * 1.85);
+                            client.player.setVelocity(dashVelocity);
+                            client.player.fallDistance = 0;
+
                             ClientPlayNetworking.send(new DashC2SPayload());
                         } else {
                             long remainingSec = (cdMillis - (now - clientLastDashTime) + 999) / 1000;
@@ -102,8 +113,7 @@ public class ChainOresClient implements ClientModInitializer {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.player == null || client.options.hudHidden) return;
 
-            ItemStack chest = client.player.getEquippedStack(EquipmentSlot.CHEST);
-            if (!(chest.getItem() instanceof ChainArmorItem)) return;
+            if (!ChainArmorItem.hasAnyChainArmor(client.player)) return;
 
             long now = System.currentTimeMillis();
             long cdMillis = ChainOresConfig.get().dashCooldownSeconds * 1000L;

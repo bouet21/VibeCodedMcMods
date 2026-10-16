@@ -90,10 +90,9 @@ public class ChainOresConfig {
     // 5. DASH & HUD CONTROLS
     // =========================================================================
     /**
-     * Whether Sprint + Crouch also triggers Dash. Disabled by default
-     * to avoid unwanted dash activation during normal crouching while running.
+     * Whether Sprint + Crouch also triggers Dash as an alternate activation method.
      */
-    public boolean enableSprintSneakDash = false;
+    public boolean enableSprintSneakDash = true;
 
     /** Cooldown in seconds for Dash ability. */
     public int dashCooldownSeconds = 4;

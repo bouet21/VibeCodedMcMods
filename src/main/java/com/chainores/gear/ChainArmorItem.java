@@ -195,11 +195,20 @@ public class ChainArmorItem extends Item {
         }
     }
 
+    public static boolean hasAnyChainArmor(LivingEntity entity) {
+        if (entity == null) return false;
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            if (entity.getEquippedStack(slot).getItem() instanceof ChainArmorItem) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean performDash(ServerPlayerEntity player) {
         if (player == null || player.isSpectator()) return false;
 
-        ItemStack chest = player.getEquippedStack(EquipmentSlot.CHEST);
-        if (!(chest.getItem() instanceof ChainArmorItem)) {
+        if (!hasAnyChainArmor(player)) {
             return false;
         }
 
@@ -209,13 +218,30 @@ public class ChainArmorItem extends Item {
 
         if (now - lastDash >= cdMillis) {
             DASH_COOLDOWNS.put(player.getUuid(), now);
-            Vec3d rot = player.getRotationVector();
-            Vec3d dashVelocity = new Vec3d(rot.x * 1.6, 0.25, rot.z * 1.6);
+
+            Vec3d look = player.getRotationVector();
+            Vec3d horizontal = new Vec3d(look.x, 0, look.z);
+            if (horizontal.lengthSquared() < 0.001) {
+                horizontal = Vec3d.fromPolar(0, player.getYaw());
+            }
+            horizontal = horizontal.normalize();
+
+            Vec3d dashVelocity = new Vec3d(horizontal.x * 1.85, 0.32, horizontal.z * 1.85);
             player.setVelocity(dashVelocity);
             player.velocityDirty = true;
-            player.getEntityWorld().playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.ENTITY_BREEZE_WIND_BURST, net.minecraft.sound.SoundCategory.PLAYERS, 1.0f, 1.2f);
-            player.sendMessage(Text.literal("⚡ ¡DASH IMPULSO EJECUTADO!").formatted(Formatting.AQUA, Formatting.BOLD), true);
+            player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket(player));
+            player.fallDistance = 0;
+
+            ServerWorld world = (ServerWorld) player.getEntityWorld();
+            world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ENTITY_BREEZE_WIND_BURST, net.minecraft.sound.SoundCategory.PLAYERS, 1.2f, 1.2f);
+            world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, net.minecraft.sound.SoundCategory.PLAYERS, 0.8f, 1.5f);
+
+            world.spawnParticles(net.minecraft.particle.ParticleTypes.GUST, player.getX(), player.getY() + 0.5, player.getZ(), 8, 0.4, 0.2, 0.4, 0.05);
+            world.spawnParticles(net.minecraft.particle.ParticleTypes.CLOUD, player.getX(), player.getY() + 0.2, player.getZ(), 12, 0.5, 0.2, 0.5, 0.05);
+
+            player.sendMessage(Text.literal("⚡ ¡DASH IMPULSO!").formatted(Formatting.AQUA, Formatting.BOLD), true);
             return true;
         }
         return false;
