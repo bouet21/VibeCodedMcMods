@@ -36,6 +36,10 @@ public abstract class ChainTrinketItem extends Item {
         // Apply passives every second (20 ticks)
         if (player.age % 20 != 0) return;
 
+        applyTrinketPassives(stack, player);
+    }
+
+    public static void applyTrinketPassives(ItemStack stack, PlayerEntity player) {
         List<String> gems = ChainModifiers.getGems(stack);
         int bloodPower = 0;
         int voidPower = 0;
@@ -115,8 +119,8 @@ public abstract class ChainTrinketItem extends Item {
     public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         super.appendTooltip(stack, context, displayComponent, textConsumer, type);
         textConsumer.accept(Text.literal("✦ Accesorio / Reliquia Arcana ✦").formatted(Formatting.GOLD, Formatting.BOLD));
-        textConsumer.accept(Text.literal("Otorga sus beneficios pasivos continuos mientras permanezca").formatted(Formatting.GRAY));
-        textConsumer.accept(Text.literal("en tu inventario o mano secundaria.").formatted(Formatting.GRAY));
+        textConsumer.accept(Text.literal("Otorga sus beneficios pasivos continuos en inventario,").formatted(Formatting.GRAY));
+        textConsumer.accept(Text.literal("mano secundaria o ranuras de Trinkets (Anillo/Amuleto).").formatted(Formatting.GRAY));
         textConsumer.accept(Text.empty());
         textConsumer.accept(Text.literal("⚒ Personalización:").formatted(Formatting.AQUA, Formatting.BOLD));
         textConsumer.accept(Text.literal(" • Engarza hasta " + maxSockets + " gemas en el Yunque en Cadena.").formatted(Formatting.DARK_AQUA));
