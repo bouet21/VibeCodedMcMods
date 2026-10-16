@@ -119,7 +119,9 @@ public class ModWorldGen {
 
             case COSMIC -> BiomeSelectors.includeByKey(
                     BiomeKeys.END_HIGHLANDS,
-                    BiomeKeys.SMALL_END_ISLANDS
+                    BiomeKeys.SMALL_END_ISLANDS,
+                    BiomeKeys.END_MIDLANDS,
+                    BiomeKeys.END_BARRENS
             );
         };
     }

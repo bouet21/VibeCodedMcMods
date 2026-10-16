@@ -5,7 +5,7 @@
     "discard_chance_on_air_exposure": 0.0,
     "targets": [
       {
-        "target": {"predicate_type": "minecraft:tag_match", "tag": "minecraft:base_stone_end"},
+        "target": {"predicate_type": "minecraft:block_match", "block": "minecraft:end_stone"},
         "state": {"Name": "chainores:ore_tier_143"}
       }
     ]

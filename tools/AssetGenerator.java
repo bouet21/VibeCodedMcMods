@@ -431,11 +431,11 @@ public class AssetGenerator {
                 "}");
 
             // 7. Worldgen (Configured Feature & Placed Feature)
-            String targetBlock = switch (ore.baseStone) {
-                case STONE -> "minecraft:stone_ore_replaceables";
-                case DEEPSLATE -> "minecraft:deepslate_ore_replaceables";
-                case NETHERRACK -> "minecraft:netherrack";
-                case END_STONE -> "minecraft:base_stone_end";
+            String targetPredicate = switch (ore.baseStone) {
+                case STONE -> "{\"predicate_type\": \"minecraft:tag_match\", \"tag\": \"minecraft:stone_ore_replaceables\"}";
+                case DEEPSLATE -> "{\"predicate_type\": \"minecraft:tag_match\", \"tag\": \"minecraft:deepslate_ore_replaceables\"}";
+                case NETHERRACK -> "{\"predicate_type\": \"minecraft:tag_match\", \"tag\": \"minecraft:base_stone_nether\"}";
+                case END_STONE -> "{\"predicate_type\": \"minecraft:block_match\", \"block\": \"minecraft:end_stone\"}";
             };
 
             writeJson(data.resolve("worldgen/configured_feature/" + oreBlockId + ".json"),
@@ -446,7 +446,7 @@ public class AssetGenerator {
                 "    \"discard_chance_on_air_exposure\": 0.0,\n" +
                 "    \"targets\": [\n" +
                 "      {\n" +
-                "        \"target\": {\"predicate_type\": \"minecraft:tag_match\", \"tag\": \"" + targetBlock + "\"},\n" +
+                "        \"target\": " + targetPredicate + ",\n" +
                 "        \"state\": {\"Name\": \"chainores:" + oreBlockId + "\"}\n" +
                 "      }\n" +
                 "    ]\n" +
