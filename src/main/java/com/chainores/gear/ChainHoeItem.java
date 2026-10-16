@@ -54,8 +54,8 @@ public class ChainHoeItem extends Item {
         super.postHit(stack, target, attacker);
         if (attacker.getEntityWorld() instanceof ServerWorld world) {
             String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
-            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
-                attacker.heal(2.0f);
+            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(com.chainores.modifier.ChainModifiers.getBaseGemType(gem))) {
+                attacker.heal(2.0f * com.chainores.modifier.ChainModifiers.getGemTier(gem));
             }
             float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
             if (mult > 1.0f) {

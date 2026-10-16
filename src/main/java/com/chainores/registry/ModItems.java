@@ -17,8 +17,25 @@ public class ModItems {
     public static Item CHAIN_SMITHING_TEMPLATE;
     public static Item PROSPECTOR_ROD;
     public static Item STRUCTURE_COMPASS;
+    public static Item CHAIN_RING;
+    public static Item CHAIN_AMULET;
 
     public static void initialize() {
+        // Register Chain Ring & Amulet (Trinkets)
+        RegistryKey<Item> ringKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chain_ring"));
+        CHAIN_RING = Registry.register(
+                Registries.ITEM,
+                ringKey,
+                new com.chainores.item.ChainRingItem(new Item.Settings().registryKey(ringKey).maxCount(1).rarity(net.minecraft.util.Rarity.RARE))
+        );
+
+        RegistryKey<Item> amuletKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chain_amulet"));
+        CHAIN_AMULET = Registry.register(
+                Registries.ITEM,
+                amuletKey,
+                new com.chainores.item.ChainAmuletItem(new Item.Settings().registryKey(amuletKey).maxCount(1).rarity(net.minecraft.util.Rarity.EPIC))
+        );
+
         // Register Guide Book
         RegistryKey<Item> guideKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("guide_book"));
         GUIDE_BOOK = Registry.register(

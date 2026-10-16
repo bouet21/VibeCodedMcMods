@@ -365,28 +365,23 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
             }
         }
 
+        // Trinkets (Chain Ring & Chain Amulet)
+        if ((input.isOf(Items.GOLD_INGOT) || input.isOf(Items.COPPER_INGOT) || input.isOf(t1.ingotItem)) &&
+            (catalyst.isOf(Items.AMETHYST_SHARD) || isTemplate)) {
+            return new ItemStack(ModItems.CHAIN_RING);
+        }
+        if (input.isOf(ModItems.CHAIN_RING) && (catalyst.isOf(Items.DIAMOND) || catalyst.isOf(ModBossItems.ABYSSAL_CATALYST) || isTemplate)) {
+            return transferGearData(input, new ItemStack(ModItems.CHAIN_AMULET));
+        }
+
         // -------------------------------------------------------------
         // 6. Gem Socketing in the Forge
         // -------------------------------------------------------------
         if (ChainModifiers.isSocketableItem(input)) {
-            if (catalyst.isOf(ModGems.BLOOD_GEM) && ChainModifiers.canAddGem(input)) {
+            String gemId = com.chainores.registry.ModGems.getGemId(catalyst.getItem());
+            if (gemId != null && ChainModifiers.canAddGem(input)) {
                 ItemStack out = input.copy();
-                ChainModifiers.addGem(out, ChainModifiers.GEM_BLOOD);
-                return out;
-            }
-            if (catalyst.isOf(ModGems.VOID_GEM) && ChainModifiers.canAddGem(input)) {
-                ItemStack out = input.copy();
-                ChainModifiers.addGem(out, ChainModifiers.GEM_VOID);
-                return out;
-            }
-            if (catalyst.isOf(ModGems.CORE_GEM) && ChainModifiers.canAddGem(input)) {
-                ItemStack out = input.copy();
-                ChainModifiers.addGem(out, ChainModifiers.GEM_CORE);
-                return out;
-            }
-            if (catalyst.isOf(ModGems.GENESIS_GEM) && ChainModifiers.canAddGem(input)) {
-                ItemStack out = input.copy();
-                ChainModifiers.addGem(out, ChainModifiers.GEM_GENESIS);
+                ChainModifiers.addGem(out, gemId);
                 return out;
             }
         }

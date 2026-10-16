@@ -41,6 +41,7 @@ public class NetherBehemothEntity extends HostileEntity {
     private int meteorCooldown = 130;
     private int chargeCooldown = 150;
     private boolean isEnraged = false;
+    private int scaledPlayerCount = 1;
 
     public NetherBehemothEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -113,6 +114,7 @@ public class NetherBehemothEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+        this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 950.0, 42.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
         // Auto-prune excess duplicate bosses from old unspaced world generation

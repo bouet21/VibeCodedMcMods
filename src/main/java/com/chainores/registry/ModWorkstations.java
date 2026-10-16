@@ -8,6 +8,7 @@ import com.chainores.workstation.ChainForgeScreenHandler;
 import com.chainores.workstation.CosmicSmelterBlock;
 import com.chainores.workstation.CosmicSmelterBlockEntity;
 import com.chainores.workstation.CosmicSmelterScreenHandler;
+import com.chainores.workstation.CosmicAltarBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -28,15 +29,18 @@ public class ModWorkstations {
     public static Block CHAIN_FORGE_BLOCK;
     public static Block CHAIN_ANVIL_BLOCK;
     public static Block COSMIC_SMELTER_BLOCK;
+    public static Block COSMIC_ALTAR_BLOCK;
 
     // Block Items
     public static Item CHAIN_FORGE_ITEM;
     public static Item CHAIN_ANVIL_ITEM;
     public static Item COSMIC_SMELTER_ITEM;
+    public static Item COSMIC_ALTAR_ITEM;
 
     // 2. Block Entity Types
     public static BlockEntityType<ChainForgeBlockEntity> CHAIN_FORGE_BLOCK_ENTITY;
     public static BlockEntityType<CosmicSmelterBlockEntity> COSMIC_SMELTER_BLOCK_ENTITY;
+    public static BlockEntityType<CosmicAltarBlockEntity> COSMIC_ALTAR_BLOCK_ENTITY;
 
     // 3. Screen Handler Types
     public static ScreenHandlerType<ChainForgeScreenHandler> CHAIN_FORGE_SCREEN_HANDLER;
@@ -65,6 +69,13 @@ public class ModWorkstations {
                 new CosmicSmelterBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).registryKey(smelterKey).requiresTool().strength(7.0f, 10.0f))
         );
 
+        RegistryKey<Block> altarKey = RegistryKey.of(RegistryKeys.BLOCK, ChainOresMod.id("cosmic_altar"));
+        COSMIC_ALTAR_BLOCK = Registry.register(
+                Registries.BLOCK,
+                altarKey,
+                new com.chainores.workstation.CosmicAltarBlock(AbstractBlock.Settings.copy(Blocks.CRYING_OBSIDIAN).registryKey(altarKey).requiresTool().strength(8.0f, 1200.0f).luminance(state -> 12))
+        );
+
         // B. Register Block Items
         RegistryKey<Item> forgeItemKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chain_forge"));
         CHAIN_FORGE_ITEM = Registry.register(
@@ -87,6 +98,13 @@ public class ModWorkstations {
                 new BlockItem(COSMIC_SMELTER_BLOCK, new Item.Settings().registryKey(smelterItemKey).useBlockPrefixedTranslationKey())
         );
 
+        RegistryKey<Item> altarItemKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("cosmic_altar"));
+        COSMIC_ALTAR_ITEM = Registry.register(
+                Registries.ITEM,
+                altarItemKey,
+                new BlockItem(COSMIC_ALTAR_BLOCK, new Item.Settings().registryKey(altarItemKey).rarity(net.minecraft.util.Rarity.EPIC).useBlockPrefixedTranslationKey())
+        );
+
         // C. Register Block Entities
         CHAIN_FORGE_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
@@ -98,6 +116,12 @@ public class ModWorkstations {
                 Registries.BLOCK_ENTITY_TYPE,
                 ChainOresMod.id("cosmic_smelter"),
                 FabricBlockEntityTypeBuilder.create(CosmicSmelterBlockEntity::new, COSMIC_SMELTER_BLOCK).build()
+        );
+
+        COSMIC_ALTAR_BLOCK_ENTITY = Registry.register(
+                Registries.BLOCK_ENTITY_TYPE,
+                ChainOresMod.id("cosmic_altar"),
+                FabricBlockEntityTypeBuilder.create(CosmicAltarBlockEntity::new, COSMIC_ALTAR_BLOCK).build()
         );
 
         // D. Register Screen Handlers

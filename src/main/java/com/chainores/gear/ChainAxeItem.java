@@ -84,9 +84,10 @@ public class ChainAxeItem extends Item {
     public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (target.getEntityWorld() instanceof ServerWorld world) {
             String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
-            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
-                attacker.heal(2.5f);
-                world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(com.chainores.modifier.ChainModifiers.getBaseGemType(gem))) {
+                int gt = com.chainores.modifier.ChainModifiers.getGemTier(gem);
+                attacker.heal(2.5f * gt);
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2 * gt, 0.2, 0.2, 0.2, 0.0);
             }
 
             float dmgMult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);

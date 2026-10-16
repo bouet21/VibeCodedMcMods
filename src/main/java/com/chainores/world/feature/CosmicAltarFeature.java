@@ -132,10 +132,10 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
                 world.setBlockState(basePos.add(x, 1, z), (Math.abs(x) == 2 || Math.abs(z) == 2) ? Blocks.PURPUR_BLOCK.getDefaultState() : Blocks.CRYING_OBSIDIAN.getDefaultState(), 2);
             }
         }
-        world.setBlockState(basePos.add(0, 2, 0), Blocks.CRYING_OBSIDIAN.getDefaultState(), 2);
+        // 5. Cosmic Altar & Chest
+        world.setBlockState(basePos.add(0, 2, 0), com.chainores.registry.ModWorkstations.COSMIC_ALTAR_BLOCK.getDefaultState(), 2);
 
-        // 5. Cosmic Master Chest atop Altar
-        BlockPos chestPos = basePos.add(0, 3, 0);
+        BlockPos chestPos = basePos.add(0, 2, 2);
         world.setBlockState(chestPos, Blocks.CHEST.getDefaultState(), 2);
         if (world.getBlockEntity(chestPos) instanceof ChestBlockEntity chest) {
             chest.setStack(0, new ItemStack(ModBossItems.VOID_BEACON, 1));

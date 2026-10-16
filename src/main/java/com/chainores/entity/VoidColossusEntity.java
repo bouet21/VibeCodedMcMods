@@ -43,6 +43,7 @@ public class VoidColossusEntity extends HostileEntity {
     private int bulletCooldown = 80;
     private int singularityCooldown = 130;
     private boolean isEnraged = false;
+    private int scaledPlayerCount = 1;
 
     public VoidColossusEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -114,6 +115,7 @@ public class VoidColossusEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+        this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 1350.0, 54.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
         // Auto-prune excess duplicate bosses from old unspaced world generation

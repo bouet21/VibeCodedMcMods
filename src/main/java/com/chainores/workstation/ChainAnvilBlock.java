@@ -108,10 +108,49 @@ public class ChainAnvilBlock extends Block {
         }
 
         if (gearStack.isEmpty()) {
+            // Check for Gem Fusion (Combining 2 identical gems to upgrade tier)
+            if (mainStack.getItem() instanceof com.chainores.item.GemItem) {
+                boolean canFuse = (mainStack.getCount() >= 2) || (offStack.isOf(mainStack.getItem()));
+                Item nextGem = com.chainores.registry.ModGems.getFusedGem(mainStack.getItem());
+
+                if (canFuse) {
+                    if (nextGem != null) {
+                        if (!world.isClient()) {
+                            ServerWorld sw = (ServerWorld) world;
+                            if (!player.getAbilities().creativeMode) {
+                                if (mainStack.getCount() >= 2) {
+                                    mainStack.decrement(2);
+                                } else {
+                                    mainStack.decrement(1);
+                                    offStack.decrement(1);
+                                }
+                            }
+                            player.getInventory().offerOrDrop(new ItemStack(nextGem, 1));
+                            world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.2f, 1.3f);
+                            world.playSound(null, pos, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 1.0f, 1.2f);
+                            world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.5f, 1.5f);
+                            sw.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 30, 0.4, 0.4, 0.4, 0.2);
+                            sw.spawnParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 15, 0.3, 0.3, 0.3, 0.1);
+
+                            player.sendMessage(Text.literal("★ ¡FUSIÓN DE GEMAS EXITOSA! Has creado: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                                    .append(nextGem.getName()), true);
+                        }
+                        return ActionResult.SUCCESS;
+                    } else {
+                        if (!world.isClient()) {
+                            player.sendMessage(Text.literal("★ Esta gema ya ha alcanzado el Rango III (Máximo Rango Trascendente).").formatted(Formatting.YELLOW), true);
+                            world.playSound(null, pos, SoundEvents.BLOCK_DISPENSER_FAIL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        }
+                        return ActionResult.SUCCESS;
+                    }
+                }
+            }
+
             if (!world.isClient() && hand == Hand.MAIN_HAND) {
                 player.sendMessage(Text.literal("ℹ YUNQUE EN CADENA:").formatted(Formatting.GOLD, Formatting.BOLD), false);
+                player.sendMessage(Text.literal("  • Fusión de Gemas: Clic con 2 gemas iguales (en mano u offhand) para subir a Rango II o III").formatted(Formatting.LIGHT_PURPLE), false);
                 player.sendMessage(Text.literal("  • Reforjar: Shift + Clic (con Amatista, Lapis o Diamante)").formatted(Formatting.AQUA), false);
-                player.sendMessage(Text.literal("  • Engarzar: Clic con Gema en mano secundaria").formatted(Formatting.LIGHT_PURPLE), false);
+                player.sendMessage(Text.literal("  • Engarzar: Clic con Gema en mano secundaria y arma/armadura/reliquia en principal").formatted(Formatting.GOLD), false);
                 player.sendMessage(Text.literal("  • Reparar: Clic con ítem dañado y su lingote").formatted(Formatting.GREEN), false);
                 player.sendMessage(Text.literal("  • Templar: Clic con Redstone o Lapis para Fuerza II y Prisa II (10m)").formatted(Formatting.YELLOW), false);
             }
@@ -264,17 +303,26 @@ public class ChainAnvilBlock extends Block {
     }
 
     private static boolean isGemItem(Item item) {
-        return item == com.chainores.registry.ModGems.BLOOD_GEM ||
-               item == com.chainores.registry.ModGems.VOID_GEM ||
-               item == com.chainores.registry.ModGems.CORE_GEM ||
-               item == com.chainores.registry.ModGems.GENESIS_GEM;
+        return item instanceof com.chainores.item.GemItem;
     }
 
     private static String getGemId(Item item) {
-        if (item == com.chainores.registry.ModGems.BLOOD_GEM) return com.chainores.modifier.ChainModifiers.GEM_BLOOD;
-        if (item == com.chainores.registry.ModGems.VOID_GEM) return com.chainores.modifier.ChainModifiers.GEM_VOID;
-        if (item == com.chainores.registry.ModGems.CORE_GEM) return com.chainores.modifier.ChainModifiers.GEM_CORE;
-        if (item == com.chainores.registry.ModGems.GENESIS_GEM) return com.chainores.modifier.ChainModifiers.GEM_GENESIS;
+        if (item == com.chainores.registry.ModGems.BLOOD_GEM) return "blood_gem";
+        if (item == com.chainores.registry.ModGems.BLOOD_GEM_2) return "blood_gem_2";
+        if (item == com.chainores.registry.ModGems.BLOOD_GEM_3) return "blood_gem_3";
+
+        if (item == com.chainores.registry.ModGems.VOID_GEM) return "void_gem";
+        if (item == com.chainores.registry.ModGems.VOID_GEM_2) return "void_gem_2";
+        if (item == com.chainores.registry.ModGems.VOID_GEM_3) return "void_gem_3";
+
+        if (item == com.chainores.registry.ModGems.CORE_GEM) return "core_gem";
+        if (item == com.chainores.registry.ModGems.CORE_GEM_2) return "core_gem_2";
+        if (item == com.chainores.registry.ModGems.CORE_GEM_3) return "core_gem_3";
+
+        if (item == com.chainores.registry.ModGems.GENESIS_GEM) return "genesis_gem";
+        if (item == com.chainores.registry.ModGems.GENESIS_GEM_2) return "genesis_gem_2";
+        if (item == com.chainores.registry.ModGems.GENESIS_GEM_3) return "genesis_gem_3";
+
         return null;
     }
 
@@ -306,10 +354,14 @@ public class ChainAnvilBlock extends Block {
         if (item == com.chainores.registry.ModGear.INFERNAL_BULWARK) return 100;
         if (item == com.chainores.registry.ModGear.AEGIS_SHIELD) return 115;
         if (item == com.chainores.registry.ModGear.COSMIC_SHIELD) return 150;
+        if (item == com.chainores.registry.ModItems.CHAIN_RING) return 30;
+        if (item == com.chainores.registry.ModItems.CHAIN_AMULET) return 70;
         return 1;
     }
 
     private Item getRequiredIngot(Item item, int tier) {
+        if (item == com.chainores.registry.ModItems.CHAIN_RING) return Items.GOLD_INGOT;
+        if (item == com.chainores.registry.ModItems.CHAIN_AMULET) return Items.DIAMOND;
         if (item == com.chainores.registry.ModGear.DRAGON_BOW) return OreRegistryData.TIERS.get(114).ingotItem;
         if (item == com.chainores.registry.ModGear.GALACTIC_CROSSBOW) return OreRegistryData.TIERS.get(124).ingotItem;
         if (item == com.chainores.registry.ModGear.SENTINEL_SHIELD) return OreRegistryData.TIERS.get(9).ingotItem;

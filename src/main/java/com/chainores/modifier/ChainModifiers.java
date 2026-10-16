@@ -10,6 +10,7 @@ import com.chainores.gear.DragonBreathBowItem;
 import com.chainores.gear.GalacticCrossbowItem;
 import com.chainores.gear.GodOmnitoolItem;
 import com.chainores.gear.ChainShieldItem;
+import com.chainores.item.ChainTrinketItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.Item;
@@ -28,7 +29,7 @@ public class ChainModifiers {
     public static final String KEY_GEM_COUNT = "chainores_gem_count";
     public static final String KEY_REFORGE = "chainores_reforge";
 
-    // Gem IDs
+    // Base Gem IDs
     public static final String GEM_BLOOD = "blood_gem";
     public static final String GEM_VOID = "void_gem";
     public static final String GEM_CORE = "core_gem";
@@ -41,6 +42,22 @@ public class ChainModifiers {
     public static final String REFORGE_SWIFT = "swift";
     public static final String REFORGE_TITANIC = "titanic";
 
+    public static int getGemTier(String gemId) {
+        if (gemId == null) return 1;
+        if (gemId.endsWith("_3")) return 3;
+        if (gemId.endsWith("_2")) return 2;
+        return 1;
+    }
+
+    public static String getBaseGemType(String gemId) {
+        if (gemId == null) return "";
+        if (gemId.startsWith(GEM_BLOOD)) return GEM_BLOOD;
+        if (gemId.startsWith(GEM_VOID)) return GEM_VOID;
+        if (gemId.startsWith(GEM_CORE)) return GEM_CORE;
+        if (gemId.startsWith(GEM_GENESIS)) return GEM_GENESIS;
+        return gemId;
+    }
+
     public static boolean isSocketableItem(ItemStack stack) {
         if (stack.isEmpty()) return false;
         Item item = stack.getItem();
@@ -48,12 +65,17 @@ public class ChainModifiers {
                item instanceof ChainSwordItem ||
                item instanceof DragonBreathBowItem ||
                item instanceof GalacticCrossbowItem ||
-               item instanceof GodOmnitoolItem;
+               item instanceof GodOmnitoolItem ||
+               item instanceof ChainTrinketItem;
     }
 
     public static int getMaxSockets(ItemStack stack) {
         if (stack.isEmpty() || !isSocketableItem(stack)) return 0;
         Item item = stack.getItem();
+
+        if (item instanceof ChainTrinketItem trinket) {
+            return trinket.getMaxSockets();
+        }
 
         if (item instanceof ChainArmorItem armor) {
             int t = armor.getTier();
@@ -126,7 +148,6 @@ public class ChainModifiers {
     }
 
     public static void setGem(ItemStack stack, String gemId) {
-        // Clear previous and set single gem
         if (stack.isEmpty()) return;
         NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> {
             nbt.putInt(KEY_GEM_COUNT, 1);
@@ -165,17 +186,28 @@ public class ChainModifiers {
     }
 
     public static float getDamageMultiplier(ItemStack stack) {
+        float mult = 1.0f;
         String reforge = getReforge(stack);
-        if (reforge == null) return 1.0f;
         com.chainores.config.ChainOresConfig cfg = com.chainores.config.ChainOresConfig.get();
-        float mult = switch (reforge) {
-            case REFORGE_DIVINE -> cfg.reforgeDivineDamageBoost;
-            case REFORGE_FIERCE -> cfg.reforgeFierceDamageBoost;
-            case REFORGE_LEGENDARY -> cfg.reforgeLegendaryDamageBoost;
-            case REFORGE_SWIFT -> 0.90f;
-            case REFORGE_TITANIC -> 1.10f;
-            default -> 1.0f;
-        };
+        if (reforge != null) {
+            mult = switch (reforge) {
+                case REFORGE_DIVINE -> cfg.reforgeDivineDamageBoost;
+                case REFORGE_FIERCE -> cfg.reforgeFierceDamageBoost;
+                case REFORGE_LEGENDARY -> cfg.reforgeLegendaryDamageBoost;
+                case REFORGE_SWIFT -> 0.90f;
+                case REFORGE_TITANIC -> 1.10f;
+                default -> 1.0f;
+            };
+        }
+
+        // Also scale with Void and Genesis gems
+        for (String gem : getGems(stack)) {
+            String base = getBaseGemType(gem);
+            int tier = getGemTier(gem);
+            if (GEM_VOID.equals(base)) mult += 0.15f * tier;
+            if (GEM_GENESIS.equals(base)) mult += 0.25f * tier;
+        }
+
         return Math.min(mult, cfg.maxCumulativeDamageMultiplier);
     }
 
@@ -184,8 +216,10 @@ public class ChainModifiers {
         float mult = 1.0f;
         List<String> gems = getGems(stack);
         for (String gem : gems) {
-            if (GEM_CORE.equals(gem)) mult += 0.35f;
-            if (GEM_GENESIS.equals(gem)) mult += cfg.genesisGemMiningBoost;
+            String base = getBaseGemType(gem);
+            int tier = getGemTier(gem);
+            if (GEM_CORE.equals(base)) mult += 0.35f * tier;
+            if (GEM_GENESIS.equals(base)) mult += cfg.genesisGemMiningBoost * tier;
         }
 
         String reforge = getReforge(stack);
@@ -213,6 +247,7 @@ public class ChainModifiers {
                item instanceof DragonBreathBowItem ||
                item instanceof GalacticCrossbowItem ||
                item instanceof ChainShieldItem ||
+               item instanceof ChainTrinketItem ||
                stack.isIn(net.minecraft.registry.tag.ItemTags.SWORDS) ||
                stack.isIn(net.minecraft.registry.tag.ItemTags.PICKAXES) ||
                stack.isIn(net.minecraft.registry.tag.ItemTags.AXES) ||
@@ -312,7 +347,6 @@ public class ChainModifiers {
             return;
         }
 
-        // Only weapons and armors show gem sockets!
         if (!isSocketableItem(stack)) {
             return;
         }
@@ -330,12 +364,20 @@ public class ChainModifiers {
             for (int i = 0; i < maxSockets; i++) {
                 if (i < gems.size()) {
                     String g = gems.get(i);
-                    switch (g) {
-                        case GEM_BLOOD -> socketLine.append(Text.literal("[◆ Carmesí] ").formatted(Formatting.DARK_RED, Formatting.BOLD));
-                        case GEM_VOID -> socketLine.append(Text.literal("[◆ Vacío] ").formatted(Formatting.DARK_PURPLE, Formatting.BOLD));
-                        case GEM_CORE -> socketLine.append(Text.literal("[◆ Núcleo] ").formatted(Formatting.GOLD, Formatting.BOLD));
-                        case GEM_GENESIS -> socketLine.append(Text.literal("[◆ Génesis] ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
-                        default -> socketLine.append(Text.literal("[◆ Gema] ").formatted(Formatting.AQUA));
+                    String base = getBaseGemType(g);
+                    int tier = getGemTier(g);
+                    String roman = switch (tier) {
+                        case 2 -> " II";
+                        case 3 -> " III";
+                        default -> " I";
+                    };
+
+                    switch (base) {
+                        case GEM_BLOOD -> socketLine.append(Text.literal("[◆ Carmesí" + roman + "] ").formatted(Formatting.DARK_RED, Formatting.BOLD));
+                        case GEM_VOID -> socketLine.append(Text.literal("[◆ Vacío" + roman + "] ").formatted(Formatting.DARK_PURPLE, Formatting.BOLD));
+                        case GEM_CORE -> socketLine.append(Text.literal("[◆ Núcleo" + roman + "] ").formatted(Formatting.GOLD, Formatting.BOLD));
+                        case GEM_GENESIS -> socketLine.append(Text.literal("[◆ Génesis" + roman + "] ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
+                        default -> socketLine.append(Text.literal("[◆ Gema" + roman + "] ").formatted(Formatting.AQUA));
                     }
                 } else {
                     socketLine.append(Text.literal("[◇ Vacío] ").formatted(Formatting.DARK_GRAY));

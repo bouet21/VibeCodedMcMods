@@ -17,6 +17,9 @@
 		],
 		"client": [
 			"com.chainores.client.ChainOresClient"
+		],
+		"emi": [
+			"com.chainores.compat.emi.ChainOresEmiPlugin"
 		]
 	},
 	"depends": {

@@ -263,11 +263,13 @@ public class ChainArmorItem extends Item {
         int genesisCount = 0;
 
         for (String gem : gems) {
-            switch (gem) {
-                case com.chainores.modifier.ChainModifiers.GEM_BLOOD -> bloodCount++;
-                case com.chainores.modifier.ChainModifiers.GEM_VOID -> voidCount++;
-                case com.chainores.modifier.ChainModifiers.GEM_CORE -> coreCount++;
-                case com.chainores.modifier.ChainModifiers.GEM_GENESIS -> genesisCount++;
+            String base = com.chainores.modifier.ChainModifiers.getBaseGemType(gem);
+            int tier = com.chainores.modifier.ChainModifiers.getGemTier(gem);
+            switch (base) {
+                case com.chainores.modifier.ChainModifiers.GEM_BLOOD -> bloodCount += tier;
+                case com.chainores.modifier.ChainModifiers.GEM_VOID -> voidCount += tier;
+                case com.chainores.modifier.ChainModifiers.GEM_CORE -> coreCount += tier;
+                case com.chainores.modifier.ChainModifiers.GEM_GENESIS -> genesisCount += tier;
             }
         }
 

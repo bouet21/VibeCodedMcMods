@@ -19,7 +19,17 @@ public class ChainForgeScreen extends HandledScreen<ChainForgeScreenHandler> {
     @Override
     protected void init() {
         super.init();
-        this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
+        this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2 - 20;
+
+        // Interactive button to open Códice / Progression Recipes directly from Forge
+        this.addDrawableChild(net.minecraft.client.gui.widget.ButtonWidget.builder(
+                Text.literal("📖 Códice"),
+                button -> {
+                    if (this.client != null) {
+                        this.client.setScreen(new ChainOresGuideScreen());
+                    }
+                }
+        ).dimensions(this.x + this.backgroundWidth - 56, this.y + 4, 50, 12).build());
     }
 
     @Override

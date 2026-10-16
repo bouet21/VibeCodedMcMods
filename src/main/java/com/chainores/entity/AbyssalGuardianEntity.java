@@ -42,6 +42,7 @@ public class AbyssalGuardianEntity extends HostileEntity {
     private int slamCooldown = 120;
     private int dashCooldown = 80;
     private boolean isEnraged = false;
+    private int scaledPlayerCount = 1;
 
     public AbyssalGuardianEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -95,6 +96,7 @@ public class AbyssalGuardianEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+        this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 650.0, 32.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
         // Auto-prune excess duplicate bosses from old unspaced world generation

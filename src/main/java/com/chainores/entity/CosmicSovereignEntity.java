@@ -43,6 +43,7 @@ public class CosmicSovereignEntity extends HostileEntity {
     private int burstCooldown = 100;
     private int supernovaCooldown = 130;
     private boolean isEnraged = false;
+    private int scaledPlayerCount = 1;
 
     public CosmicSovereignEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -120,6 +121,7 @@ public class CosmicSovereignEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+        this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 2500.0, 75.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
         // Ambient celestial sparkles

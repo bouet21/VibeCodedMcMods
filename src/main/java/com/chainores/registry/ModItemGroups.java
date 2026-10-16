@@ -37,6 +37,7 @@ public class ModItemGroups {
                     entries.add(ModWorkstations.CHAIN_FORGE_ITEM);
                     entries.add(ModWorkstations.CHAIN_ANVIL_ITEM);
                     entries.add(ModWorkstations.COSMIC_SMELTER_ITEM);
+                    entries.add(ModWorkstations.COSMIC_ALTAR_ITEM);
 
                     // Boss Summoners and Milestone Transition Catalysts
                     entries.add(ModBossItems.ABYSSAL_EYE);
@@ -49,11 +50,26 @@ public class ModItemGroups {
                     entries.add(ModBossItems.COSMIC_SINGULARITY);
                     entries.add(ModBossItems.COSMIC_TROPHY);
 
-                    // Phase 4 Socketable Gems
+                    // Phase 4 & 5 Socketable Gems (Tiers I, II, III)
                     entries.add(ModGems.BLOOD_GEM);
+                    entries.add(ModGems.BLOOD_GEM_2);
+                    entries.add(ModGems.BLOOD_GEM_3);
+
                     entries.add(ModGems.VOID_GEM);
+                    entries.add(ModGems.VOID_GEM_2);
+                    entries.add(ModGems.VOID_GEM_3);
+
                     entries.add(ModGems.CORE_GEM);
+                    entries.add(ModGems.CORE_GEM_2);
+                    entries.add(ModGems.CORE_GEM_3);
+
                     entries.add(ModGems.GENESIS_GEM);
+                    entries.add(ModGems.GENESIS_GEM_2);
+                    entries.add(ModGems.GENESIS_GEM_3);
+
+                    // Trinkets & Accessories
+                    entries.add(ModItems.CHAIN_RING);
+                    entries.add(ModItems.CHAIN_AMULET);
 
                     // Weapons, Tools, and Armors (Grouped by milestone sets)
                     for (ModGear.GearSet gear : ModGear.GEAR_SETS) {

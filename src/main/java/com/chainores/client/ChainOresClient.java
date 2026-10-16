@@ -66,11 +66,11 @@ public class ChainOresClient implements ClientModInitializer {
             com.chainores.modifier.ChainModifiers.appendModifierTooltips(stack, lines);
         });
 
-        // Register dedicated Dash KeyBinding (Default: 'R')
+        // Register dedicated Dash KeyBinding (Default: 'V' for Velocity, freeing 'R' for EMI/JEI recipes)
         DASH_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.chainores.dash",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_R,
+                GLFW.GLFW_KEY_V,
                 KeyBinding.Category.MOVEMENT
         ));
 

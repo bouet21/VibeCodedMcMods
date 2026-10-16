@@ -14,6 +14,8 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -83,10 +85,19 @@ public class GodOmnitoolItem extends Item {
             target.damage(serverWorld, serverWorld.getDamageSources().magic(), 120.0f);
 
             // Gem Modifiers
-            String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
-            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
-                attacker.heal(6.0f);
-                serverWorld.spawnParticles(ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 3, 0.2, 0.2, 0.2, 0.0);
+            for (String gem : com.chainores.modifier.ChainModifiers.getGems(stack)) {
+                String base = com.chainores.modifier.ChainModifiers.getBaseGemType(gem);
+                int gemTier = com.chainores.modifier.ChainModifiers.getGemTier(gem);
+                if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(base)) {
+                    attacker.heal(5.0f * gemTier);
+                    serverWorld.spawnParticles(ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 3 * gemTier, 0.2, 0.2, 0.2, 0.0);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_GENESIS.equals(base)) {
+                    target.damage(serverWorld, serverWorld.getDamageSources().magic(), 30.0f * gemTier);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_VOID.equals(base)) {
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 30 + 15 * gemTier, gemTier - 1));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_CORE.equals(base)) {
+                    target.setOnFireFor(8 * gemTier);
+                }
             }
 
             // Reforge Damage Boost

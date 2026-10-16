@@ -77,21 +77,24 @@ public class ChainSwordItem extends Item {
         // Multi-Gem Modifiers
         java.util.List<String> gems = com.chainores.modifier.ChainModifiers.getGems(stack);
         for (String gem : gems) {
-            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
-                attacker.heal(3.0f); // 1.5 hearts lifesteal
-                world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
-            } else if (com.chainores.modifier.ChainModifiers.GEM_GENESIS.equals(gem)) {
+            String base = com.chainores.modifier.ChainModifiers.getBaseGemType(gem);
+            int gemTier = com.chainores.modifier.ChainModifiers.getGemTier(gem);
+            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(base)) {
+                attacker.heal(3.0f * gemTier);
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 2 * gemTier, 0.2, 0.2, 0.2, 0.0);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_GENESIS.equals(base)) {
                 LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.TRIGGERED);
                 if (lightning != null) {
                     lightning.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
                     lightning.setCosmetic(true);
                     world.spawnEntity(lightning);
                 }
-                target.damage(world, attacker.getDamageSources().magic(), 20.0f);
-            } else if (com.chainores.modifier.ChainModifiers.GEM_VOID.equals(gem)) {
-                target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 40, 1));
-            } else if (com.chainores.modifier.ChainModifiers.GEM_CORE.equals(gem)) {
-                target.setOnFireFor(8);
+                target.damage(world, attacker.getDamageSources().magic(), 20.0f * gemTier);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_VOID.equals(base)) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 30 + 15 * gemTier, gemTier - 1));
+                target.damage(world, attacker.getDamageSources().magic(), 10.0f * gemTier);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_CORE.equals(base)) {
+                target.setOnFireFor(6 * gemTier);
             }
         }
 
