@@ -54,8 +54,17 @@ public class ChainShovelItem extends Item {
             }
             float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
             if (mult > 1.0f) {
-                target.damage(world, world.getDamageSources().magic(), (mult - 1.0f) * 6.0f);
+                target.timeUntilRegen = 0;
+                target.damage(world, world.getDamageSources().magic(), (mult - 1.0f) * 10.0f);
             }
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, net.minecraft.entity.EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == net.minecraft.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.entity.EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
         }
     }
 
@@ -99,14 +108,25 @@ public class ChainShovelItem extends Item {
         BlockState state = world.getBlockState(pos);
         PlayerEntityAccessor(context);
 
-        if (context.getPlayer() != null && state.isOf(Blocks.GRASS_BLOCK)) {
-            if (!world.isClient()) {
+        if (context.getPlayer() != null && isPathable(state)) {
+            if (!world.isClient() && world instanceof ServerWorld serverWorld && context.getPlayer() instanceof ServerPlayerEntity serverPlayer) {
                 int radius = (tier >= 135) ? 2 : (tier >= 40 ? 1 : 0);
                 for (int dx = -radius; dx <= radius; dx++) {
                     for (int dz = -radius; dz <= radius; dz++) {
                         BlockPos p = pos.add(dx, 0, dz);
-                        if (world.getBlockState(p).isOf(Blocks.GRASS_BLOCK) && world.getBlockState(p.up()).isAir()) {
-                            world.setBlockState(p, Blocks.DIRT_PATH.getDefaultState());
+                        BlockState bs = world.getBlockState(p);
+                        if (isPathable(bs)) {
+                            BlockPos up = p.up();
+                            BlockState upState = world.getBlockState(up);
+                            if (upState.isAir() || upState.isReplaceable()) {
+                                if (!com.chainores.util.ServerProtectionHelper.canModifyAt(serverWorld, serverPlayer, p)) {
+                                    continue;
+                                }
+                                if (!upState.isAir()) {
+                                    world.breakBlock(up, true, serverPlayer);
+                                }
+                                world.setBlockState(p, Blocks.DIRT_PATH.getDefaultState());
+                            }
                         }
                     }
                 }
@@ -118,12 +138,21 @@ public class ChainShovelItem extends Item {
         return super.useOnBlock(context);
     }
 
+    private boolean isPathable(BlockState state) {
+        return state.isOf(Blocks.GRASS_BLOCK)
+                || state.isOf(Blocks.DIRT)
+                || state.isOf(Blocks.COARSE_DIRT)
+                || state.isOf(Blocks.ROOTED_DIRT)
+                || state.isOf(Blocks.PODZOL)
+                || state.isOf(Blocks.MYCELIUM);
+    }
+
     private void PlayerEntityAccessor(ItemUsageContext context) {}
 
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld && miner instanceof ServerPlayerEntity player) {
-            if (!IS_EXCAVATING.get() && state.isIn(BlockTags.SHOVEL_MINEABLE) && (player.isSneaking() || tier >= 100)) {
+            if (!IS_EXCAVATING.get() && state.isIn(BlockTags.SHOVEL_MINEABLE) && com.chainores.config.ChainOresConfig.get().enableAreaMining && (player.isSneaking() || tier >= 100)) {
                 int radius = (tier >= 135) ? 2 : (tier >= 40 ? 1 : 0);
                 if (radius > 0) {
                     excavateArea(serverWorld, player, stack, pos, radius);
@@ -140,10 +169,11 @@ public class ChainShovelItem extends Item {
 
     private void excavateArea(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center, int radius) {
         Direction facing = Direction.getEntityFacingOrder(player)[0];
+        int effRadius = Math.min(radius, com.chainores.config.ChainOresConfig.get().areaMiningMaxRadius);
         IS_EXCAVATING.set(true);
         try {
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -effRadius; dx <= effRadius; dx++) {
+                for (int dy = -effRadius; dy <= effRadius; dy++) {
                     if (dx == 0 && dy == 0) continue;
 
                     BlockPos targetPos;
@@ -157,6 +187,9 @@ public class ChainShovelItem extends Item {
 
                     BlockState targetState = world.getBlockState(targetPos);
                     if (targetState.isIn(BlockTags.SHOVEL_MINEABLE)) {
+                        if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, targetPos, targetState)) {
+                            continue;
+                        }
                         world.breakBlock(targetPos, true, player);
                         if (tier < 135) {
                             stack.damage(1, player, EquipmentSlot.MAINHAND);
@@ -167,8 +200,9 @@ public class ChainShovelItem extends Item {
                 if (stack.isEmpty()) break;
             }
 
+            consolidateDrops(world, player, 10.0);
             if (tier >= 125) {
-                world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(8.0), e -> true).forEach(e -> {
+                world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(8.0), e -> !e.isRemoved()).forEach(e -> {
                     e.requestTeleport(player.getX(), player.getY() + 0.2, player.getZ());
                 });
             }
@@ -178,7 +212,7 @@ public class ChainShovelItem extends Item {
     }
 
     private void applySuperSmelt(ServerWorld world, BlockPos pos) {
-        world.getEntitiesByClass(ItemEntity.class, new net.minecraft.util.math.Box(pos).expand(2.0), e -> true).forEach(item -> {
+        world.getEntitiesByClass(ItemEntity.class, new net.minecraft.util.math.Box(pos).expand(2.0), e -> !e.isRemoved()).forEach(item -> {
             ItemStack drop = item.getStack();
             if (drop.isOf(Blocks.SAND.asItem()) || drop.isOf(Blocks.RED_SAND.asItem())) {
                 item.setStack(new ItemStack(Blocks.GLASS, drop.getCount()));
@@ -186,5 +220,28 @@ public class ChainShovelItem extends Item {
                 item.setStack(new ItemStack(Items.BRICK, drop.getCount()));
             }
         });
+    }
+
+    private void consolidateDrops(ServerWorld world, ServerPlayerEntity player, double radius) {
+        java.util.List<ItemEntity> items = world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(radius), e -> !e.isRemoved());
+        for (int i = 0; i < items.size(); i++) {
+            ItemEntity a = items.get(i);
+            if (a.isRemoved()) continue;
+            for (int j = i + 1; j < items.size(); j++) {
+                ItemEntity b = items.get(j);
+                if (b.isRemoved()) continue;
+                if (ItemStack.areItemsAndComponentsEqual(a.getStack(), b.getStack())) {
+                    int space = a.getStack().getMaxCount() - a.getStack().getCount();
+                    if (space > 0) {
+                        int toTake = Math.min(space, b.getStack().getCount());
+                        a.getStack().increment(toTake);
+                        b.getStack().decrement(toTake);
+                        if (b.getStack().isEmpty()) {
+                            b.discard();
+                        }
+                    }
+                }
+            }
+        }
     }
 }

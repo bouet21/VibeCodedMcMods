@@ -32,13 +32,27 @@ public class GalacticCrossbowItem extends CrossbowItem {
     protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float roll, LivingEntity target) {
         super.shoot(shooter, projectile, index, speed * 2.2f, divergence, roll, target);
         projectile.setNoGravity(true);
+        ItemStack xbowStack = shooter.getActiveItem();
+        if (xbowStack.isEmpty() || !(xbowStack.getItem() instanceof GalacticCrossbowItem)) {
+            xbowStack = shooter.getMainHandStack().getItem() instanceof GalacticCrossbowItem ? shooter.getMainHandStack() : shooter.getOffHandStack();
+        }
+        float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(xbowStack);
+
         if (projectile instanceof PersistentProjectileEntity arrow) {
-            arrow.applyDamageModifier(2.8f);
+            arrow.applyDamageModifier(2.8f * mult);
             arrow.setCritical(true);
         }
         if (shooter.getEntityWorld() instanceof ServerWorld) {
             shooter.getEntityWorld().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
                     SoundEvents.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.PLAYERS, 0.7f, 1.8f);
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, net.minecraft.entity.EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == net.minecraft.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.entity.EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
         }
     }
 }

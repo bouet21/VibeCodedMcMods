@@ -71,7 +71,7 @@ public class ChainArmorItem extends Item {
         textConsumer.accept(Text.literal("★ Set Completo (4/4): ").formatted(Formatting.GOLD, Formatting.BOLD)
                 .append(Text.literal(getArmorPerkDesc(tier)).formatted(Formatting.YELLOW)));
         textConsumer.accept(Text.literal("⚡ Habilidad Activa: ").formatted(Formatting.LIGHT_PURPLE)
-                .append(Text.literal("Esprintar + Agacharse activa Dash Impulso (CD: 4s)").formatted(Formatting.GRAY, Formatting.ITALIC)));
+                .append(Text.literal("Tecla [Dash] activa Dash Impulso (CD: " + com.chainores.config.ChainOresConfig.get().dashCooldownSeconds + "s)").formatted(Formatting.AQUA, Formatting.ITALIC)));
     }
 
     public static String getArmor2PieceDesc(int tier) {
@@ -195,18 +195,36 @@ public class ChainArmorItem extends Item {
         }
     }
 
+    public static boolean performDash(ServerPlayerEntity player) {
+        if (player == null || player.isSpectator()) return false;
+
+        ItemStack chest = player.getEquippedStack(EquipmentSlot.CHEST);
+        if (!(chest.getItem() instanceof ChainArmorItem)) {
+            return false;
+        }
+
+        long now = System.currentTimeMillis();
+        long cdMillis = com.chainores.config.ChainOresConfig.get().dashCooldownSeconds * 1000L;
+        long lastDash = DASH_COOLDOWNS.getOrDefault(player.getUuid(), 0L);
+
+        if (now - lastDash >= cdMillis) {
+            DASH_COOLDOWNS.put(player.getUuid(), now);
+            Vec3d rot = player.getRotationVector();
+            Vec3d dashVelocity = new Vec3d(rot.x * 1.6, 0.25, rot.z * 1.6);
+            player.setVelocity(dashVelocity);
+            player.velocityDirty = true;
+            player.getEntityWorld().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ENTITY_BREEZE_WIND_BURST, net.minecraft.sound.SoundCategory.PLAYERS, 1.0f, 1.2f);
+            player.sendMessage(Text.literal("⚡ ¡DASH IMPULSO EJECUTADO!").formatted(Formatting.AQUA, Formatting.BOLD), true);
+            return true;
+        }
+        return false;
+    }
+
     private void handleDashAbility(ServerPlayerEntity player, ServerWorld world) {
-        if (player.isSprinting() && player.isSneaking()) {
-            long now = System.currentTimeMillis();
-            long lastDash = DASH_COOLDOWNS.getOrDefault(player.getUuid(), 0L);
-            if (now - lastDash >= 4000) { // 4s cooldown
-                DASH_COOLDOWNS.put(player.getUuid(), now);
-                Vec3d rot = player.getRotationVector();
-                Vec3d dashVelocity = new Vec3d(rot.x * 1.6, 0.25, rot.z * 1.6);
-                player.setVelocity(dashVelocity);
-                player.velocityDirty = true;
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_BREEZE_WIND_BURST, net.minecraft.sound.SoundCategory.PLAYERS, 1.0f, 1.2f);
-                player.sendMessage(Text.literal("⚡ ¡DASH IMPULSO EJECUTADO!").formatted(Formatting.AQUA, Formatting.BOLD), true);
+        if (com.chainores.config.ChainOresConfig.get().enableSprintSneakDash) {
+            if (player.isSprinting() && player.isSneaking()) {
+                performDash(player);
             }
         }
     }

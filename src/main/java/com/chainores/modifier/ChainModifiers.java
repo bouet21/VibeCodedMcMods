@@ -9,6 +9,7 @@ import com.chainores.gear.ChainSwordItem;
 import com.chainores.gear.DragonBreathBowItem;
 import com.chainores.gear.GalacticCrossbowItem;
 import com.chainores.gear.GodOmnitoolItem;
+import com.chainores.gear.ChainShieldItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.Item;
@@ -166,22 +167,25 @@ public class ChainModifiers {
     public static float getDamageMultiplier(ItemStack stack) {
         String reforge = getReforge(stack);
         if (reforge == null) return 1.0f;
-        return switch (reforge) {
-            case REFORGE_DIVINE -> 1.50f;
-            case REFORGE_FIERCE -> 1.35f;
-            case REFORGE_LEGENDARY -> 1.25f;
+        com.chainores.config.ChainOresConfig cfg = com.chainores.config.ChainOresConfig.get();
+        float mult = switch (reforge) {
+            case REFORGE_DIVINE -> cfg.reforgeDivineDamageBoost;
+            case REFORGE_FIERCE -> cfg.reforgeFierceDamageBoost;
+            case REFORGE_LEGENDARY -> cfg.reforgeLegendaryDamageBoost;
             case REFORGE_SWIFT -> 0.90f;
             case REFORGE_TITANIC -> 1.10f;
             default -> 1.0f;
         };
+        return Math.min(mult, cfg.maxCumulativeDamageMultiplier);
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack) {
+        com.chainores.config.ChainOresConfig cfg = com.chainores.config.ChainOresConfig.get();
         float mult = 1.0f;
         List<String> gems = getGems(stack);
         for (String gem : gems) {
             if (GEM_CORE.equals(gem)) mult += 0.35f;
-            if (GEM_GENESIS.equals(gem)) mult += 0.50f;
+            if (GEM_GENESIS.equals(gem)) mult += cfg.genesisGemMiningBoost;
         }
 
         String reforge = getReforge(stack);
@@ -193,7 +197,90 @@ public class ChainModifiers {
                 case REFORGE_TITANIC -> mult -= 0.10f;
             }
         }
-        return mult;
+        return Math.min(mult, cfg.maxMiningSpeedMultiplier);
+    }
+
+    public static boolean isReforgableGear(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return false;
+        Item item = stack.getItem();
+        return item instanceof ChainSwordItem ||
+               item instanceof ChainPickaxeItem ||
+               item instanceof ChainAxeItem ||
+               item instanceof ChainShovelItem ||
+               item instanceof ChainHoeItem ||
+               item instanceof ChainArmorItem ||
+               item instanceof GodOmnitoolItem ||
+               item instanceof DragonBreathBowItem ||
+               item instanceof GalacticCrossbowItem ||
+               item instanceof ChainShieldItem ||
+               stack.isIn(net.minecraft.registry.tag.ItemTags.SWORDS) ||
+               stack.isIn(net.minecraft.registry.tag.ItemTags.PICKAXES) ||
+               stack.isIn(net.minecraft.registry.tag.ItemTags.AXES) ||
+               stack.isIn(net.minecraft.registry.tag.ItemTags.SHOVELS) ||
+               stack.isIn(net.minecraft.registry.tag.ItemTags.HOES) ||
+               stack.isIn(net.minecraft.registry.tag.ItemTags.ARMOR_ENCHANTABLE) ||
+               stack.isOf(net.minecraft.item.Items.SHIELD) ||
+               stack.isOf(net.minecraft.item.Items.BOW) ||
+               stack.isOf(net.minecraft.item.Items.CROSSBOW);
+    }
+
+    public static void applyReforgeHeldBuffs(net.minecraft.entity.Entity entity, ItemStack stack) {
+        if (entity.getEntityWorld().isClient() || !(entity instanceof net.minecraft.entity.player.PlayerEntity player)) return;
+        String reforge = getReforge(stack);
+        if (reforge != null) {
+            switch (reforge) {
+                case REFORGE_DIVINE ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.RESISTANCE, 40, 0, true, false));
+                case REFORGE_SWIFT ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SPEED, 40, 0, true, false));
+                case REFORGE_FIERCE ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.STRENGTH, 40, 0, true, false));
+                case REFORGE_TITANIC ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.RESISTANCE, 40, 0, true, false));
+                case REFORGE_LEGENDARY ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.LUCK, 40, 0, true, false));
+            }
+        }
+    }
+
+    public static Text getReforgeName(String reforge) {
+        if (reforge == null) return Text.empty();
+        return switch (reforge) {
+            case REFORGE_DIVINE -> Text.translatable("reforge.chainores.divine").formatted(Formatting.AQUA, Formatting.BOLD);
+            case REFORGE_LEGENDARY -> Text.translatable("reforge.chainores.legendary").formatted(Formatting.GOLD, Formatting.BOLD);
+            case REFORGE_FIERCE -> Text.translatable("reforge.chainores.fierce").formatted(Formatting.RED, Formatting.BOLD);
+            case REFORGE_SWIFT -> Text.translatable("reforge.chainores.swift").formatted(Formatting.GREEN, Formatting.BOLD);
+            case REFORGE_TITANIC -> Text.translatable("reforge.chainores.titanic").formatted(Formatting.GRAY, Formatting.BOLD);
+            default -> Text.empty();
+        };
+    }
+
+    public static List<Text> getReforgeDescriptionLines(String reforge) {
+        List<Text> lines = new ArrayList<>();
+        if (reforge == null) return lines;
+        switch (reforge) {
+            case REFORGE_DIVINE -> {
+                lines.add(Text.translatable("reforge.chainores.divine.desc1").formatted(Formatting.DARK_AQUA));
+                lines.add(Text.translatable("reforge.chainores.divine.desc2").formatted(Formatting.AQUA));
+            }
+            case REFORGE_LEGENDARY -> {
+                lines.add(Text.translatable("reforge.chainores.legendary.desc1").formatted(Formatting.GOLD));
+                lines.add(Text.translatable("reforge.chainores.legendary.desc2").formatted(Formatting.YELLOW));
+            }
+            case REFORGE_FIERCE -> {
+                lines.add(Text.translatable("reforge.chainores.fierce.desc1").formatted(Formatting.DARK_RED));
+                lines.add(Text.translatable("reforge.chainores.fierce.desc2").formatted(Formatting.RED));
+            }
+            case REFORGE_SWIFT -> {
+                lines.add(Text.translatable("reforge.chainores.swift.desc1").formatted(Formatting.DARK_GREEN));
+                lines.add(Text.translatable("reforge.chainores.swift.desc2").formatted(Formatting.GREEN));
+            }
+            case REFORGE_TITANIC -> {
+                lines.add(Text.translatable("reforge.chainores.titanic.desc1").formatted(Formatting.GRAY));
+                lines.add(Text.translatable("reforge.chainores.titanic.desc2").formatted(Formatting.WHITE));
+            }
+        }
+        return lines;
     }
 
     public static void appendModifierTooltips(ItemStack stack, Consumer<Text> textConsumer) {
@@ -205,28 +292,24 @@ public class ChainModifiers {
     }
 
     public static void appendModifierTooltips(ItemStack stack, List<Text> tooltip) {
-        // Prevent duplicate tooltip lines if called multiple times
-        boolean hasSocketInfo = tooltip.stream().anyMatch(t -> t.getString().contains("Ranuras de Gemas"));
-        if (hasSocketInfo) {
-            return;
-        }
-
         String reforge = getReforge(stack);
         if (reforge != null) {
             boolean hasReforgeInfo = tooltip.stream().anyMatch(t -> t.getString().contains("⚡ "));
             if (!hasReforgeInfo) {
-                Text reforgeText = switch (reforge) {
-                    case REFORGE_DIVINE -> Text.translatable("reforge.chainores.divine").formatted(Formatting.AQUA, Formatting.BOLD);
-                    case REFORGE_LEGENDARY -> Text.translatable("reforge.chainores.legendary").formatted(Formatting.GOLD, Formatting.BOLD);
-                    case REFORGE_FIERCE -> Text.translatable("reforge.chainores.fierce").formatted(Formatting.RED, Formatting.BOLD);
-                    case REFORGE_SWIFT -> Text.translatable("reforge.chainores.swift").formatted(Formatting.GREEN, Formatting.BOLD);
-                    case REFORGE_TITANIC -> Text.translatable("reforge.chainores.titanic").formatted(Formatting.GRAY, Formatting.BOLD);
-                    default -> Text.empty();
-                };
+                Text reforgeText = getReforgeName(reforge);
                 if (!reforgeText.getString().isEmpty()) {
                     tooltip.add(Text.literal("⚡ ").formatted(Formatting.YELLOW).append(reforgeText));
+                    for (Text desc : getReforgeDescriptionLines(reforge)) {
+                        tooltip.add(desc);
+                    }
                 }
             }
+        }
+
+        // Prevent duplicate socket info if called multiple times
+        boolean hasSocketInfo = tooltip.stream().anyMatch(t -> t.getString().contains("Ranuras de Gemas"));
+        if (hasSocketInfo) {
+            return;
         }
 
         // Only weapons and armors show gem sockets!

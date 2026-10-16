@@ -32,13 +32,27 @@ public class DragonBreathBowItem extends BowItem {
     @Override
     protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float roll, LivingEntity target) {
         super.shoot(shooter, projectile, index, speed * 1.6f, divergence, roll, target);
+        ItemStack bowStack = shooter.getActiveItem();
+        if (bowStack.isEmpty() || !(bowStack.getItem() instanceof DragonBreathBowItem)) {
+            bowStack = shooter.getMainHandStack().getItem() instanceof DragonBreathBowItem ? shooter.getMainHandStack() : shooter.getOffHandStack();
+        }
+        float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(bowStack);
+
         if (projectile instanceof PersistentProjectileEntity arrow) {
-            arrow.applyDamageModifier(1.8f);
+            arrow.applyDamageModifier(1.8f * mult);
             arrow.setCritical(true);
         }
         if (shooter.getEntityWorld() instanceof ServerWorld) {
             shooter.getEntityWorld().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
                     SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 0.8f, 1.6f);
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, net.minecraft.entity.EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == net.minecraft.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.entity.EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
         }
     }
 }

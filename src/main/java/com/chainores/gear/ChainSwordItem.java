@@ -22,10 +22,12 @@ import java.util.function.Consumer;
 
 public class ChainSwordItem extends Item {
     private final int tier;
+    private final float bonusDamage;
 
     public ChainSwordItem(ToolMaterial material, int tier, float bonusDamage, Settings settings) {
         super(settings.sword(material, bonusDamage, -2.4f));
         this.tier = tier;
+        this.bonusDamage = bonusDamage;
     }
 
     public int getTier() {
@@ -96,7 +98,9 @@ public class ChainSwordItem extends Item {
         // Reforge Damage Multiplier
         float dmgMult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
         if (dmgMult > 1.0f && attacker instanceof PlayerEntity pe) {
-            float extra = (dmgMult - 1.0f) * 12.0f;
+            float baseDmg = this.bonusDamage + 4.0f;
+            float extra = (dmgMult - 1.0f) * baseDmg;
+            target.timeUntilRegen = 0;
             target.damage(world, attacker.getDamageSources().playerAttack(pe), extra);
         }
 
@@ -223,6 +227,14 @@ public class ChainSwordItem extends Item {
                     attacker.playSound(net.minecraft.sound.SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 0.8f, 1.5f);
                 }
             }
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, net.minecraft.entity.EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == net.minecraft.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.entity.EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
         }
     }
 }

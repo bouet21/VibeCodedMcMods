@@ -157,6 +157,9 @@ public class StructureLocator {
         int targetZ = ((playerPos.getZ() >> 4) + 28) * 16 + 8;
         int targetY;
 
+        // Ensure the target chunk is generated and loaded so heightmap calculations and block placement succeed
+        world.getChunk(targetX >> 4, targetZ >> 4);
+
         BlockPos targetPos;
         if (type.equals(TYPE_FORGE)) {
             int surfaceY = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, targetX, targetZ);
@@ -201,7 +204,8 @@ public class StructureLocator {
                             return false;
                         });
 
-                        // Enforce minimum 2000 blocks separation between structures of same type and dimension
+                        // Enforce minimum separation between structures of same type and dimension
+                        double minDistance = com.chainores.config.ChainOresConfig.get().minStructureDistanceBlocks;
                         List<StructureEntry> pruned = new ArrayList<>();
                         for (StructureEntry entry : ENTRIES) {
                             boolean duplicate = false;
@@ -209,7 +213,7 @@ public class StructureLocator {
                                 if (kept.type().equalsIgnoreCase(entry.type()) && kept.dimension().equals(entry.dimension())) {
                                     double dx = kept.x() - entry.x();
                                     double dz = kept.z() - entry.z();
-                                    if (dx * dx + dz * dz < 2000.0 * 2000.0) {
+                                    if (dx * dx + dz * dz < minDistance * minDistance) {
                                         duplicate = true;
                                         break;
                                     }

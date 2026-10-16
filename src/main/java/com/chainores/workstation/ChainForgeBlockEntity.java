@@ -27,13 +27,20 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.inventory.SidedInventory;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
+public class ChainForgeBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
     public static final int INPUT_SLOT = 0;
     public static final int CATALYST_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
+
+    private static final int[] TOP_SLOTS = new int[]{INPUT_SLOT};
+    private static final int[] BOTTOM_SLOTS = new int[]{OUTPUT_SLOT};
+    private static final int[] SIDE_SLOTS = new int[]{CATALYST_SLOT, INPUT_SLOT};
 
     private int forgeProgress = 0;
     private final int totalForgeTime = 15; // 0.75 seconds for fast, responsive feedback
@@ -530,8 +537,33 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity {
     }
 
     private boolean isGear(Item item) {
-        return item instanceof ChainSwordItem || item instanceof ChainPickaxeItem || item instanceof ChainAxeItem ||
-                item instanceof ChainShovelItem || item instanceof ChainHoeItem || item instanceof ChainArmorItem ||
-                item instanceof GodOmnitoolItem || item instanceof ChainShieldItem || isSpecialWeapon(item);
+        return com.chainores.modifier.ChainModifiers.isReforgableGear(new ItemStack(item));
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        if (side == Direction.DOWN) {
+            return BOTTOM_SLOTS;
+        }
+        if (side == Direction.UP) {
+            return TOP_SLOTS;
+        }
+        return SIDE_SLOTS;
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        if (slot == OUTPUT_SLOT) {
+            return false;
+        }
+        if (slot == CATALYST_SLOT) {
+            return true;
+        }
+        return slot == INPUT_SLOT;
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return dir == Direction.DOWN && slot == OUTPUT_SLOT;
     }
 }

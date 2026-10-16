@@ -91,4 +91,12 @@ public class ChainShieldItem extends Item {
         }
         super.usageTick(world, user, stack, remainingUseTicks);
     }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, net.minecraft.entity.EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == net.minecraft.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.entity.EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
+        }
+    }
 }

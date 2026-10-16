@@ -113,6 +113,7 @@ public class ModWorkstations {
                 new ScreenHandlerType<>(CosmicSmelterScreenHandler::new, FeatureFlags.VANILLA_FEATURES)
         );
 
+        ChainAnvilBlock.registerInteractionCallback();
         ChainOresMod.LOGGER.info("Registered Chain Ores Workstations: Chain Forge, Chain Anvil, and Cosmic Smelter!");
     }
 }

@@ -2,8 +2,11 @@ package com.chainores.gear;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.FarmlandBlock;
+import net.minecraft.block.NetherWartBlock;
+import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -14,7 +17,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -28,6 +33,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -80,12 +86,13 @@ public class GodOmnitoolItem extends Item {
             String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
             if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(gem)) {
                 attacker.heal(6.0f);
-                serverWorld.spawnParticles(net.minecraft.particle.ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 3, 0.2, 0.2, 0.2, 0.0);
+                serverWorld.spawnParticles(ParticleTypes.HEART, attacker.getX(), attacker.getY() + 1.2, attacker.getZ(), 3, 0.2, 0.2, 0.2, 0.0);
             }
 
             // Reforge Damage Boost
             float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
             if (mult > 1.0f) {
+                target.timeUntilRegen = 0;
                 target.damage(serverWorld, serverWorld.getDamageSources().magic(), (mult - 1.0f) * 60.0f);
             }
 
@@ -95,40 +102,106 @@ public class GodOmnitoolItem extends Item {
     }
 
     @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, net.minecraft.entity.EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == net.minecraft.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.entity.EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
+
+            if (entity instanceof ServerPlayerEntity player) {
+                // Escarcha Agrícola Divina: Protect farmland & keep hydrated
+                BlockPos under = player.getBlockPos().down();
+                BlockState bs = world.getBlockState(under);
+                if (bs.isOf(Blocks.FARMLAND)) {
+                    if (bs.get(FarmlandBlock.MOISTURE) < 7) {
+                        world.setBlockState(under, bs.with(FarmlandBlock.MOISTURE, 7));
+                    }
+                } else if (bs.isOf(Blocks.DIRT) && isAnyCrop(world.getBlockState(player.getBlockPos()))) {
+                    world.setBlockState(under, Blocks.FARMLAND.getDefaultState().with(FarmlandBlock.MOISTURE, 7));
+                }
+            }
+        }
+    }
+
+    @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         ServerPlayerEntity player = context.getPlayer() instanceof ServerPlayerEntity sp ? sp : null;
 
-        if (!world.isClient() && player != null) {
-            if (player.isSneaking()) {
-                // Shift + Click: Till 9x9 Farmland
-                if (state.isOf(Blocks.DIRT) || state.isOf(Blocks.GRASS_BLOCK) || state.isOf(Blocks.DIRT_PATH)) {
+        if (world.isClient()) {
+            if (isAnyCrop(state) || isTillable(state)) return ActionResult.SUCCESS;
+            return super.useOnBlock(context);
+        }
+
+        if (player != null && world instanceof ServerWorld serverWorld) {
+            // CASE 1: CROP RIGHT-CLICK (Eden Harvest or Eden Growth)
+            if (isAnyCrop(state)) {
+                if (isMatureCrop(state)) {
+                    harvestEden(serverWorld, player, context.getStack(), pos);
+                    world.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    world.playSound(null, pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 0.8f, 1.2f);
+                    return ActionResult.SUCCESS;
+                } else {
+                    // 9x9 Instant Max Maturity
                     for (int dx = -4; dx <= 4; dx++) {
                         for (int dz = -4; dz <= 4; dz++) {
                             BlockPos p = pos.add(dx, 0, dz);
                             BlockState bs = world.getBlockState(p);
-                            if ((bs.isOf(Blocks.DIRT) || bs.isOf(Blocks.GRASS_BLOCK) || bs.isOf(Blocks.DIRT_PATH)) && world.getBlockState(p.up()).isAir()) {
-                                world.setBlockState(p, Blocks.FARMLAND.getDefaultState().with(FarmlandBlock.MOISTURE, 7));
+                            if (bs.getBlock() instanceof CropBlock crop) {
+                                world.setBlockState(p, crop.withAge(crop.getMaxAge()));
+                            } else if (bs.isOf(Blocks.NETHER_WART)) {
+                                world.setBlockState(p, bs.with(NetherWartBlock.AGE, 3));
+                            } else if (bs.isOf(Blocks.COCOA)) {
+                                world.setBlockState(p, bs.with(CocoaBlock.AGE, 2));
                             }
                         }
                     }
-                    world.playSound(null, pos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    serverWorld.spawnParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 12, 1.0, 0.3, 1.0, 0.0);
+                    world.playSound(null, pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
                     return ActionResult.SUCCESS;
                 }
-            } else {
-                // Normal Click: Path 9x9 or strip logs
-                if (state.isOf(Blocks.GRASS_BLOCK)) {
+            }
+
+            // CASE 2: SOIL RIGHT-CLICK
+            if (isTillable(state)) {
+                if (player.isSneaking() && state.isOf(Blocks.GRASS_BLOCK)) {
+                    // Shift + Click: Path 9x9
                     for (int dx = -4; dx <= 4; dx++) {
                         for (int dz = -4; dz <= 4; dz++) {
                             BlockPos p = pos.add(dx, 0, dz);
-                            if (world.getBlockState(p).isOf(Blocks.GRASS_BLOCK) && world.getBlockState(p.up()).isAir()) {
-                                world.setBlockState(p, Blocks.DIRT_PATH.getDefaultState());
+                            if (world.getBlockState(p).isOf(Blocks.GRASS_BLOCK)) {
+                                BlockPos up = p.up();
+                                BlockState upState = world.getBlockState(up);
+                                if (upState.isAir() || upState.isReplaceable()) {
+                                    if (!com.chainores.util.ServerProtectionHelper.canModifyAt(serverWorld, player, p)) continue;
+                                    if (!upState.isAir()) world.breakBlock(up, true, player);
+                                    world.setBlockState(p, Blocks.DIRT_PATH.getDefaultState());
+                                }
                             }
                         }
                     }
                     world.playSound(null, pos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    return ActionResult.SUCCESS;
+                } else {
+                    // Normal Click: Till 9x9 Hydrated Farmland
+                    for (int dx = -4; dx <= 4; dx++) {
+                        for (int dz = -4; dz <= 4; dz++) {
+                            BlockPos p = pos.add(dx, 0, dz);
+                            BlockState bs = world.getBlockState(p);
+                            if (isTillable(bs)) {
+                                BlockPos up = p.up();
+                                BlockState upState = world.getBlockState(up);
+                                if (upState.isAir() || upState.isReplaceable()) {
+                                    if (!com.chainores.util.ServerProtectionHelper.canModifyAt(serverWorld, player, p)) continue;
+                                    if (!upState.isAir()) world.breakBlock(up, true, player);
+                                    world.setBlockState(p, Blocks.FARMLAND.getDefaultState().with(FarmlandBlock.MOISTURE, 7));
+                                }
+                            }
+                        }
+                    }
+                    serverWorld.spawnParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 12, 1.0, 0.3, 1.0, 0.0);
+                    world.playSound(null, pos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
                     return ActionResult.SUCCESS;
                 }
             }
@@ -140,17 +213,26 @@ public class GodOmnitoolItem extends Item {
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld && miner instanceof ServerPlayerEntity player) {
             if (!IS_WORKING.get()) {
-                if (state.isIn(BlockTags.LOGS)) {
+                if (state.isIn(BlockTags.LOGS) && com.chainores.config.ChainOresConfig.get().enableTreeCapitator) {
                     fellFullTree(serverWorld, player, stack, pos);
-                } else if (state.getBlock() instanceof CropBlock crop) {
-                    harvestEden(serverWorld, player, stack, pos);
-                } else if (player.isSneaking()) {
+                } else if (isAnyCrop(state)) {
+                    IS_WORKING.set(true);
+                    try {
+                        // Replant broken central crop
+                        replantCrop(serverWorld, pos, state);
+                        // Harvest surrounding 9x9
+                        harvestEden(serverWorld, player, stack, pos);
+                    } finally {
+                        IS_WORKING.set(false);
+                    }
+                } else if (player.isSneaking() && com.chainores.config.ChainOresConfig.get().enableAreaMining) {
                     omniMineArea(serverWorld, player, stack, pos, 2); // 5x5
                 }
             }
 
-            // Attract drops
-            serverWorld.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(16.0), e -> true).forEach(e -> {
+            // Consolidate & attract drops
+            consolidateDrops(serverWorld, player, 16.0);
+            serverWorld.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(16.0), e -> !e.isRemoved()).forEach(e -> {
                 e.requestTeleport(player.getX(), player.getY() + 0.2, player.getZ());
             });
         }
@@ -163,10 +245,11 @@ public class GodOmnitoolItem extends Item {
         queue.add(start);
         visited.add(start);
 
+        int maxLogs = Math.min(256, com.chainores.config.ChainOresConfig.get().treeCapitatorMaxBlocks);
         IS_WORKING.set(true);
         int count = 0;
         try {
-            while (!queue.isEmpty() && count < 256) {
+            while (!queue.isEmpty() && count < maxLogs) {
                 BlockPos current = queue.poll();
                 for (int dx = -1; dx <= 1; dx++) {
                     for (int dy = -1; dy <= 1; dy++) {
@@ -177,10 +260,13 @@ public class GodOmnitoolItem extends Item {
                                 BlockState bs = world.getBlockState(neighbor);
                                 if (bs.isIn(BlockTags.LOGS) || bs.isIn(BlockTags.LEAVES)) {
                                     visited.add(neighbor);
+                                    if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, neighbor, bs)) {
+                                        continue;
+                                    }
                                     queue.add(neighbor);
                                     world.breakBlock(neighbor, true, player);
                                     count++;
-                                    if (count >= 256) break;
+                                    if (count >= maxLogs) break;
                                 }
                             }
                         }
@@ -200,9 +286,30 @@ public class GodOmnitoolItem extends Item {
                 for (int dz = -4; dz <= 4; dz++) {
                     BlockPos p = center.add(dx, 0, dz);
                     BlockState bs = world.getBlockState(p);
-                    if (bs.getBlock() instanceof CropBlock c && c.isMature(bs)) {
-                        world.breakBlock(p, true, player);
-                        world.setBlockState(p, c.withAge(3));
+                    if (isAnyCrop(bs) && isMatureCrop(bs)) {
+                        if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, p, bs)) {
+                            continue;
+                        }
+                        if (bs.getBlock() instanceof CropBlock c) {
+                            world.breakBlock(p, true, player);
+                            world.setBlockState(p, c.withAge(Math.min(3, c.getMaxAge() - 1)));
+                        } else if (bs.isOf(Blocks.NETHER_WART)) {
+                            world.breakBlock(p, true, player);
+                            world.setBlockState(p, Blocks.NETHER_WART.getDefaultState().with(NetherWartBlock.AGE, 0));
+                        } else if (bs.isOf(Blocks.COCOA)) {
+                            world.breakBlock(p, true, player);
+                            world.setBlockState(p, bs.with(CocoaBlock.AGE, 0));
+                        } else if (bs.isOf(Blocks.SWEET_BERRY_BUSH)) {
+                            world.spawnEntity(new ItemEntity(world, p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, new ItemStack(Items.SWEET_BERRIES, world.random.nextInt(3) + 2)));
+                            world.setBlockState(p, bs.with(SweetBerryBushBlock.AGE, 1));
+                        }
+
+                        // Fruit of Eden bonus
+                        if (world.random.nextFloat() < 0.15f) {
+                            ItemStack fruit = (world.random.nextFloat() < 0.08f) ? new ItemStack(Items.ENCHANTED_GOLDEN_APPLE)
+                                    : (world.random.nextBoolean() ? new ItemStack(Items.GOLDEN_APPLE) : new ItemStack(Items.GOLDEN_CARROT, 2));
+                            world.spawnEntity(new ItemEntity(world, p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, fruit));
+                        }
                     }
                 }
             }
@@ -213,10 +320,11 @@ public class GodOmnitoolItem extends Item {
 
     private void omniMineArea(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center, int radius) {
         Direction facing = Direction.getEntityFacingOrder(player)[0];
+        int effRadius = Math.min(radius, com.chainores.config.ChainOresConfig.get().areaMiningMaxRadius);
         IS_WORKING.set(true);
         try {
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -effRadius; dx <= effRadius; dx++) {
+                for (int dy = -effRadius; dy <= effRadius; dy++) {
                     if (dx == 0 && dy == 0) continue;
 
                     BlockPos targetPos;
@@ -230,6 +338,9 @@ public class GodOmnitoolItem extends Item {
 
                     BlockState targetState = world.getBlockState(targetPos);
                     if (!targetState.isAir() && !targetState.isOf(Blocks.BEDROCK)) {
+                        if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, targetPos, targetState)) {
+                            continue;
+                        }
                         world.breakBlock(targetPos, true, player);
                     }
                 }
@@ -237,6 +348,77 @@ public class GodOmnitoolItem extends Item {
             player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.9f, 1.8f);
         } finally {
             IS_WORKING.set(false);
+        }
+    }
+
+    private void replantCrop(ServerWorld world, BlockPos pos, BlockState brokenState) {
+        if (!world.getBlockState(pos).isAir()) return;
+
+        if (brokenState.getBlock() instanceof CropBlock crop) {
+            BlockState soil = world.getBlockState(pos.down());
+            if (soil.isOf(Blocks.FARMLAND) || soil.isOf(Blocks.DIRT) || soil.isOf(Blocks.GRASS_BLOCK)) {
+                world.setBlockState(pos, crop.withAge(Math.min(3, crop.getMaxAge() - 1)));
+            }
+        } else if (brokenState.isOf(Blocks.NETHER_WART)) {
+            if (world.getBlockState(pos.down()).isOf(Blocks.SOUL_SAND)) {
+                world.setBlockState(pos, Blocks.NETHER_WART.getDefaultState().with(NetherWartBlock.AGE, 0));
+            }
+        } else if (brokenState.isOf(Blocks.COCOA)) {
+            world.setBlockState(pos, brokenState.with(CocoaBlock.AGE, 0));
+        }
+    }
+
+    private boolean isTillable(BlockState state) {
+        return state.isOf(Blocks.DIRT)
+                || state.isOf(Blocks.GRASS_BLOCK)
+                || state.isOf(Blocks.DIRT_PATH)
+                || state.isOf(Blocks.COARSE_DIRT)
+                || state.isOf(Blocks.ROOTED_DIRT);
+    }
+
+    private boolean isAnyCrop(BlockState state) {
+        return state.getBlock() instanceof CropBlock
+                || state.isOf(Blocks.NETHER_WART)
+                || state.isOf(Blocks.COCOA)
+                || state.isOf(Blocks.SWEET_BERRY_BUSH);
+    }
+
+    private boolean isMatureCrop(BlockState state) {
+        if (state.getBlock() instanceof CropBlock crop) {
+            return crop.isMature(state);
+        }
+        if (state.isOf(Blocks.NETHER_WART)) {
+            return state.get(NetherWartBlock.AGE) >= 3;
+        }
+        if (state.isOf(Blocks.COCOA)) {
+            return state.get(CocoaBlock.AGE) >= 2;
+        }
+        if (state.isOf(Blocks.SWEET_BERRY_BUSH)) {
+            return state.get(SweetBerryBushBlock.AGE) >= 2;
+        }
+        return false;
+    }
+
+    private void consolidateDrops(ServerWorld world, ServerPlayerEntity player, double radius) {
+        List<ItemEntity> items = world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(radius), e -> !e.isRemoved());
+        for (int i = 0; i < items.size(); i++) {
+            ItemEntity a = items.get(i);
+            if (a.isRemoved()) continue;
+            for (int j = i + 1; j < items.size(); j++) {
+                ItemEntity b = items.get(j);
+                if (b.isRemoved()) continue;
+                if (ItemStack.areItemsAndComponentsEqual(a.getStack(), b.getStack())) {
+                    int space = a.getStack().getMaxCount() - a.getStack().getCount();
+                    if (space > 0) {
+                        int toTake = Math.min(space, b.getStack().getCount());
+                        a.getStack().increment(toTake);
+                        b.getStack().decrement(toTake);
+                        if (b.getStack().isEmpty()) {
+                            b.discard();
+                        }
+                    }
+                }
+            }
         }
     }
 }

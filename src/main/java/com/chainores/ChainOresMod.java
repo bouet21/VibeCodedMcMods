@@ -27,6 +27,9 @@ public class ChainOresMod implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Initializing Chain Ores: 150 Tier Progression Mod with In-Game Guide...");
 
+        // Load or generate configuration from config/chainores.json
+        com.chainores.config.ChainOresConfig.load();
+
         ModBlocks.initialize();
         ModItems.initialize();
         ModGear.initialize();
@@ -37,6 +40,20 @@ public class ChainOresMod implements ModInitializer {
         com.chainores.command.ChainOresCommands.initialize();
         ModItemGroups.initialize();
         ModWorldGen.initialize();
+
+        // Register C2S Dash packet for dedicated keybind
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playC2S().register(
+                com.chainores.network.DashC2SPayload.ID,
+                com.chainores.network.DashC2SPayload.CODEC
+        );
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(
+                com.chainores.network.DashC2SPayload.ID,
+                (payload, context) -> {
+                    context.server().execute(() -> {
+                        com.chainores.gear.ChainArmorItem.performDash(context.player());
+                    });
+                }
+        );
 
         // Give Guide Book automatically on first player spawn / join
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

@@ -29,11 +29,13 @@ import java.util.function.Consumer;
 
 public class ChainAxeItem extends Item {
     private final int tier;
+    private final float bonusDamage;
     private static final ThreadLocal<Boolean> IS_FELLING = ThreadLocal.withInitial(() -> false);
 
     public ChainAxeItem(ToolMaterial material, int tier, float bonusDamage, Settings settings) {
         super(settings.axe(material, bonusDamage, -3.0f));
         this.tier = tier;
+        this.bonusDamage = bonusDamage;
     }
 
     public int getTier() {
@@ -89,7 +91,10 @@ public class ChainAxeItem extends Item {
 
             float dmgMult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
             if (dmgMult > 1.0f) {
-                target.damage(world, world.getDamageSources().magic(), (dmgMult - 1.0f) * 10.0f);
+                float baseDmg = this.bonusDamage + 7.0f;
+                float extra = (dmgMult - 1.0f) * baseDmg;
+                target.timeUntilRegen = 0;
+                target.damage(world, world.getDamageSources().magic(), extra);
             }
 
             if (tier >= 10) {
@@ -106,9 +111,17 @@ public class ChainAxeItem extends Item {
     }
 
     @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
+        }
+    }
+
+    @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld && miner instanceof ServerPlayerEntity player) {
-            if (!IS_FELLING.get() && state.isIn(BlockTags.LOGS) && (player.isSneaking() || tier >= 40)) {
+            if (!IS_FELLING.get() && state.isIn(BlockTags.LOGS) && com.chainores.config.ChainOresConfig.get().enableTreeCapitator && (player.isSneaking() || tier >= 40)) {
                 fellTree(serverWorld, player, stack, pos, state);
             }
         }
@@ -121,7 +134,7 @@ public class ChainAxeItem extends Item {
         queue.add(start);
         visited.add(start);
 
-        int maxLogs = switch (tier) {
+        int tierMaxLogs = switch (tier) {
             case 1 -> 16;
             case 10, 20 -> 24;
             case 30 -> 32;
@@ -130,6 +143,7 @@ public class ChainAxeItem extends Item {
             case 115, 125, 135 -> 160;
             default -> 256;
         };
+        int maxLogs = Math.min(tierMaxLogs, com.chainores.config.ChainOresConfig.get().treeCapitatorMaxBlocks);
 
         IS_FELLING.set(true);
         int count = 0;
@@ -145,6 +159,9 @@ public class ChainAxeItem extends Item {
                                 BlockState bs = world.getBlockState(neighbor);
                                 if (bs.isIn(BlockTags.LOGS) || (tier >= 60 && bs.isIn(BlockTags.LEAVES))) {
                                     visited.add(neighbor);
+                                    if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, neighbor, bs)) {
+                                        continue;
+                                    }
                                     queue.add(neighbor);
                                     world.breakBlock(neighbor, true, player);
                                     if (bs.isIn(BlockTags.LOGS)) {
@@ -172,14 +189,17 @@ public class ChainAxeItem extends Item {
             }
 
             // Tier 40 / 140 / 150: Replantar y manzanas doradas
-            if (tier >= 140) {
+            if (tier >= 140 && com.chainores.util.ServerProtectionHelper.canModifyAt(world, player, start)) {
                 world.setBlockState(start, Blocks.OAK_SAPLING.getDefaultState());
                 world.spawnEntity(new ItemEntity(world, start.getX() + 0.5, start.getY() + 0.5, start.getZ() + 0.5, new ItemStack(Items.GOLDEN_APPLE, 1)));
             }
 
+            // Performance optimization: Consolidate drops to prevent entity cramming lag
+            consolidateDrops(world, player, 16.0);
+
             // Tier 125+: Imán de drops al inventario
             if (tier >= 125) {
-                world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(12.0), e -> true).forEach(e -> {
+                world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(12.0), e -> !e.isRemoved()).forEach(e -> {
                     e.requestTeleport(player.getX(), player.getY() + 0.2, player.getZ());
                 });
             }
@@ -190,6 +210,29 @@ public class ChainAxeItem extends Item {
             }
         } finally {
             IS_FELLING.set(false);
+        }
+    }
+
+    private void consolidateDrops(ServerWorld world, ServerPlayerEntity player, double radius) {
+        java.util.List<ItemEntity> items = world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(radius), e -> !e.isRemoved());
+        for (int i = 0; i < items.size(); i++) {
+            ItemEntity a = items.get(i);
+            if (a.isRemoved()) continue;
+            for (int j = i + 1; j < items.size(); j++) {
+                ItemEntity b = items.get(j);
+                if (b.isRemoved()) continue;
+                if (ItemStack.areItemsAndComponentsEqual(a.getStack(), b.getStack())) {
+                    int space = a.getStack().getMaxCount() - a.getStack().getCount();
+                    if (space > 0) {
+                        int toTake = Math.min(space, b.getStack().getCount());
+                        a.getStack().increment(toTake);
+                        b.getStack().decrement(toTake);
+                        if (b.getStack().isEmpty()) {
+                            b.discard();
+                        }
+                    }
+                }
+            }
         }
     }
 }

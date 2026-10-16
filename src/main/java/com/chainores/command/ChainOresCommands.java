@@ -89,6 +89,15 @@ public class ChainOresCommands {
                         .then(CommandManager.literal("shrine").executes(ctx -> executeLocate(ctx.getSource(), "shrine")))
                         .then(CommandManager.literal("altar").executes(ctx -> executeLocate(ctx.getSource(), "altar")))
                 )
+                // /chainores reload
+                .then(CommandManager.literal("reload")
+                        .requires(source -> source.getEntity() == null || (source.getPlayer() != null && source.getServer().getPlayerManager().isOperator(new net.minecraft.server.PlayerConfigEntry(source.getPlayer().getGameProfile()))))
+                        .executes(ctx -> {
+                            com.chainores.config.ChainOresConfig.load();
+                            ctx.getSource().sendMessage(Text.literal("⚙ ¡Configuración de Chain Ores (config/chainores.json) recargada exitosamente!").formatted(Formatting.GREEN, Formatting.BOLD));
+                            return 1;
+                        })
+                )
         );
 
         // Standalone alias /structures as requested

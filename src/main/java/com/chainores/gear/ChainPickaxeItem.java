@@ -56,8 +56,17 @@ public class ChainPickaxeItem extends Item {
             }
             float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
             if (mult > 1.0f) {
-                target.damage(world, world.getDamageSources().magic(), (mult - 1.0f) * 6.0f);
+                target.timeUntilRegen = 0;
+                target.damage(world, world.getDamageSources().magic(), (mult - 1.0f) * 12.0f);
             }
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, net.minecraft.entity.EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
+        if (slot == net.minecraft.entity.EquipmentSlot.MAINHAND || slot == net.minecraft.entity.EquipmentSlot.OFFHAND) {
+            com.chainores.modifier.ChainModifiers.applyReforgeHeldBuffs(entity, stack);
         }
     }
 
@@ -107,16 +116,16 @@ public class ChainPickaxeItem extends Item {
             // Prevent recursion when breaking chained blocks
             if (!IS_CHAINING.get()) {
                 // 1. Vein Mining on Chain Ores & Vanilla Ores (when player is sneaking or tier >= 50)
-                if ((player.isSneaking() || tier >= 50) && (state.getBlock() instanceof ChainOreBlock || isOreBlock(state))) {
+                if (com.chainores.config.ChainOresConfig.get().enableVeinMining && (player.isSneaking() || tier >= 50) && (state.getBlock() instanceof ChainOreBlock || isOreBlock(state))) {
                     veinMine(serverWorld, player, stack, pos, state);
                 }
 
                 // 2. 5x5 Mining for Tier 135 & 150 (on non-ores when sneaking)
-                else if ((tier >= 135) && player.isSneaking() && state.getHardness(world, pos) > 0) {
+                else if (com.chainores.config.ChainOresConfig.get().enableAreaMining && (tier >= 135) && player.isSneaking() && state.getHardness(world, pos) > 0) {
                     mineArea(serverWorld, player, stack, pos, state, 2);
                 }
                 // 3. 3x3 Mining for Tier 70, 100, 125 (on non-ores when sneaking)
-                else if ((tier >= 70) && player.isSneaking() && state.getHardness(world, pos) > 0) {
+                else if (com.chainores.config.ChainOresConfig.get().enableAreaMining && (tier >= 70) && player.isSneaking() && state.getHardness(world, pos) > 0) {
                     mineArea(serverWorld, player, stack, pos, state, 1);
                 }
             }
@@ -132,7 +141,7 @@ public class ChainPickaxeItem extends Item {
             }
 
             // Tier 40: Timber tree feller
-            if (tier == 40 && state.isIn(BlockTags.LOGS) && !IS_CHAINING.get()) {
+            if (tier == 40 && state.isIn(BlockTags.LOGS) && !IS_CHAINING.get() && com.chainores.config.ChainOresConfig.get().enableTreeCapitator) {
                 fellTree(serverWorld, player, stack, pos);
             }
 
@@ -147,7 +156,8 @@ public class ChainPickaxeItem extends Item {
             // Tier 60: 1x2 tunnel forward
             if (tier == 60 && !player.isSneaking() && state.getHardness(world, pos) > 0 && !IS_CHAINING.get()) {
                 BlockPos above = pos.up();
-                if (world.getBlockState(above).getHardness(world, above) > 0) {
+                BlockState aboveState = world.getBlockState(above);
+                if (aboveState.getHardness(world, above) > 0 && com.chainores.util.ServerProtectionHelper.canBreakBlock(serverWorld, player, above, aboveState)) {
                     serverWorld.breakBlock(above, true, player);
                 }
             }
@@ -156,7 +166,7 @@ public class ChainPickaxeItem extends Item {
             if (tier == 80) {
                 for (Direction dir : Direction.values()) {
                     BlockPos p = pos.offset(dir);
-                    if (world.getBlockState(p).isOf(Blocks.LAVA)) {
+                    if (world.getBlockState(p).isOf(Blocks.LAVA) && com.chainores.util.ServerProtectionHelper.canModifyAt(serverWorld, player, p)) {
                         world.setBlockState(p, Blocks.OBSIDIAN.getDefaultState());
                         world.playSound(null, p, SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5f, 1.2f);
                     }
@@ -185,10 +195,12 @@ public class ChainPickaxeItem extends Item {
     }
 
     /**
-     * Vein mining algorithm: BFS to chain connected matching ore blocks
+     * Vein mining algorithm: BFS to chain connected matching ore blocks.
+     * Respects server claims (FTB Chunks, etc.) and configurable limits.
      */
     private void veinMine(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos startPos, BlockState targetState) {
-        int maxChain = Math.min(64, 4 + (tier / 10) * 4);
+        int configMax = com.chainores.config.ChainOresConfig.get().veinMiningMaxBlocks;
+        int maxChain = Math.min(configMax, 4 + (tier / 10) * 4);
         Queue<BlockPos> queue = new ArrayDeque<>();
         Set<BlockPos> visited = new HashSet<>();
 
@@ -213,6 +225,9 @@ public class ChainPickaxeItem extends Item {
 
                                 BlockState neighborState = world.getBlockState(neighbor);
                                 if (neighborState.isOf(targetState.getBlock())) {
+                                    if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, neighbor, neighborState)) {
+                                        continue;
+                                    }
                                     queue.add(neighbor);
                                     world.breakBlock(neighbor, true, player);
                                     brokenCount++;
@@ -232,6 +247,7 @@ public class ChainPickaxeItem extends Item {
         }
 
         if (brokenCount > 0) {
+            consolidateDrops(world, player, 14.0);
             float pitch = Math.min(2.0f, 1.0f + brokenCount * 0.05f);
             player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.9f, pitch);
         }
@@ -255,7 +271,7 @@ public class ChainPickaxeItem extends Item {
 
     private void attractDrops(ServerWorld world, ServerPlayerEntity player) {
         Box box = player.getBoundingBox().expand(8.0);
-        world.getEntitiesByClass(ItemEntity.class, box, e -> true).forEach(e -> {
+        world.getEntitiesByClass(ItemEntity.class, box, e -> !e.isRemoved()).forEach(e -> {
             e.requestTeleport(player.getX(), player.getY() + 0.2, player.getZ());
         });
     }
@@ -266,27 +282,33 @@ public class ChainPickaxeItem extends Item {
         queue.add(start);
         visited.add(start);
 
+        int maxLogs = Math.min(32, com.chainores.config.ChainOresConfig.get().treeCapitatorMaxBlocks);
         IS_CHAINING.set(true);
         int count = 0;
         try {
-            while (!queue.isEmpty() && count < 32) {
+            while (!queue.isEmpty() && count < maxLogs) {
                 BlockPos current = queue.poll();
                 for (int dx = -1; dx <= 1; dx++) {
                     for (int dy = 0; dy <= 1; dy++) {
                         for (int dz = -1; dz <= 1; dz++) {
                             BlockPos neighbor = current.add(dx, dy, dz);
-                            if (!visited.contains(neighbor) && world.getBlockState(neighbor).isIn(BlockTags.LOGS)) {
+                            BlockState neighborState = world.getBlockState(neighbor);
+                            if (!visited.contains(neighbor) && neighborState.isIn(BlockTags.LOGS)) {
                                 visited.add(neighbor);
+                                if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, neighbor, neighborState)) {
+                                    continue;
+                                }
                                 queue.add(neighbor);
                                 world.breakBlock(neighbor, true, player);
                                 stack.damage(1, player, EquipmentSlot.MAINHAND);
                                 count++;
-                                if (count >= 32 || stack.isEmpty()) break;
+                                if (count >= maxLogs || stack.isEmpty()) break;
                             }
                         }
                     }
                 }
             }
+            consolidateDrops(world, player, 12.0);
         } finally {
             IS_CHAINING.set(false);
         }
@@ -294,10 +316,11 @@ public class ChainPickaxeItem extends Item {
 
     private void mineArea(ServerWorld world, ServerPlayerEntity player, ItemStack stack, BlockPos center, BlockState centerState, int radius) {
         Direction facing = Direction.getEntityFacingOrder(player)[0];
+        int effRadius = Math.min(radius, com.chainores.config.ChainOresConfig.get().areaMiningMaxRadius);
         IS_CHAINING.set(true);
         try {
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -effRadius; dx <= effRadius; dx++) {
+                for (int dy = -effRadius; dy <= effRadius; dy++) {
                     if (dx == 0 && dy == 0) continue;
 
                     BlockPos targetPos;
@@ -311,14 +334,41 @@ public class ChainPickaxeItem extends Item {
 
                     BlockState targetState = world.getBlockState(targetPos);
                     if (!targetState.isAir() && targetState.getHardness(world, targetPos) > 0 && targetState.getHardness(world, targetPos) <= centerState.getHardness(world, center) + 4.0f) {
+                        if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, targetPos, targetState)) {
+                            continue;
+                        }
                         world.breakBlock(targetPos, true, player);
                         stack.damage(1, player, EquipmentSlot.MAINHAND);
                         if (stack.isEmpty()) break;
                     }
                 }
             }
+            consolidateDrops(world, player, 10.0);
         } finally {
             IS_CHAINING.set(false);
+        }
+    }
+
+    private void consolidateDrops(ServerWorld world, ServerPlayerEntity player, double radius) {
+        java.util.List<ItemEntity> items = world.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(radius), e -> !e.isRemoved());
+        for (int i = 0; i < items.size(); i++) {
+            ItemEntity a = items.get(i);
+            if (a.isRemoved()) continue;
+            for (int j = i + 1; j < items.size(); j++) {
+                ItemEntity b = items.get(j);
+                if (b.isRemoved()) continue;
+                if (ItemStack.areItemsAndComponentsEqual(a.getStack(), b.getStack())) {
+                    int space = a.getStack().getMaxCount() - a.getStack().getCount();
+                    if (space > 0) {
+                        int toTake = Math.min(space, b.getStack().getCount());
+                        a.getStack().increment(toTake);
+                        b.getStack().decrement(toTake);
+                        if (b.getStack().isEmpty()) {
+                            b.discard();
+                        }
+                    }
+                }
+            }
         }
     }
 }

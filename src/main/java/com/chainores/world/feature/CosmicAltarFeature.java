@@ -34,7 +34,8 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
         }
 
         ServerWorld serverWorld = context.getWorld().toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 2000)) {
+        int minDist = com.chainores.config.ChainOresConfig.get().minStructureDistanceBlocks;
+        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, minDist)) {
             return false;
         }
         return buildStructure(context.getWorld(), origin, context.getRandom());
@@ -48,9 +49,6 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
         }
 
         ServerWorld serverWorld = world.toServerWorld();
-        if (serverWorld != null && StructureLocator.isTooClose(serverWorld, StructureLocator.TYPE_ALTAR, origin, 2000)) {
-            return false;
-        }
 
         // Find solid End ground
         BlockPos basePos = origin;

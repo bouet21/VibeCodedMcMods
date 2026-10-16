@@ -21,14 +21,21 @@ import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.inventory.SidedInventory;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity {
+public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
 
     public static final int INPUT_SLOT = 0;
     public static final int FUEL_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
+
+    private static final int[] TOP_SLOTS = new int[]{INPUT_SLOT};
+    private static final int[] BOTTOM_SLOTS = new int[]{OUTPUT_SLOT, FUEL_SLOT};
+    private static final int[] SIDE_SLOTS = new int[]{FUEL_SLOT, INPUT_SLOT};
 
     private int burnTime = 0;
     private int fuelTime = 0;
@@ -151,20 +158,28 @@ public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity {
             if (entity.cookTime >= entity.totalCookTime) {
                 input.decrement(1);
 
-                // Cuadruplicar (x4) lingotes
-                int yield = 4;
+                // Multiplicar lingotes según configuración
+                com.chainores.config.ChainOresConfig cfg = com.chainores.config.ChainOresConfig.get();
+                int yield = cfg.smelterYield;
                 ItemStack out = recipeResult.copy();
 
-                // 35% probabilidad de transmutar al tier superior!
-                if (world.random.nextFloat() < 0.35f) {
+                // Probabilidad configurable de transmutar al tier superior (bloqueado en hitos de jefes)
+                if (world.random.nextFloat() < cfg.smelterTransmutationChance) {
                     for (int i = 0; i < OreRegistryData.TIERS.size() - 1; i++) {
                         if (recipeResult.isOf(OreRegistryData.TIERS.get(i).ingotItem)) {
-                            out = new ItemStack(OreRegistryData.TIERS.get(i + 1).ingotItem);
+                            int currentTier = OreRegistryData.TIERS.get(i).tier;
+                            // Bloquear transmutación automática en los hitos que exigen catalizador de jefe
+                            boolean isBossMilestone = cfg.smelterLockBossMilestones &&
+                                    (currentTier == 70 || currentTier == 105 || currentTier == 135 || currentTier >= 149);
+
+                            if (!isBossMilestone) {
+                                out = new ItemStack(OreRegistryData.TIERS.get(i + 1).ingotItem);
+                                world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.2f, 1.8f);
+                                ((ServerWorld) world).spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, 15, 0.3, 0.3, 0.3, 0.1);
+                            }
                             break;
                         }
                     }
-                    world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.2f, 1.8f);
-                    ((ServerWorld) world).spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, 15, 0.3, 0.3, 0.3, 0.1);
                 }
 
                 if (outputSlot.isEmpty()) {
@@ -208,7 +223,8 @@ public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity {
     private static boolean canInsertOutput(ItemStack outputSlot, ItemStack result) {
         if (outputSlot.isEmpty()) return true;
         if (!ItemStack.areItemsAndComponentsEqual(outputSlot, result)) return false;
-        return outputSlot.getCount() + 4 <= outputSlot.getMaxCount();
+        int yield = com.chainores.config.ChainOresConfig.get().smelterYield;
+        return outputSlot.getCount() + yield <= outputSlot.getMaxCount();
     }
 
     private static ItemStack getSmeltingResult(ItemStack input) {
@@ -234,5 +250,38 @@ public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        if (side == Direction.DOWN) {
+            return BOTTOM_SLOTS;
+        }
+        if (side == Direction.UP) {
+            return TOP_SLOTS;
+        }
+        return SIDE_SLOTS;
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        if (slot == OUTPUT_SLOT) {
+            return false;
+        }
+        if (slot == FUEL_SLOT) {
+            return getFuelTime(stack) > 0;
+        }
+        return slot == INPUT_SLOT;
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        if (dir == Direction.DOWN && slot == OUTPUT_SLOT) {
+            return true;
+        }
+        if (dir == Direction.DOWN && slot == FUEL_SLOT) {
+            return stack.isOf(Items.BUCKET);
+        }
+        return false;
     }
 }
