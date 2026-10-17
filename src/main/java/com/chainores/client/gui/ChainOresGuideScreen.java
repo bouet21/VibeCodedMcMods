@@ -157,7 +157,8 @@ public class ChainOresGuideScreen extends Screen {
         return switch (tab) {
             case ARSENAL -> 6;
             case BOSSES -> 4;
-            case WORKSTATIONS, MODIFIERS -> 3;
+            case WORKSTATIONS -> 4;
+            case MODIFIERS -> 3;
             default -> 1;
         };
     }
@@ -609,8 +610,52 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "  • Mineral crudo arriba y combustible abajo (Lava ideal).", cx, cy + 112, 0xFFE0E0E0, false);
             context.drawText(this.textRenderer, "  • Recibe el cuádruple (x4) de lingotes y transmutación 35%.", cx, cy + 122, 0xFFFFF1A8, false);
 
+        } else if (subPage == 2) {
+            // subPage 2: Catalizadores & Ascensión Dimensional
+            context.drawText(this.textRenderer, Text.literal("✦ CATALIZADORES Y ASCENSIÓN DIMENSIONAL ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+                    cx, cy, 0xFFFFD700, false);
+
+            context.drawText(this.textRenderer, "🔑 ¿PARA QUÉ SIRVEN LOS CATALIZADORES?:", cx, cy + 12, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, "Son reliquias alquímicas soltadas por los Jefes. Se insertan en la", cx, cy + 22, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "ranura DERECHA (activador) de la Forja en Cadena.", cx, cy + 31, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "🚪 PUERTAS DE ASCENSIÓN OBLIGATORIA (DIMENSIONES):", cx, cy + 44, 0xFFFF5555, false);
+            context.drawText(this.textRenderer, "• T70 ➔ T71: Requiere Catalizador Abisal (Guardián del Abismo).", cx, cy + 54, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "• T105 ➔ T106: Requiere Núcleo Ígneo (Behemoth del Nether).", cx, cy + 64, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "• T135 ➔ T136: Requiere Fragmento del Vacío (Coloso del Vacío).", cx, cy + 74, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "• T150 (Final): Requiere Singularidad Cósmica (Soberano Cósmico).", cx, cy + 84, 0xFFFFF1A8, false);
+
+            context.drawText(this.textRenderer, "⚡ RECETAS LEGENDARIAS & DUPLICACIÓN (x2):", cx, cy + 97, 0xFF55FF55, false);
+            context.drawText(this.textRenderer, "• Escudo Criogénico (Cat. Glacial) | Coraza Guardabosques (Cat. Silvestre).", cx, cy + 107, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "• Duplicación: Lingote en base + Cat. en derecha = ¡x2 lingotes gratis!", cx, cy + 117, 0xFF88FF88, false);
+
+            int catBoxY = cy + 130;
+            drawCustomBorder(context, cx, catBoxY, 332, 24, 0xFF4A3E31);
+
+            ItemStack c1 = new ItemStack(ModBossItems.GLACIAL_CATALYST);
+            ItemStack c2 = new ItemStack(ModBossItems.SYLVA_CATALYST);
+            ItemStack c3 = new ItemStack(ModBossItems.ABYSSAL_CATALYST);
+            ItemStack c4 = new ItemStack(ModBossItems.NETHER_CORE);
+            ItemStack c5 = new ItemStack(ModBossItems.VOID_SHARD);
+            ItemStack c6 = new ItemStack(ModBossItems.COSMIC_SINGULARITY);
+
+            context.drawItem(c1, cx + 6, catBoxY + 4);
+            context.drawItem(c2, cx + 42, catBoxY + 4);
+            context.drawItem(c3, cx + 78, catBoxY + 4);
+            context.drawItem(c4, cx + 114, catBoxY + 4);
+            context.drawItem(c5, cx + 150, catBoxY + 4);
+            context.drawItem(c6, cx + 186, catBoxY + 4);
+            context.drawText(this.textRenderer, "◀ Reliquias Alquímicas", cx + 210, catBoxY + 8, 0xFFD4AF37, false);
+
+            checkTooltip(context, c1, cx + 6, catBoxY + 4, mouseX, mouseY);
+            checkTooltip(context, c2, cx + 42, catBoxY + 4, mouseX, mouseY);
+            checkTooltip(context, c3, cx + 78, catBoxY + 4, mouseX, mouseY);
+            checkTooltip(context, c4, cx + 114, catBoxY + 4, mouseX, mouseY);
+            checkTooltip(context, c5, cx + 150, catBoxY + 4, mouseX, mouseY);
+            checkTooltip(context, c6, cx + 186, catBoxY + 4, mouseX, mouseY);
+
         } else {
-            // subPage 2: Altar Cósmico & Dificultades Escalables
+            // subPage 3: Altar Cósmico & Dificultades Escalables
             context.drawText(this.textRenderer, Text.literal("✦ ALTAR CÓSMICO: MODOS Y DIFICULTADES ✦").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD),
                     cx, cy, 0xFFFF55FF, false);
 
@@ -648,10 +693,10 @@ public class ChainOresGuideScreen extends Screen {
             context.drawItem(horn, cx, cy + 14);
             context.drawText(this.textRenderer,
                     Text.literal("1. Guardián Criogénico ").formatted(Formatting.AQUA, Formatting.BOLD)
-                            .append(Text.literal("(T20 - Zonas Heladas)").formatted(Formatting.DARK_AQUA)),
+                            .append(Text.literal("(T20 - Santuario Glacial / Nieve)").formatted(Formatting.DARK_AQUA)),
                     cx + 22, cy + 14, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer,
-                    Text.literal("  Invocador: Cuerno Glacial. ").formatted(Formatting.GRAY)
+                    Text.literal("  Spawn: Santuario Glacial o Cuerno. ").formatted(Formatting.GRAY)
                             .append(Text.literal("Drop: Catalizador Glacial.").formatted(Formatting.YELLOW)),
                     cx + 22, cy + 24, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer, "  Habilidades: Golpe sísmico helado, Congelación y Nova.", cx + 22, cy + 34, 0xFFB3E5FC, false);
@@ -660,10 +705,10 @@ public class ChainOresGuideScreen extends Screen {
             context.drawItem(heartS, cx, cy + 48);
             context.drawText(this.textRenderer,
                     Text.literal("2. Titán Silvestre ").formatted(Formatting.GREEN, Formatting.BOLD)
-                            .append(Text.literal("(T40 - Bosques y Selvas)").formatted(Formatting.DARK_GREEN)),
+                            .append(Text.literal("(T40 - Arboleda Ancestral / Bosque)").formatted(Formatting.DARK_GREEN)),
                     cx + 22, cy + 48, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer,
-                    Text.literal("  Invocador: Corazón Verdante. ").formatted(Formatting.GRAY)
+                    Text.literal("  Spawn: Arboleda Ancestral o Corazón. ").formatted(Formatting.GRAY)
                             .append(Text.literal("Drop: Catalizador Silvestre.").formatted(Formatting.YELLOW)),
                     cx + 22, cy + 58, 0xFFFFFFFF, false);
             context.drawText(this.textRenderer, "  Habilidades: Raíces inmovilizadoras, Terremoto y Fotosíntesis.", cx + 22, cy + 68, 0xFFA5D6A7, false);
@@ -742,8 +787,8 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "  de distancia mínima. ¡Tienen arena y cofre del tesoro!", cx, cy + 34, 0xFFE0E0E0, false);
 
             context.drawText(this.textRenderer, "🧭 CÓMO USAR LA BRÚJULA DE ESTRUCTURAS:", cx, cy + 50, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "• Shift + Clic der.: Alterna la estructura objetivo:", cx, cy + 60, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "  1. Forja Abandonada | 2. Santuario | 3. Altar Cósmico", cx, cy + 70, 0xFF88FF88, false);
+            context.drawText(this.textRenderer, "• Shift + Clic der.: Alterna entre los 6 objetivos:", cx, cy + 60, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "  0: Auto | 1: Forja | 2: Glacial | 3: Arboleda | 4: Nether | 5: Altar", cx, cy + 70, 0xFF88FF88, false);
 
             context.drawText(this.textRenderer, "• Clic der. normal: Pulso sonar de resonancia rúnica.", cx, cy + 84, 0xFFE0E0E0, false);
             context.drawText(this.textRenderer, "  Calcula distancia, rumbo y envía coordenadas al chat.", cx, cy + 94, 0xFFE0E0E0, false);

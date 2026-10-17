@@ -197,18 +197,20 @@ Compatible de forma nativa con **Create**, **Applied Energistics 2**, **Mekanism
 ## 👹 Jefes y Mini-Jefes, Escalado Multijugador y Mobs Infundidos
 
 ### Mini-Jefes del Overworld (Pacing Intermedio T1-T70)
-| Mini-Jefe | Tier / Bioma | Invocador | Catalizador | Drops & Crafteos Exclusivos |
+| Mini-Jefe | Tier / Estructura / Bioma | Invocador | Catalizador | Drops & Crafteos Exclusivos |
 |:---|:---:|:---|:---|:---|
-| **Guardián Criogénico** | T20 / Fríos & Hielo | Cuerno Glacial | **Catalizador Glacial** | Desbloquea el *Escudo Criogénico* y duplica lingotes T20 en la Forja. |
-| **Titán Silvestre** | T40 / Bosques & Selvas | Corazón Verdante | **Catalizador Silvestre** | Desbloquea la *Coraza del Guardabosques* (Tala masiva) y duplica lingotes T40. |
+| **Guardián Criogénico** | T20 / **Santuario Glacial** (Hielo/Nieve) | Cuerno Glacial | **Catalizador Glacial** | Desbloquea el *Escudo Criogénico* y duplica lingotes T20 en la Forja. |
+| **Titán Silvestre** | T40 / **Arboleda Ancestral** (Bosque/Selva) | Corazón Verdante | **Catalizador Silvestre** | Desbloquea la *Coraza del Guardabosques* (Tala masiva) y duplica lingotes T40. |
 
 ### Los 4 Jefes Supremos de Dimensión
-| Jefe | Dimensión / Tier | Invocador | Catalizador | Drops Especiales |
+| Jefe | Dimensión / Tier / Estructura | Invocador | Catalizador | Drops Especiales |
 |:---|:---:|:---|:---|:---|
-| **Guardián del Abismo** | Deep Dark / T70 | Ojo del Abismo | **Catalizador del Abismo** | Desbloquea Nether Shrine, lingotes T70, armaduras T70 con 2 ranuras. |
-| **Behemoth del Nether** | Nether / T105 | Corazón Ígneo | **Núcleo del Nether** | Desbloquea End Shrine, lingotes T100-T105, cabezas de wither. |
-| **Coloso del Vacío** | The End / T135 | Baliza del Vacío | **Fragmento del Vacío** | Desbloquea Altar Cósmico, lingotes T135, Coraza Alada Cósmica. |
-| **Soberano Cósmico** | Cósmica / T150 | Altar Cósmico | **Singularidad Cósmica** | **Trofeo Cósmico**, Singularidades, lingotes T150. |
+| **Guardián del Abismo** | Deep Dark / T70 / **Forja Abandonada** | Ojo del Abismo | **Catalizador del Abismo** | Desbloquea Nether Shrine, lingotes T70, armaduras T70 con 2 ranuras. |
+| **Behemoth del Nether** | Nether / T105 / **Santuario del Nether** | Corazón Ígneo | **Núcleo del Nether** | Desbloquea End Shrine, lingotes T100-T105, cabezas de wither. |
+| **Coloso del Vacío** | The End / T135 / **Islas Exteriores** | Baliza del Vacío | **Fragmento del Vacío** | Desbloquea Altar Cósmico, lingotes T135, Coraza Alada Cósmica. |
+| **Soberano Cósmico** | The End / T150 / **Altar Cósmico** | Núcleo del Altar | **Singularidad Cósmica** | **Trofeo Cósmico**, Singularidades, lingotes T150. |
+
+> 🎨 **Texturas 3D Renovadas:** Los 6 jefes cuentan ahora con modelos multicapa con coronas, cornamentas 3D, reactores de pecho en relieve, hombreras flotantes y marcas rúnicas bioluminiscentes de alta definición.
 
 ### 👥 Escalado Dinámico de Dificultad en Multijugador
 Para ofrecer una experiencia desafiante tanto en solitario como en servidores comunitarios, los jefes ajustan sus estadísticas según los jugadores presentes en un radio de 64 bloques al despertar:
@@ -336,9 +338,9 @@ Cuenta con:
 - **Pestañas y Subpáginas Interactivas:**
   1. **`[Minerales]`**: Los 150 tiers con renderizado 3D, recetas, alturas, biomas y botones de salto rápido por eras.
   2. **`[Arsenal]`**: 5 subpáginas con Hachas TreeCapitator, Palas 3x3, Azadas 9x9, los 6 Escudos Temáticos, Sets de Armadura, Dash Impulso, **Joyería Arcana**, **Compatibilidad Trinkets** y la **Bolsa de Minería con Auto-Imán QoL**.
-  3. **`[Estaciones]`**: 3 subpáginas detallando la Forja en Cadena, Yunque Indestructible, Fundidor Cósmico y el **Altar Cósmico con la Arena de Oleadas**.
-  4. **`[Jefes y Mundo]`**: 3 subpáginas con los 4 Jefes Supremos, Estructuras y Brújula Rúnica, **Escalado Dinámico Multijugador**, **Mobs Infundidos** e **Integración EMI**.
-  5. **`[Gemas y Reforje]`**: 3 subpáginas con efectos de las 4 gemas, prefijos de reforjado, encantamientos arcanos y **Fusión de Gemas Tier I, II y III**.
+  3. **`[Estaciones]`**: 4 subpáginas detallando la Forja en Cadena, Yunque Indestructible, Fundidor Cósmico, **Catalizadores & Ascensión Dimensional (Ranura Derecha)** y el **Altar Cósmico con la Arena de Oleadas**.
+  4. **`[Jefes y Mundo]`**: 4 subpáginas con los Mini-Jefes y Santuarios (Glacial y Arboleda), los 4 Jefes Supremos, Estructuras y Brújula Rúnica (6 Modos), **Escalado Dinámico Multijugador**, **Mobs Infundidos** e **Integración EMI**.
+  5. **`[Gemas y Reforje]`**: 3 subpáginas con efectos de las 5 gemas elementales, prefijos de reforjado, encantamientos arcanos y **Fusión de Gemas Tier I, II y III**.
 
 ---
 

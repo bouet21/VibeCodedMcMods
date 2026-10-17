@@ -44,12 +44,12 @@ public class StructureCompassItem extends Item {
         if (nbt != null) {
             return nbt.copyNbt().getInt("structure_mode").orElse(0);
         }
-        return 0; // 0 = Auto/Dimension, 1 = Forge, 2 = Shrine, 3 = Altar
+        return 0; // 0 = Auto/Dimension, 1 = Forge, 2 = Glacial, 3 = Sylva, 4 = Shrine, 5 = Altar
     }
 
     public static void cycleTargetMode(ItemStack stack) {
         int current = getTargetMode(stack);
-        int next = (current + 1) % 4;
+        int next = (current + 1) % 6;
         NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> {
             nbt.putInt("structure_mode", next);
         });
@@ -58,8 +58,10 @@ public class StructureCompassItem extends Item {
     public static String getModeName(int mode) {
         return switch (mode) {
             case 1 -> "FORJA ABANDONADA (OVERWORLD)";
-            case 2 -> "SANTUARIO DEL NETHER (NETHER)";
-            case 3 -> "ALTAR CÓSMICO (THE END)";
+            case 2 -> "SANTUARIO GLACIAL (OVERWORLD - HIELO)";
+            case 3 -> "ARBOLEDA ANCESTRAL (OVERWORLD - BOSQUE)";
+            case 4 -> "SANTUARIO DEL NETHER (NETHER)";
+            case 5 -> "ALTAR CÓSMICO (THE END)";
             default -> "AUTOMÁTICO (SEGÚN DIMENSIÓN ACTUAL)";
         };
     }
@@ -67,8 +69,10 @@ public class StructureCompassItem extends Item {
     private static String getTargetTypeFromMode(int mode, World world) {
         return switch (mode) {
             case 1 -> StructureLocator.TYPE_FORGE;
-            case 2 -> StructureLocator.TYPE_SHRINE;
-            case 3 -> StructureLocator.TYPE_ALTAR;
+            case 2 -> StructureLocator.TYPE_GLACIAL;
+            case 3 -> StructureLocator.TYPE_SYLVA;
+            case 4 -> StructureLocator.TYPE_SHRINE;
+            case 5 -> StructureLocator.TYPE_ALTAR;
             default -> {
                 if (world.getRegistryKey().equals(World.OVERWORLD)) {
                     yield StructureLocator.TYPE_FORGE;
@@ -119,12 +123,22 @@ public class StructureCompassItem extends Item {
                 player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
                 return ActionResult.SUCCESS;
             }
-            if (mode == 2 && !world.getRegistryKey().equals(World.NETHER)) {
+            if (mode == 2 && !world.getRegistryKey().equals(World.OVERWORLD)) {
+                player.sendMessage(Text.literal("⚠ El Santuario Glacial solo se encuentra en el Overworld. ¡Regresa al Overworld para rastrearlo!").formatted(Formatting.AQUA), true);
+                player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
+                return ActionResult.SUCCESS;
+            }
+            if (mode == 3 && !world.getRegistryKey().equals(World.OVERWORLD)) {
+                player.sendMessage(Text.literal("⚠ La Arboleda Ancestral solo se encuentra en el Overworld. ¡Regresa al Overworld para rastrearla!").formatted(Formatting.GREEN), true);
+                player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
+                return ActionResult.SUCCESS;
+            }
+            if (mode == 4 && !world.getRegistryKey().equals(World.NETHER)) {
                 player.sendMessage(Text.literal("⚠ El Santuario del Nether solo se encuentra en el Nether. ¡Cruza un portal para rastrearlo!").formatted(Formatting.RED), true);
                 player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
                 return ActionResult.SUCCESS;
             }
-            if (mode == 3 && !world.getRegistryKey().equals(World.END)) {
+            if (mode == 5 && !world.getRegistryKey().equals(World.END)) {
                 player.sendMessage(Text.literal("⚠ El Altar Cósmico solo se encuentra en The End. ¡Cruza al Fin para rastrearlo!").formatted(Formatting.LIGHT_PURPLE), true);
                 player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.7f, 1.0f);
                 return ActionResult.SUCCESS;

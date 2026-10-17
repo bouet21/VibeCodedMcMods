@@ -22,6 +22,8 @@ public class StructureLocator {
     private static final Type LIST_TYPE = new TypeToken<ArrayList<StructureEntry>>() {}.getType();
 
     public static final String TYPE_FORGE = "abandoned_forge";
+    public static final String TYPE_GLACIAL = "glacial_sanctuary";
+    public static final String TYPE_SYLVA = "sylva_grove";
     public static final String TYPE_SHRINE = "nether_shrine";
     public static final String TYPE_ALTAR = "cosmic_altar";
 
@@ -94,7 +96,7 @@ public class StructureLocator {
 
     public static boolean isValidDimensionForType(ServerWorld world, String type) {
         if (type == null || type.isEmpty()) return true;
-        if (type.equalsIgnoreCase(TYPE_FORGE)) {
+        if (type.equalsIgnoreCase(TYPE_FORGE) || type.equalsIgnoreCase(TYPE_GLACIAL) || type.equalsIgnoreCase(TYPE_SYLVA)) {
             return world.getRegistryKey().equals(World.OVERWORLD);
         } else if (type.equalsIgnoreCase(TYPE_SHRINE)) {
             return world.getRegistryKey().equals(World.NETHER);
@@ -166,6 +168,16 @@ public class StructureLocator {
             targetY = (surfaceY < 60) ? 64 : surfaceY;
             targetPos = new BlockPos(targetX, targetY, targetZ);
             com.chainores.world.feature.AbandonedForgeFeature.buildStructure(world, targetPos, world.random);
+        } else if (type.equals(TYPE_GLACIAL)) {
+            int surfaceY = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, targetX, targetZ);
+            targetY = (surfaceY < 60) ? 64 : surfaceY;
+            targetPos = new BlockPos(targetX, targetY, targetZ);
+            com.chainores.world.feature.GlacialSanctuaryFeature.buildStructure(world, targetPos, world.random);
+        } else if (type.equals(TYPE_SYLVA)) {
+            int surfaceY = world.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, targetX, targetZ);
+            targetY = (surfaceY < 60) ? 64 : surfaceY;
+            targetPos = new BlockPos(targetX, targetY, targetZ);
+            com.chainores.world.feature.SylvaGroveFeature.buildStructure(world, targetPos, world.random);
         } else if (type.equals(TYPE_SHRINE)) {
             targetY = 48;
             targetPos = new BlockPos(targetX, targetY, targetZ);
@@ -200,7 +212,7 @@ public class StructureLocator {
                         ENTRIES.removeIf(entry -> {
                             if (entry.type().equals(TYPE_SHRINE) && !entry.dimension().contains("the_nether")) return true;
                             if (entry.type().equals(TYPE_ALTAR) && !entry.dimension().contains("the_end")) return true;
-                            if (entry.type().equals(TYPE_FORGE) && !entry.dimension().contains("overworld")) return true;
+                            if ((entry.type().equals(TYPE_FORGE) || entry.type().equals(TYPE_GLACIAL) || entry.type().equals(TYPE_SYLVA)) && !entry.dimension().contains("overworld")) return true;
                             return false;
                         });
 
@@ -256,6 +268,8 @@ public class StructureLocator {
     public static String getLocalizedName(String type) {
         return switch (type) {
             case TYPE_FORGE -> "Forja Abandonada (Abandoned Forge)";
+            case TYPE_GLACIAL -> "Santuario Glacial (Glacial Sanctuary)";
+            case TYPE_SYLVA -> "Arboleda Ancestral (Sylva Grove)";
             case TYPE_SHRINE -> "Santuario del Nether (Nether Shrine)";
             case TYPE_ALTAR -> "Altar Cósmico (Cosmic Altar)";
             default -> "Estructura Ancestral";

@@ -31,7 +31,25 @@ public class ModFeatures {
             new CosmicAltarFeature(DefaultFeatureConfig.CODEC)
     );
 
+    public static final Feature<DefaultFeatureConfig> GLACIAL_SANCTUARY = Registry.register(
+            Registries.FEATURE,
+            ChainOresMod.id("glacial_sanctuary"),
+            new com.chainores.world.feature.GlacialSanctuaryFeature(DefaultFeatureConfig.CODEC)
+    );
+
+    public static final Feature<DefaultFeatureConfig> SYLVA_GROVE = Registry.register(
+            Registries.FEATURE,
+            ChainOresMod.id("sylva_grove"),
+            new com.chainores.world.feature.SylvaGroveFeature(DefaultFeatureConfig.CODEC)
+    );
+
     // Placed Feature Keys matching JSON definitions
+    public static final RegistryKey<PlacedFeature> GLACIAL_SANCTUARY_PLACED =
+            RegistryKey.of(RegistryKeys.PLACED_FEATURE, ChainOresMod.id("glacial_sanctuary"));
+
+    public static final RegistryKey<PlacedFeature> SYLVA_GROVE_PLACED =
+            RegistryKey.of(RegistryKeys.PLACED_FEATURE, ChainOresMod.id("sylva_grove"));
+
     public static final RegistryKey<PlacedFeature> ABANDONED_FORGE_PLACED =
             RegistryKey.of(RegistryKeys.PLACED_FEATURE, ChainOresMod.id("abandoned_forge"));
 
