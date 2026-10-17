@@ -1,0 +1,6 @@
+{
+  "parent": "chainores:item/dragon_breath_bow",
+  "textures": {
+    "layer0": "chainores:item/dragon_breath_bow_pulling_2"
+  }
+}

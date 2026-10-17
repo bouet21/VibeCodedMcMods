@@ -256,60 +256,7 @@ public class ChainArmorItem extends Item {
     }
 
     private void applyGemAndReforgeArmorBuffs(ServerPlayerEntity player, ItemStack stack) {
-        java.util.List<String> gems = com.chainores.modifier.ChainModifiers.getGems(stack);
-        int bloodCount = 0;
-        int voidCount = 0;
-        int coreCount = 0;
-        int genesisCount = 0;
-
-        for (String gem : gems) {
-            String base = com.chainores.modifier.ChainModifiers.getBaseGemType(gem);
-            int tier = com.chainores.modifier.ChainModifiers.getGemTier(gem);
-            switch (base) {
-                case com.chainores.modifier.ChainModifiers.GEM_BLOOD -> bloodCount += tier;
-                case com.chainores.modifier.ChainModifiers.GEM_VOID -> voidCount += tier;
-                case com.chainores.modifier.ChainModifiers.GEM_CORE -> coreCount += tier;
-                case com.chainores.modifier.ChainModifiers.GEM_GENESIS -> genesisCount += tier;
-            }
-        }
-
-        if (bloodCount > 0) {
-            int amp = Math.min(bloodCount - 1, 2);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 40, amp, true, false));
-        }
-        if (voidCount > 0) {
-            if (player.fallDistance > 1.5f && !player.isOnGround()) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 40, 0, true, false));
-                player.fallDistance = 0;
-            }
-        }
-        if (coreCount > 0) {
-            int amp = Math.min(coreCount - 1, 2);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, amp, true, false));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 40, 0, true, false));
-        }
-        if (genesisCount > 0) {
-            if (!player.hasStatusEffect(StatusEffects.ABSORPTION)) {
-                int amp = Math.min(genesisCount, 3);
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, amp, true, false));
-            }
-        }
-
-        String reforge = com.chainores.modifier.ChainModifiers.getReforge(stack);
-        if (reforge != null) {
-            switch (reforge) {
-                case com.chainores.modifier.ChainModifiers.REFORGE_DIVINE ->
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 0, true, false));
-                case com.chainores.modifier.ChainModifiers.REFORGE_SWIFT ->
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 40, 0, true, false));
-                case com.chainores.modifier.ChainModifiers.REFORGE_FIERCE ->
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 40, 0, true, false));
-                case com.chainores.modifier.ChainModifiers.REFORGE_TITANIC ->
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 0, true, false));
-                case com.chainores.modifier.ChainModifiers.REFORGE_LEGENDARY ->
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 40, 0, true, false));
-            }
-        }
+        com.chainores.modifier.ChainModifiers.applyArmorGemAndReforgeBuffs(player, stack);
     }
 
     private void apply2PiecePerk(ServerPlayerEntity player, int tier) {
@@ -464,11 +411,7 @@ public class ChainArmorItem extends Item {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 2, true, false));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, duration, 0, true, false));
                 if (player.getY() < -50) {
-                    player.requestTeleport(player.getX(), 90, player.getZ());
-                    player.setVelocity(0, 0, 0);
-                    player.velocityDirty = true;
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 200, 0, true, false));
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 1, true, false));
+                    com.chainores.util.VoidRescueHelper.tryVoidRescue(player, 90.0);
                 }
             }
             case 140 -> {
@@ -502,10 +445,7 @@ public class ChainArmorItem extends Item {
                 }
 
                 if (player.getY() < -50) {
-                    player.requestTeleport(player.getX(), 100, player.getZ());
-                    player.setVelocity(0, 0, 0);
-                    player.velocityDirty = true;
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 200, 0, true, false));
+                    com.chainores.util.VoidRescueHelper.tryVoidRescue(player, 100.0);
                 }
 
                 if (player.getEntityWorld().getTime() % 40 == 0) {

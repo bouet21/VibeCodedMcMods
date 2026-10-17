@@ -49,12 +49,27 @@ public class GodOmnitoolItem extends Item {
 
     @Override
     public float getMiningSpeed(ItemStack stack, BlockState state) {
+        if (com.chainores.config.ChainOresConfig.get().godOmnitoolRespectsUnbreakable && state.getBlock().getHardness() < 0.0f) {
+            return 0.0f;
+        }
         return 65.0f * com.chainores.modifier.ChainModifiers.getMiningSpeedMultiplier(stack);
     }
 
     @Override
     public boolean isCorrectForDrops(ItemStack stack, BlockState state) {
-        return true; // Drops ANY block in the game!
+        if (com.chainores.config.ChainOresConfig.get().godOmnitoolRespectsUnbreakable && state.getBlock().getHardness() < 0.0f) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canMine(ItemStack stack, BlockState state, World world, BlockPos pos, LivingEntity miner) {
+        if (miner instanceof net.minecraft.entity.player.PlayerEntity player && player.isCreative()) return true;
+        if (com.chainores.config.ChainOresConfig.get().godOmnitoolRespectsUnbreakable && state.getHardness(world, pos) < 0.0f) {
+            return false;
+        }
+        return super.canMine(stack, state, world, pos, miner);
     }
 
     @Override
@@ -72,11 +87,12 @@ public class GodOmnitoolItem extends Item {
         textConsumer.accept(Text.literal(" • Pala Cósmica: Nivelación y auto-fundición").formatted(Formatting.GOLD));
         textConsumer.accept(Text.literal(" • Azada del Edén: Arado e hidratación 9x9 instantáneo").formatted(Formatting.LIGHT_PURPLE));
         textConsumer.accept(Text.literal(" • Filo del Juicio: 120 Daño Sagrado y Rayo Divino").formatted(Formatting.RED, Formatting.BOLD));
+        textConsumer.accept(Text.literal(" • Seguridad Servidor: Respeta Bedrock y Bloques Protegidos").formatted(Formatting.DARK_GREEN, Formatting.ITALIC));
     }
 
     @Override
     public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (target.getEntityWorld() instanceof ServerWorld serverWorld) {
+        if (target.getEntityWorld() instanceof ServerWorld serverWorld && !target.isInvulnerable()) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(serverWorld, SpawnReason.TRIGGERED);
             if (lightning != null) {
                 lightning.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
@@ -97,6 +113,9 @@ public class GodOmnitoolItem extends Item {
                     target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 30 + 15 * gemTier, gemTier - 1));
                 } else if (com.chainores.modifier.ChainModifiers.GEM_CORE.equals(base)) {
                     target.setOnFireFor(8 * gemTier);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_EARTH.equals(base)) {
+                    attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 100, gemTier - 1));
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 80, gemTier));
                 }
             }
 
@@ -241,6 +260,13 @@ public class GodOmnitoolItem extends Item {
                 }
             }
 
+            // Earth Gem & Divine Fortune Extra Drop Bonus
+            float earthChance = com.chainores.modifier.ChainModifiers.getEarthGemDoubleDropChance(stack);
+            if ((earthChance > 0.0f || world.random.nextFloat() < 0.35f) && (state.getBlock() instanceof com.chainores.block.ChainOreBlock || state.isIn(BlockTags.GOLD_ORES) || state.isIn(BlockTags.DIAMOND_ORES) || state.isIn(BlockTags.IRON_ORES))) {
+                state.getBlock().afterBreak(world, player, pos, state, null, stack);
+                player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.7f, 1.8f);
+            }
+
             // Consolidate & attract drops
             consolidateDrops(serverWorld, player, 16.0);
             serverWorld.getEntitiesByClass(ItemEntity.class, player.getBoundingBox().expand(16.0), e -> !e.isRemoved()).forEach(e -> {
@@ -349,6 +375,9 @@ public class GodOmnitoolItem extends Item {
 
                     BlockState targetState = world.getBlockState(targetPos);
                     if (!targetState.isAir() && !targetState.isOf(Blocks.BEDROCK)) {
+                        if (com.chainores.config.ChainOresConfig.get().godOmnitoolRespectsUnbreakable && targetState.getHardness(world, targetPos) < 0.0f) {
+                            continue;
+                        }
                         if (!com.chainores.util.ServerProtectionHelper.canBreakBlock(world, player, targetPos, targetState)) {
                             continue;
                         }

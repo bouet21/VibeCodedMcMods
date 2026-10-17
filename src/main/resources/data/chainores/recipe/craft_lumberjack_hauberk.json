@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "chainores:axe_tier_40",
+    "C": "chainores:chestplate_tier_40",
+    "I": "chainores:ingot_tier_40",
+    "E": "minecraft:emerald_block"
+  },
+  "pattern": [
+    "EAE",
+    "ICI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "chainores:lumberjack_hauberk"
+  }
+}

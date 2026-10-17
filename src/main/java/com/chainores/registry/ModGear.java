@@ -17,6 +17,9 @@ import com.chainores.gear.DragonBreathBowItem;
 import com.chainores.gear.GalacticCrossbowItem;
 import com.chainores.gear.GearTier;
 import com.chainores.gear.GodOmnitoolItem;
+import com.chainores.gear.MiningExoskeletonItem;
+import com.chainores.gear.LumberjackHauberkItem;
+import com.chainores.gear.CosmicElytraChestplateItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.equipment.ArmorMaterial;
@@ -69,6 +72,11 @@ public class ModGear {
     public static Item INFERNAL_BULWARK;
     public static Item COSMIC_SHIELD;
     public static Item GOD_OMNITOOL;
+
+    // Specialized Utility Armors
+    public static Item MINING_EXOSKELETON;
+    public static Item LUMBERJACK_HAUBERK;
+    public static Item COSMIC_ELYTRA_CHESTPLATE;
 
     static {
         // 16 Progressive Gear Milestone Sets
@@ -236,6 +244,28 @@ public class ModGear {
                 Registries.ITEM,
                 omniKey,
                 new GodOmnitoolItem(new Item.Settings().registryKey(omniKey).fireproof())
+        );
+
+        // Register Specialized Utility Armors
+        RegistryKey<Item> exoKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("mining_exoskeleton"));
+        MINING_EXOSKELETON = Registry.register(
+                Registries.ITEM,
+                exoKey,
+                new MiningExoskeletonItem(new Item.Settings().registryKey(exoKey).fireproof().rarity(net.minecraft.util.Rarity.RARE))
+        );
+
+        RegistryKey<Item> lumberKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("lumberjack_hauberk"));
+        LUMBERJACK_HAUBERK = Registry.register(
+                Registries.ITEM,
+                lumberKey,
+                new LumberjackHauberkItem(new Item.Settings().registryKey(lumberKey).rarity(net.minecraft.util.Rarity.RARE))
+        );
+
+        RegistryKey<Item> elytraKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("cosmic_elytra_chestplate"));
+        COSMIC_ELYTRA_CHESTPLATE = Registry.register(
+                Registries.ITEM,
+                elytraKey,
+                new CosmicElytraChestplateItem(new Item.Settings().registryKey(elytraKey).fireproof().rarity(net.minecraft.util.Rarity.EPIC))
         );
 
         ChainOresMod.LOGGER.info("Registered complete progressive arsenal: swords, pickaxes, axes, shovels, hoes, armors, and legendary weapons!");

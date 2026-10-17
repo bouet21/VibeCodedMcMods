@@ -24,13 +24,23 @@ public class ChainOresConfig {
     // 1. PERFORMANCE & SERVER CLAIM PROTECTION
     // =========================================================================
     /** Maximum blocks that can be mined in a single chain with a pickaxe. */
-    public int veinMiningMaxBlocks = 64;
+    public int veinMiningMaxBlocks = 48;
 
     /** Maximum logs that can be felled at once with TreeCapitator. */
-    public int treeCapitatorMaxBlocks = 128;
+    public int treeCapitatorMaxBlocks = 96;
 
     /** Maximum area mining radius (1 = 3x3, 2 = 5x5). */
     public int areaMiningMaxRadius = 2;
+
+    /**
+     * Whether GodOmnitool respects unbreakable blocks (Bedrock, Command Blocks, End Portals, Barriers).
+     */
+    public boolean godOmnitoolRespectsUnbreakable = true;
+
+    /**
+     * Internal cooldown in seconds for Void Rescue ability (T135 / Cosmic Elytra).
+     */
+    public int voidRescueCooldownSeconds = 60;
 
     /**
      * Whether vein mining, treecapitator, and area tools strictly respect

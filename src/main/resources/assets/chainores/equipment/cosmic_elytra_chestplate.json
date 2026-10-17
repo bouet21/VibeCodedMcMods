@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "chainores:cosmic_elytra_chestplate"
+      }
+    ],
+    "wings": [
+      {
+        "texture": "chainores:cosmic_elytra"
+      }
+    ]
+  }
+}

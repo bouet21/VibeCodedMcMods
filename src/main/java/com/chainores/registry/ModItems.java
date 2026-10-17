@@ -19,8 +19,17 @@ public class ModItems {
     public static Item STRUCTURE_COMPASS;
     public static Item CHAIN_RING;
     public static Item CHAIN_AMULET;
+    public static Item MINING_SATCHEL;
 
     public static void initialize() {
+        // Register Mining Satchel
+        RegistryKey<Item> satchelKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("mining_satchel"));
+        MINING_SATCHEL = Registry.register(
+                Registries.ITEM,
+                satchelKey,
+                new com.chainores.item.MiningSatchelItem(new Item.Settings().registryKey(satchelKey).maxCount(1).rarity(net.minecraft.util.Rarity.RARE))
+        );
+
         // Register Chain Ring & Amulet (Trinkets)
         RegistryKey<Item> ringKey = RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chain_ring"));
         CHAIN_RING = Registry.register(

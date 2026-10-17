@@ -1,6 +1,1 @@
-{
-  "model": {
-    "type": "minecraft:model",
-    "model": "chainores:item/void_gem"
-  }
-}
+{"model": {"type": "minecraft:model", "model": "chainores:item/void_gem"}}

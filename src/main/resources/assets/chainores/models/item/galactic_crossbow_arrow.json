@@ -1,0 +1,6 @@
+{
+  "parent": "chainores:item/galactic_crossbow",
+  "textures": {
+    "layer0": "chainores:item/galactic_crossbow_arrow"
+  }
+}

@@ -14,7 +14,31 @@ import net.minecraft.util.Rarity;
 import net.minecraft.world.World;
 
 public class ModBossItems {
-    // 1. Invocadores de Jefes
+    // 1. Invocadores de Jefes y Mini-Jefes
+    public static final Item GLACIAL_HORN = register("glacial_horn", new BossSummonerItem(
+            new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("glacial_horn"))),
+            () -> ModEntities.FROSTWARDEN,
+            World.OVERWORLD,
+            -64, 320,
+            "message.chainores.summon_frostwarden",
+            Formatting.AQUA,
+            SoundEvents.ENTITY_WARDEN_SONIC_BOOM,
+            ParticleTypes.SNOWFLAKE
+    ));
+
+    public static final Item VERDANT_HEART = register("verdant_heart", new BossSummonerItem(
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("verdant_heart"))),
+            () -> ModEntities.SYLVA_ANCIENT,
+            World.OVERWORLD,
+            -64, 320,
+            "message.chainores.summon_sylva_ancient",
+            Formatting.DARK_GREEN,
+            SoundEvents.ENTITY_RAVAGER_ROAR,
+            ParticleTypes.HAPPY_VILLAGER
+    ));
+
     public static final Item ABYSSAL_EYE = register("abyssal_eye", new BossSummonerItem(
             new Item.Settings().maxCount(16).rarity(Rarity.RARE)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("abyssal_eye"))),
@@ -64,6 +88,16 @@ public class ModBossItems {
     ));
 
     // 2. Catalizadores de Transición de Tier
+    public static final Item GLACIAL_CATALYST = register("glacial_catalyst", new Item(
+            new Item.Settings().maxCount(64).rarity(Rarity.UNCOMMON)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("glacial_catalyst")))
+    ));
+
+    public static final Item SYLVA_CATALYST = register("sylva_catalyst", new Item(
+            new Item.Settings().maxCount(64).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("sylva_catalyst")))
+    ));
+
     public static final Item ABYSSAL_CATALYST = register("abyssal_catalyst", new Item(
             new Item.Settings().maxCount(64).rarity(Rarity.RARE)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("abyssal_catalyst")))

@@ -35,6 +35,12 @@ public class ModGems {
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("genesis_gem")))
     ));
 
+    public static final Item EARTH_GEM = register("earth_gem", new GemItem(
+            GemItem.GemType.EARTH, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("earth_gem")))
+    ));
+
     // Tier II
     public static final Item BLOOD_GEM_2 = register("blood_gem_2", new GemItem(
             GemItem.GemType.BLOOD, 2,
@@ -58,6 +64,12 @@ public class ModGems {
             GemItem.GemType.GENESIS, 2,
             new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("genesis_gem_2")))
+    ));
+
+    public static final Item EARTH_GEM_2 = register("earth_gem_2", new GemItem(
+            GemItem.GemType.EARTH, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("earth_gem_2")))
     ));
 
     // Tier III (Transcendent)
@@ -85,6 +97,12 @@ public class ModGems {
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("genesis_gem_3")))
     ));
 
+    public static final Item EARTH_GEM_3 = register("earth_gem_3", new GemItem(
+            GemItem.GemType.EARTH, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("earth_gem_3")))
+    ));
+
     public static boolean isGem(Item item) {
         return item instanceof GemItem;
     }
@@ -101,6 +119,9 @@ public class ModGems {
 
         if (item == GENESIS_GEM) return GENESIS_GEM_2;
         if (item == GENESIS_GEM_2) return GENESIS_GEM_3;
+
+        if (item == EARTH_GEM) return EARTH_GEM_2;
+        if (item == EARTH_GEM_2) return EARTH_GEM_3;
 
         return null;
     }
@@ -121,6 +142,10 @@ public class ModGems {
         if (item == GENESIS_GEM) return "genesis_gem";
         if (item == GENESIS_GEM_2) return "genesis_gem_2";
         if (item == GENESIS_GEM_3) return "genesis_gem_3";
+
+        if (item == EARTH_GEM) return "earth_gem";
+        if (item == EARTH_GEM_2) return "earth_gem_2";
+        if (item == EARTH_GEM_3) return "earth_gem_3";
 
         return null;
     }

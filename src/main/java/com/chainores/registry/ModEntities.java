@@ -14,6 +14,26 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 public class ModEntities {
+    public static final RegistryKey<EntityType<?>> FROSTWARDEN_KEY =
+            RegistryKey.of(RegistryKeys.ENTITY_TYPE, ChainOresMod.id("frostwarden"));
+    public static final EntityType<com.chainores.entity.FrostwardenEntity> FROSTWARDEN = Registry.register(
+            Registries.ENTITY_TYPE,
+            FROSTWARDEN_KEY,
+            EntityType.Builder.create(com.chainores.entity.FrostwardenEntity::new, SpawnGroup.MONSTER)
+                    .dimensions(1.3f, 2.7f)
+                    .build(FROSTWARDEN_KEY)
+    );
+
+    public static final RegistryKey<EntityType<?>> SYLVA_ANCIENT_KEY =
+            RegistryKey.of(RegistryKeys.ENTITY_TYPE, ChainOresMod.id("sylva_ancient"));
+    public static final EntityType<com.chainores.entity.SylvaAncientEntity> SYLVA_ANCIENT = Registry.register(
+            Registries.ENTITY_TYPE,
+            SYLVA_ANCIENT_KEY,
+            EntityType.Builder.create(com.chainores.entity.SylvaAncientEntity::new, SpawnGroup.MONSTER)
+                    .dimensions(1.5f, 3.2f)
+                    .build(SYLVA_ANCIENT_KEY)
+    );
+
     public static final RegistryKey<EntityType<?>> ABYSSAL_GUARDIAN_KEY =
             RegistryKey.of(RegistryKeys.ENTITY_TYPE, ChainOresMod.id("abyssal_guardian"));
     public static final EntityType<AbyssalGuardianEntity> ABYSSAL_GUARDIAN = Registry.register(
@@ -57,11 +77,13 @@ public class ModEntities {
     );
 
     public static void initialize() {
+        FabricDefaultAttributeRegistry.register(FROSTWARDEN, com.chainores.entity.FrostwardenEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(SYLVA_ANCIENT, com.chainores.entity.SylvaAncientEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(ABYSSAL_GUARDIAN, AbyssalGuardianEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(NETHER_BEHEMOTH, NetherBehemothEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(VOID_COLOSSUS, VoidColossusEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(COSMIC_SOVEREIGN, CosmicSovereignEntity.createAttributes());
 
-        ChainOresMod.LOGGER.info("Registered 4 Epic Dimension Bosses for Chain Ores Phase 3.");
+        ChainOresMod.LOGGER.info("Registered Bosses & Mini-Bosses for Chain Ores.");
     }
 }

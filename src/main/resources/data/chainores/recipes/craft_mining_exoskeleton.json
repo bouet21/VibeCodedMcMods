@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "chainores:ingot_tier_50",
+    "P": "chainores:pickaxe_tier_50",
+    "S": "chainores:mining_satchel",
+    "N": "minecraft:netherite_ingot"
+  },
+  "pattern": [
+    "IPI",
+    "ISI",
+    "INI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "chainores:mining_exoskeleton"
+  }
+}

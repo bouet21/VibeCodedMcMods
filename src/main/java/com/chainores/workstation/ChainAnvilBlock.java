@@ -307,23 +307,7 @@ public class ChainAnvilBlock extends Block {
     }
 
     private static String getGemId(Item item) {
-        if (item == com.chainores.registry.ModGems.BLOOD_GEM) return "blood_gem";
-        if (item == com.chainores.registry.ModGems.BLOOD_GEM_2) return "blood_gem_2";
-        if (item == com.chainores.registry.ModGems.BLOOD_GEM_3) return "blood_gem_3";
-
-        if (item == com.chainores.registry.ModGems.VOID_GEM) return "void_gem";
-        if (item == com.chainores.registry.ModGems.VOID_GEM_2) return "void_gem_2";
-        if (item == com.chainores.registry.ModGems.VOID_GEM_3) return "void_gem_3";
-
-        if (item == com.chainores.registry.ModGems.CORE_GEM) return "core_gem";
-        if (item == com.chainores.registry.ModGems.CORE_GEM_2) return "core_gem_2";
-        if (item == com.chainores.registry.ModGems.CORE_GEM_3) return "core_gem_3";
-
-        if (item == com.chainores.registry.ModGems.GENESIS_GEM) return "genesis_gem";
-        if (item == com.chainores.registry.ModGems.GENESIS_GEM_2) return "genesis_gem_2";
-        if (item == com.chainores.registry.ModGems.GENESIS_GEM_3) return "genesis_gem_3";
-
-        return null;
+        return com.chainores.registry.ModGems.getGemId(item);
     }
 
     private static boolean isSpecialGear(Item item) {
@@ -345,6 +329,9 @@ public class ChainAnvilBlock extends Block {
         if (item instanceof ChainShovelItem shovel) return shovel.getTier();
         if (item instanceof ChainHoeItem hoe) return hoe.getTier();
         if (item instanceof ChainArmorItem armor) return armor.getTier();
+        if (item instanceof com.chainores.gear.MiningExoskeletonItem) return 50;
+        if (item instanceof com.chainores.gear.LumberjackHauberkItem) return 40;
+        if (item instanceof com.chainores.gear.CosmicElytraChestplateItem) return 135;
         if (item instanceof GodOmnitoolItem) return 150;
         if (item == com.chainores.registry.ModGear.DRAGON_BOW) return 115;
         if (item == com.chainores.registry.ModGear.GALACTIC_CROSSBOW) return 125;

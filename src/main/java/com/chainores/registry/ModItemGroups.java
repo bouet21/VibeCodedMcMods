@@ -70,6 +70,12 @@ public class ModItemGroups {
                     // Trinkets & Accessories
                     entries.add(ModItems.CHAIN_RING);
                     entries.add(ModItems.CHAIN_AMULET);
+                    entries.add(ModItems.MINING_SATCHEL);
+
+                    // Specialized Utility Armors
+                    entries.add(ModGear.MINING_EXOSKELETON);
+                    entries.add(ModGear.LUMBERJACK_HAUBERK);
+                    entries.add(ModGear.COSMIC_ELYTRA_CHESTPLATE);
 
                     // Weapons, Tools, and Armors (Grouped by milestone sets)
                     for (ModGear.GearSet gear : ModGear.GEAR_SETS) {

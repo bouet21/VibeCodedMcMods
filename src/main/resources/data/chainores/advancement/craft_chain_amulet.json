@@ -1,0 +1,30 @@
+{
+  "parent": "chainores:craft_chain_ring",
+  "display": {
+    "icon": {
+      "id": "chainores:chain_amulet"
+    },
+    "title": {
+      "translate": "advancements.chainores.craft_chain_amulet.title"
+    },
+    "description": {
+      "translate": "advancements.chainores.craft_chain_amulet.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_amulet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "chainores:chain_amulet"
+          }
+        ]
+      }
+    }
+  }
+}

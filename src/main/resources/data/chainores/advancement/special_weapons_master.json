@@ -1,0 +1,33 @@
+{
+  "parent": "chainores:root",
+  "display": {
+    "icon": {
+      "id": "chainores:dragon_breath_bow"
+    },
+    "title": {
+      "translate": "advancements.chainores.special_weapons_master.title"
+    },
+    "description": {
+      "translate": "advancements.chainores.special_weapons_master.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_special_weapon": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "chainores:dragon_breath_bow",
+              "chainores:galactic_crossbow"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

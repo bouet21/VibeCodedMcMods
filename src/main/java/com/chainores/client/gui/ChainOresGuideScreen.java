@@ -155,8 +155,9 @@ public class ChainOresGuideScreen extends Screen {
 
     private int getMaxSubPages(Tab tab) {
         return switch (tab) {
-            case ARSENAL -> 4;
-            case WORKSTATIONS, BOSSES, MODIFIERS -> 3;
+            case ARSENAL -> 6;
+            case BOSSES -> 4;
+            case WORKSTATIONS, MODIFIERS -> 3;
             default -> 1;
         };
     }
@@ -447,7 +448,7 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, l, cx + 161, dockY + 5, mouseX, mouseY);
             checkTooltip(context, b, cx + 184, dockY + 5, mouseX, mouseY);
 
-        } else {
+        } else if (subPage == 3) {
             // subPage 3: Joyería Arcana & Trinkets
             context.drawText(this.textRenderer, Text.literal("✦ JOYERÍA ARCANA Y MOD TRINKETS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
@@ -484,6 +485,79 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, amulet, cx, cy + 38, mouseX, mouseY);
             checkTooltip(context, ring, cx + 115, dockY + 5, mouseX, mouseY);
             checkTooltip(context, amulet, cx + 140, dockY + 5, mouseX, mouseY);
+
+        } else if (subPage == 4) {
+            // subPage 4: Bolsa de Minería en Cadena & Auto-Compactador
+            context.drawText(this.textRenderer, Text.literal("✦ BOLSA DE MINERÍA Y AUTO-COMPACTADOR ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+                    cx, cy, 0xFFFFD700, false);
+
+            ItemStack satchel = new ItemStack(ModItems.MINING_SATCHEL);
+            context.drawItem(satchel, cx, cy + 14);
+            context.drawText(this.textRenderer,
+                    Text.literal("Bolsa de Minería en Cadena: ").formatted(Formatting.YELLOW, Formatting.BOLD)
+                            .append(Text.literal("54 Ranuras Profundas").formatted(Formatting.AQUA)),
+                    cx + 22, cy + 14, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Almacena minerales, lingotes y gemas sin saturar inventario.", cx + 22, cy + 24, 0xFFAAAAAA, false);
+
+            context.drawText(this.textRenderer, "🧲 IMÁN Y AUTO-COMPACTADOR:", cx, cy + 40, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, "• Clic Derecho: Abre el inventario de 54 casillas.", cx, cy + 50, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "• Shift + Clic Derecho: Alterna el auto-aspirador a 8m.", cx, cy + 60, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "• Auto-Compactador: Fusión automática de 9 lingotes en 1 bloque.", cx, cy + 70, 0xFF88FF88, false);
+
+            context.drawText(this.textRenderer, "✨ COMPATIBILIDAD CON TRINKETS:", cx, cy + 86, 0xFFFF77FF, false);
+            context.drawText(this.textRenderer, "• Equípala en cinturón o espalda para aspirar mientras caminas.", cx, cy + 96, 0xFFE0E0E0, false);
+
+            int dockY = cy + 116;
+            drawCustomBorder(context, cx, dockY, maxW, 26, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "Muestra Satchel:", cx + 6, dockY + 9, 0xFFAAAAAA, false);
+            context.drawItem(satchel, cx + 115, dockY + 5);
+
+            checkTooltip(context, satchel, cx, cy + 14, mouseX, mouseY);
+            checkTooltip(context, satchel, cx + 115, dockY + 5, mouseX, mouseY);
+
+        } else {
+            // subPage 5: Armaduras Especializadas (Minería, Tala, Élitros)
+            context.drawText(this.textRenderer, Text.literal("✦ ARMADURAS ESPECIALIZADAS Y ÉLITROS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+                    cx, cy, 0xFFFFD700, false);
+
+            ItemStack exo = new ItemStack(ModGear.MINING_EXOSKELETON);
+            ItemStack lumber = new ItemStack(ModGear.LUMBERJACK_HAUBERK);
+            ItemStack elytraArmor = new ItemStack(ModGear.COSMIC_ELYTRA_CHESTPLATE);
+
+            context.drawItem(exo, cx, cy + 14);
+            context.drawText(this.textRenderer,
+                    Text.literal("Peto de Minería Profunda: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                            .append(Text.literal("Prisa II, Fuego, Imán 6m y Sonar").formatted(Formatting.WHITE)),
+                    cx + 22, cy + 14, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "La coraza definitiva para cavernas y pozos oscuros.", cx + 22, cy + 24, 0xFFAAAAAA, false);
+
+            context.drawItem(lumber, cx, cy + 38);
+            context.drawText(this.textRenderer,
+                    Text.literal("Coraza del Guardabosques: ").formatted(Formatting.GREEN, Formatting.BOLD)
+                            .append(Text.literal("Velocidad II, Tala Masiva y Fertilidad").formatted(Formatting.WHITE)),
+                    cx + 22, cy + 38, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Derriba árboles enteros en un toque y acelera cultivos.", cx + 22, cy + 48, 0xFFAAAAAA, false);
+
+            context.drawItem(elytraArmor, cx, cy + 62);
+            context.drawText(this.textRenderer,
+                    Text.literal("Coraza Alada Cósmica: ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD)
+                            .append(Text.literal("Armadura Pesada + Vuelo Élitros").formatted(Formatting.AQUA)),
+                    cx + 22, cy + 62, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Vuelo con propulsión a reacción [Shift en vuelo] e inmune a choques.", cx + 22, cy + 72, 0xFFAAAAAA, false);
+
+            int dockY = cy + 116;
+            drawCustomBorder(context, cx, dockY, maxW, 26, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "Muestra Especialistas:", cx + 6, dockY + 9, 0xFFAAAAAA, false);
+            context.drawItem(exo, cx + 130, dockY + 5);
+            context.drawItem(lumber, cx + 155, dockY + 5);
+            context.drawItem(elytraArmor, cx + 180, dockY + 5);
+
+            checkTooltip(context, exo, cx, cy + 14, mouseX, mouseY);
+            checkTooltip(context, lumber, cx, cy + 38, mouseX, mouseY);
+            checkTooltip(context, elytraArmor, cx, cy + 62, mouseX, mouseY);
+            checkTooltip(context, exo, cx + 130, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, lumber, cx + 155, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, elytraArmor, cx + 180, dockY + 5, mouseX, mouseY);
         }
     }
 
@@ -536,26 +610,27 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "  • Recibe el cuádruple (x4) de lingotes y transmutación 35%.", cx, cy + 122, 0xFFFFF1A8, false);
 
         } else {
-            // subPage 2: Altar Cósmico & Invasión Astral
-            context.drawText(this.textRenderer, Text.literal("✦ ALTAR CÓSMICO Y OLEADAS ASTRALES ✦").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD),
+            // subPage 2: Altar Cósmico & Dificultades Escalables
+            context.drawText(this.textRenderer, Text.literal("✦ ALTAR CÓSMICO: MODOS Y DIFICULTADES ✦").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD),
                     cx, cy, 0xFFFF55FF, false);
 
             ItemStack altar = new ItemStack(ModWorkstations.COSMIC_ALTAR_ITEM);
             context.drawItem(altar, cx, cy + 14);
             context.drawText(this.textRenderer,
                     Text.literal("Altar Cósmico: ").formatted(Formatting.GOLD, Formatting.BOLD)
-                            .append(Text.literal("Estación Suprema Endgame").formatted(Formatting.YELLOW)),
+                            .append(Text.literal("Arena Escalable de Oleadas").formatted(Formatting.YELLOW)),
                     cx + 22, cy + 14, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "Permite craftear los ítems de mayor poder cósmico.", cx + 22, cy + 24, 0xFFAAAAAA, false);
+            context.drawText(this.textRenderer, "Elige la dificultad según el objeto activador usado:", cx + 22, cy + 24, 0xFFAAAAAA, false);
 
-            context.drawText(this.textRenderer, "⚔ MODO SUPERVIVENCIA (5 OLEADAS ASTRALES):", cx, cy + 42, 0xFFFF5555, false);
-            context.drawText(this.textRenderer, "• Clic derecho con Núcleo Cósmico o Lingote T150.", cx, cy + 54, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "• Aparecerán 5 oleadas continuas de invasores estelares.", cx, cy + 64, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "• Los enemigos tienen auras y resistencia extrema.", cx, cy + 74, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "⚔ NORMAL (3 Oleadas): Clic derecho con Trofeo Cósmico.", cx, cy + 38, 0xFF55FF55, false);
+            context.drawText(this.textRenderer, "  Invasores cósmicos básicos. Botín: Lingotes T140 y Gemas II.", cx, cy + 48, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "★ RECOMPENSAS AL COMPLETAR LA ARENA:", cx, cy + 88, 0xFF55FF55, false);
-            context.drawText(this.textRenderer, "• Lingotes T140-T150, Gemas del Génesis Tier III", cx, cy + 98, 0xFFFFF1A8, false);
-            context.drawText(this.textRenderer, "• y Fragmentos Cósmicos para joyería y armas divinas.", cx, cy + 108, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "⚔ DIFÍCIL (5 Oleadas): Shift + Clic der. con Trofeo Cósmico.", cx, cy + 62, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "  Invoca al Guardián Criogénico y Titán Silvestre en oleada 4.", cx, cy + 72, 0xFFE0E0E0, false);
+
+            context.drawText(this.textRenderer, "☠ PESADILLA (7 Oleadas): Clic derecho con Singularidad.", cx, cy + 86, 0xFFFF5555, false);
+            context.drawText(this.textRenderer, "  Invoca a los 4 Jefes y al Soberano. Drop: Herramienta de Dios,", cx, cy + 96, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "  Gemas Trascendentes III, 8x Singularidades y 35,000 XP.", cx, cy + 106, 0xFFFFF1A8, false);
 
             checkTooltip(context, altar, cx, cy + 14, mouseX, mouseY);
         }
@@ -566,6 +641,44 @@ public class ChainOresGuideScreen extends Screen {
         int cy = y + 32;
 
         if (subPage == 0) {
+            context.drawText(this.textRenderer, Text.literal("✦ MINI-JEFES DEL OVERWORLD (T20 & T40) ✦").formatted(Formatting.AQUA, Formatting.BOLD),
+                    cx, cy, 0xFF55FFFF, false);
+
+            ItemStack horn = new ItemStack(ModBossItems.GLACIAL_HORN);
+            context.drawItem(horn, cx, cy + 14);
+            context.drawText(this.textRenderer,
+                    Text.literal("1. Guardián Criogénico ").formatted(Formatting.AQUA, Formatting.BOLD)
+                            .append(Text.literal("(T20 - Zonas Heladas)").formatted(Formatting.DARK_AQUA)),
+                    cx + 22, cy + 14, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("  Invocador: Cuerno Glacial. ").formatted(Formatting.GRAY)
+                            .append(Text.literal("Drop: Catalizador Glacial.").formatted(Formatting.YELLOW)),
+                    cx + 22, cy + 24, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  Habilidades: Golpe sísmico helado, Congelación y Nova.", cx + 22, cy + 34, 0xFFB3E5FC, false);
+
+            ItemStack heartS = new ItemStack(ModBossItems.VERDANT_HEART);
+            context.drawItem(heartS, cx, cy + 48);
+            context.drawText(this.textRenderer,
+                    Text.literal("2. Titán Silvestre ").formatted(Formatting.GREEN, Formatting.BOLD)
+                            .append(Text.literal("(T40 - Bosques y Selvas)").formatted(Formatting.DARK_GREEN)),
+                    cx + 22, cy + 48, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer,
+                    Text.literal("  Invocador: Corazón Verdante. ").formatted(Formatting.GRAY)
+                            .append(Text.literal("Drop: Catalizador Silvestre.").formatted(Formatting.YELLOW)),
+                    cx + 22, cy + 58, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  Habilidades: Raíces inmovilizadoras, Terremoto y Fotosíntesis.", cx + 22, cy + 68, 0xFFA5D6A7, false);
+
+            // Recompensa de Forja box
+            int boxY = cy + 82;
+            drawCustomBorder(context, cx, boxY, 332, 42, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "⚒ RECETAS DE FORJA CON SUS CATALIZADORES:", cx + 6, boxY + 6, 0xFFFFD700, false);
+            context.drawText(this.textRenderer, "• Cat. Glacial: Escudo Criogénico (Rebote helado) y x2 lingote T20.", cx + 6, boxY + 17, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "• Cat. Silvestre: Coraza del Guardabosques (Tala masiva) y x2 lingote T40.", cx + 6, boxY + 28, 0xFFE0E0E0, false);
+
+            checkTooltip(context, horn, cx, cy + 14, mouseX, mouseY);
+            checkTooltip(context, heartS, cx, cy + 48, mouseX, mouseY);
+
+        } else if (subPage == 1) {
             context.drawText(this.textRenderer, Text.literal("✦ JEFES SUPREMOS DE DIMENSIÓN ✦").formatted(Formatting.RED, Formatting.BOLD),
                     cx, cy, 0xFFFF5555, false);
 
@@ -620,7 +733,7 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, beacon, cx, cy + 66, mouseX, mouseY);
             checkTooltip(context, core, cx, cy + 92, mouseX, mouseY);
 
-        } else if (subPage == 1) {
+        } else if (subPage == 2) {
             context.drawText(this.textRenderer, Text.literal("✦ ESTRUCTURAS ÉPICAS Y BRÚJULA RÚNICA ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
@@ -635,7 +748,6 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "• Clic der. normal: Pulso sonar de resonancia rúnica.", cx, cy + 84, 0xFFE0E0E0, false);
             context.drawText(this.textRenderer, "  Calcula distancia, rumbo y envía coordenadas al chat.", cx, cy + 94, 0xFFE0E0E0, false);
 
-            // Dedicated Compass Slot at bottom
             int compassBoxY = cy + 108;
             drawCustomBorder(context, cx, compassBoxY, 332, 24, 0xFF4A3E31);
 
@@ -646,7 +758,7 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, compass, cx + 4, compassBoxY + 4, mouseX, mouseY);
 
         } else {
-            // subPage 2: Escalado Multijugador, Mobs Infundidos y EMI
+            // subPage 3: Escalado Multijugador, Mobs Infundidos y EMI
             context.drawText(this.textRenderer, Text.literal("✦ MULTIJUGADOR, MOBS INFUNDIDOS Y EMI ✦").formatted(Formatting.AQUA, Formatting.BOLD),
                     cx, cy, 0xFF55FFFF, false);
 
@@ -674,46 +786,50 @@ public class ChainOresGuideScreen extends Screen {
                     cx, cy, 0xFFFF77FF, false);
 
             ItemStack blood = new ItemStack(ModGems.BLOOD_GEM);
-            context.drawItem(blood, cx, cy + 14);
+            context.drawItem(blood, cx, cy + 12);
             context.drawText(this.textRenderer,
                     Text.literal("Gema Carmesí: ").formatted(Formatting.RED, Formatting.BOLD)
-                            .append(Text.literal("+15% Robo de Vida (Armas)").formatted(Formatting.WHITE)),
-                    cx + 20, cy + 14, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "Armadura: Regeneración pasiva II y salvavidas.", cx + 20, cy + 24, 0xFFAAAAAA, false);
+                            .append(Text.literal("+15% Robo de Vida | Armadura: Regen II").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 12, 0xFFFFFFFF, false);
 
             ItemStack voidGem = new ItemStack(ModGems.VOID_GEM);
-            context.drawItem(voidGem, cx, cy + 38);
+            context.drawItem(voidGem, cx, cy + 32);
             context.drawText(this.textRenderer,
                     Text.literal("Gema del Vacío: ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD)
-                            .append(Text.literal("+30% Daño cósmico y levitación").formatted(Formatting.WHITE)),
-                    cx + 20, cy + 38, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "Armadura: Inmunidad a daño de caída y planeo.", cx + 20, cy + 48, 0xFFAAAAAA, false);
+                            .append(Text.literal("+30% Daño cósmico | Armadura: Sin daño caída").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 32, 0xFFFFFFFF, false);
 
             ItemStack core = new ItemStack(ModGems.CORE_GEM);
-            context.drawItem(core, cx, cy + 62);
+            context.drawItem(core, cx, cy + 52);
             context.drawText(this.textRenderer,
                     Text.literal("Gema del Núcleo: ").formatted(Formatting.GOLD, Formatting.BOLD)
-                            .append(Text.literal("+35% Vel. ataque e ignición").formatted(Formatting.WHITE)),
-                    cx + 20, cy + 62, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "Armadura: Inmune a fuego/lava y Velocidad II.", cx + 20, cy + 72, 0xFFAAAAAA, false);
+                            .append(Text.literal("+35% Vel. ataque | Armadura: Inmune fuego/lava").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 52, 0xFFFFFFFF, false);
 
             ItemStack genesis = new ItemStack(ModGems.GENESIS_GEM);
-            context.drawItem(genesis, cx, cy + 86);
+            context.drawItem(genesis, cx, cy + 72);
             context.drawText(this.textRenderer,
                     Text.literal("Gema del Génesis: ").formatted(Formatting.AQUA, Formatting.BOLD)
-                            .append(Text.literal("Rayos sagrados en críticos").formatted(Formatting.WHITE)),
-                    cx + 20, cy + 86, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "Armadura: +4 Absorción y retribución sagrada.", cx + 20, cy + 96, 0xFFAAAAAA, false);
+                            .append(Text.literal("Rayos sagrados críticos | Armadura: +4 Absorción").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 72, 0xFFFFFFFF, false);
+
+            ItemStack earth = new ItemStack(ModGems.EARTH_GEM);
+            context.drawItem(earth, cx, cy + 92);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema de la Tierra: ").formatted(Formatting.GREEN, Formatting.BOLD)
+                            .append(Text.literal("+25% Minería, Prisa, doble drop | Suerte").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 92, 0xFFFFFFFF, false);
 
             // Tier slot breakdown box
-            int slotBoxY = cy + 110;
-            drawCustomBorder(context, cx, slotBoxY, 332, 24, 0xFF4A3E31);
-            context.drawText(this.textRenderer, "• T1-9: 0 ranuras | T10-39: 1 [◆] | T40-79: 2 [◆] | T80+: 3-4 [◆]", cx + 6, slotBoxY + 8, 0xFFFFF1A8, false);
+            int slotBoxY = cy + 112;
+            drawCustomBorder(context, cx, slotBoxY, 332, 18, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "• T10-39: 1 [◆] | T40-79: 2 [◆] | T80+: 3-4 [◆] | Exos / Élitros: 3-4 [◆]", cx + 6, slotBoxY + 5, 0xFFFFF1A8, false);
 
-            checkTooltip(context, blood, cx, cy + 14, mouseX, mouseY);
-            checkTooltip(context, voidGem, cx, cy + 38, mouseX, mouseY);
-            checkTooltip(context, core, cx, cy + 62, mouseX, mouseY);
-            checkTooltip(context, genesis, cx, cy + 86, mouseX, mouseY);
+            checkTooltip(context, blood, cx, cy + 12, mouseX, mouseY);
+            checkTooltip(context, voidGem, cx, cy + 32, mouseX, mouseY);
+            checkTooltip(context, core, cx, cy + 52, mouseX, mouseY);
+            checkTooltip(context, genesis, cx, cy + 72, mouseX, mouseY);
+            checkTooltip(context, earth, cx, cy + 92, mouseX, mouseY);
 
         } else if (subPage == 1) {
             context.drawText(this.textRenderer, Text.literal("✦ REFORJADO, PREFIJOS Y ENCANTAMIENTOS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
@@ -745,30 +861,33 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "• Combina 2 gemas iguales de Tier I para forjar Tier II.", cx, cy + 24, 0xFFE0E0E0, false);
             context.drawText(this.textRenderer, "• Combina 2 gemas de Tier II para forjar Tier III (Máx).", cx, cy + 34, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "💎 ESCALADO DE PODER DE TIER III:", cx, cy + 48, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "• Sangre III: Regeneración III y robo de vida letal.", cx, cy + 58, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "• Vacío III: Inmunidad a caída y planeo etéreo prolongado.", cx, cy + 68, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "• Núcleo III: Inmune a fuego, Velocidad II y Prisa II.", cx, cy + 78, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "• Génesis III: ¡Hasta +10 Corazones Amarillos y Fuerza II!", cx, cy + 88, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "💎 ESCALADO DE PODER DE TIER III:", cx, cy + 46, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, "• Sangre III: Regen III letal. | Vacío III: Inmune caída.", cx, cy + 56, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "• Núcleo III: Inmune fuego, Vel II y Prisa II.", cx, cy + 66, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "• Génesis III: ¡Hasta +10 Corazones Amarillos y Fuerza II!", cx, cy + 76, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "• Tierra III: +60% minería, Prisa II, 50% doble mena y +4 HP.", cx, cy + 86, 0xFFA5D6A7, false);
 
-            int dockY = cy + 104;
-            drawCustomBorder(context, cx, dockY, 332, 26, 0xFF4A3E31);
-            context.drawText(this.textRenderer, "Gemas Tier III:", cx + 6, dockY + 9, 0xFFAAAAAA, false);
+            int dockY = cy + 102;
+            drawCustomBorder(context, cx, dockY, 332, 28, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "Gemas Tier III:", cx + 6, dockY + 10, 0xFFAAAAAA, false);
 
             ItemStack b3 = new ItemStack(ModGems.BLOOD_GEM_3);
             ItemStack v3 = new ItemStack(ModGems.VOID_GEM_3);
             ItemStack c3 = new ItemStack(ModGems.CORE_GEM_3);
             ItemStack g3 = new ItemStack(ModGems.GENESIS_GEM_3);
+            ItemStack e3 = new ItemStack(ModGems.EARTH_GEM_3);
 
-            context.drawItem(b3, cx + 115, dockY + 5);
-            context.drawItem(v3, cx + 140, dockY + 5);
-            context.drawItem(c3, cx + 165, dockY + 5);
-            context.drawItem(g3, cx + 190, dockY + 5);
+            context.drawItem(b3, cx + 110, dockY + 5);
+            context.drawItem(v3, cx + 135, dockY + 5);
+            context.drawItem(c3, cx + 160, dockY + 5);
+            context.drawItem(g3, cx + 185, dockY + 5);
+            context.drawItem(e3, cx + 210, dockY + 5);
 
-            checkTooltip(context, b3, cx + 115, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, v3, cx + 140, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, c3, cx + 165, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, g3, cx + 190, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, b3, cx + 110, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, v3, cx + 135, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, c3, cx + 160, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, g3, cx + 185, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, e3, cx + 210, dockY + 5, mouseX, mouseY);
         }
     }
 

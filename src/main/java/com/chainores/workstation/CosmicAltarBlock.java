@@ -79,20 +79,36 @@ public class CosmicAltarBlock extends Block implements BlockEntityProvider {
 
         if (stack.isOf(ModBossItems.COSMIC_TROPHY)) {
             if (!world.isClient()) {
-                boolean started = altar.startArena(player);
+                CosmicAltarBlockEntity.AltarDifficulty diff = player.isSneaking() 
+                        ? CosmicAltarBlockEntity.AltarDifficulty.HARD 
+                        : CosmicAltarBlockEntity.AltarDifficulty.NORMAL;
+                boolean started = altar.startArena(player, diff);
                 if (started) {
-                    player.sendMessage(Text.literal("★ ¡Has consagrado el Trofeo Cósmico en el Altar!").formatted(Formatting.GOLD, Formatting.BOLD), true);
+                    player.sendMessage(Text.literal("★ ¡Has consagrado el Trofeo Cósmico en el Altar en Modo " + diff.displayName + "!").formatted(diff.color, Formatting.BOLD), true);
+                }
+            }
+            return ActionResult.SUCCESS;
+        }
+
+        if (stack.isOf(ModBossItems.COSMIC_SINGULARITY)) {
+            if (!world.isClient()) {
+                boolean started = altar.startArena(player, CosmicAltarBlockEntity.AltarDifficulty.NIGHTMARE);
+                if (started) {
+                    player.sendMessage(Text.literal("☠ ¡HAS DESPERTADO EL MODO PESADILLA DEL ALTAR CÓSMICO! ☠").formatted(Formatting.RED, Formatting.BOLD), true);
                 }
             }
             return ActionResult.SUCCESS;
         }
 
         if (!world.isClient() && hand == Hand.MAIN_HAND) {
-            player.sendMessage(Text.literal("✦ ALTARES CÓSMICOS ✦").formatted(Formatting.DARK_PURPLE, Formatting.BOLD), false);
-            player.sendMessage(Text.literal("El altar pulsa con una energía gravitatoria milenaria.").formatted(Formatting.GRAY), false);
-            player.sendMessage(Text.literal("Requiere el ").formatted(Formatting.GRAY)
-                    .append(Text.literal("Trofeo Cósmico").formatted(Formatting.GOLD, Formatting.BOLD))
-                    .append(Text.literal(" para desatar el Desafío de las Olas Astrales (Supervivencia Post-Game).").formatted(Formatting.GRAY)), false);
+            player.sendMessage(Text.literal("✦ ALTARES CÓSMICOS (DIFICULTAD ESCALABLE) ✦").formatted(Formatting.DARK_PURPLE, Formatting.BOLD), false);
+            player.sendMessage(Text.literal("Elige el nivel de desafío consagrando tu ofrenda:").formatted(Formatting.GRAY), false);
+            player.sendMessage(Text.literal(" • Clic derecho con Trofeo Cósmico: ").formatted(Formatting.WHITE)
+                    .append(Text.literal("Modo Normal (3 Olas)").formatted(Formatting.GREEN, Formatting.BOLD)), false);
+            player.sendMessage(Text.literal(" • Shift + Clic con Trofeo Cósmico: ").formatted(Formatting.WHITE)
+                    .append(Text.literal("Modo Difícil (5 Olas, Mini-jefes)").formatted(Formatting.GOLD, Formatting.BOLD)), false);
+            player.sendMessage(Text.literal(" • Clic con Singularidad Cósmica: ").formatted(Formatting.WHITE)
+                    .append(Text.literal("Modo Pesadilla (7 Olas, Jefes Mayores y Botín Divino)").formatted(Formatting.RED, Formatting.BOLD)), false);
             world.playSound(null, pos, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0f, 0.8f);
         }
 

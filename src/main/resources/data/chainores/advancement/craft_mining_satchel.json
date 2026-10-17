@@ -1,0 +1,30 @@
+{
+  "parent": "chainores:root",
+  "display": {
+    "icon": {
+      "id": "chainores:mining_satchel"
+    },
+    "title": {
+      "translate": "advancements.chainores.craft_mining_satchel.title"
+    },
+    "description": {
+      "translate": "advancements.chainores.craft_mining_satchel.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_satchel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "chainores:mining_satchel"
+          }
+        ]
+      }
+    }
+  }
+}

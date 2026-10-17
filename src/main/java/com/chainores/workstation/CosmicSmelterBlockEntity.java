@@ -35,7 +35,7 @@ public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity imple
 
     private static final int[] TOP_SLOTS = new int[]{INPUT_SLOT};
     private static final int[] BOTTOM_SLOTS = new int[]{OUTPUT_SLOT, FUEL_SLOT};
-    private static final int[] SIDE_SLOTS = new int[]{FUEL_SLOT, INPUT_SLOT};
+    private static final int[] SIDE_SLOTS = new int[]{FUEL_SLOT};
 
     private int burnTime = 0;
     private int fuelTime = 0;
@@ -271,7 +271,10 @@ public class CosmicSmelterBlockEntity extends LockableContainerBlockEntity imple
         if (slot == FUEL_SLOT) {
             return getFuelTime(stack) > 0;
         }
-        return slot == INPUT_SLOT;
+        if (slot == INPUT_SLOT) {
+            return !getSmeltingResult(stack).isEmpty();
+        }
+        return false;
     }
 
     @Override

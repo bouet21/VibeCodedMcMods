@@ -1,0 +1,35 @@
+{
+  "parent": "chainores:root",
+  "display": {
+    "icon": {
+      "id": "chainores:genesis_gem_3"
+    },
+    "title": {
+      "translate": "advancements.chainores.fuse_gem_tier_3.title"
+    },
+    "description": {
+      "translate": "advancements.chainores.fuse_gem_tier_3.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_t3_gem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "chainores:blood_gem_3",
+              "chainores:void_gem_3",
+              "chainores:core_gem_3",
+              "chainores:genesis_gem_3"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

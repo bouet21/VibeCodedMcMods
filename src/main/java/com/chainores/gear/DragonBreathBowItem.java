@@ -38,13 +38,24 @@ public class DragonBreathBowItem extends BowItem {
         }
         float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(bowStack);
 
+        projectile.addCommandTag("dragon_arrow");
         if (projectile instanceof PersistentProjectileEntity arrow) {
             arrow.applyDamageModifier(1.8f * mult);
             arrow.setCritical(true);
         }
-        if (shooter.getEntityWorld() instanceof ServerWorld) {
-            shooter.getEntityWorld().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
-                    SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 0.8f, 1.6f);
+        if (shooter.getEntityWorld() instanceof ServerWorld sw) {
+            sw.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
+                    SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 0.9f, 1.6f);
+            sw.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
+                    SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.PLAYERS, 0.7f, 1.8f);
+
+            net.minecraft.util.math.Vec3d rot = shooter.getRotationVector();
+            sw.spawnParticles(net.minecraft.particle.ParticleTypes.WITCH,
+                    shooter.getX() + rot.x * 1.2, shooter.getEyeY() - 0.1, shooter.getZ() + rot.z * 1.2,
+                    18, 0.25, 0.25, 0.25, 0.08);
+            sw.spawnParticles(net.minecraft.particle.ParticleTypes.PORTAL,
+                    shooter.getX() + rot.x * 0.8, shooter.getEyeY() - 0.1, shooter.getZ() + rot.z * 0.8,
+                    12, 0.15, 0.15, 0.15, 0.05);
         }
     }
 

@@ -43,7 +43,15 @@ public class ChainOresClient implements ClientModInitializer {
         HandledScreens.register(ModWorkstations.CHAIN_FORGE_SCREEN_HANDLER, ChainForgeScreen::new);
         HandledScreens.register(ModWorkstations.COSMIC_SMELTER_SCREEN_HANDLER, CosmicSmelterScreen::new);
 
-        // Register boss entity renderers
+        // Register boss and mini-boss entity renderers
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+                com.chainores.registry.ModEntities.FROSTWARDEN,
+                com.chainores.client.render.FrostwardenRenderer::new
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+                com.chainores.registry.ModEntities.SYLVA_ANCIENT,
+                com.chainores.client.render.SylvaAncientRenderer::new
+        );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
                 com.chainores.registry.ModEntities.ABYSSAL_GUARDIAN,
                 com.chainores.client.render.AbyssalGuardianRenderer::new

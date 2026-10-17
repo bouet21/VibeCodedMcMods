@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {"id": "chainores:glacial_catalyst"},
+    "title": {"translate": "advancements.chainores.slay_frostwarden.title"},
+    "description": {"translate": "advancements.chainores.slay_frostwarden.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:tier_20",
+  "criteria": {
+    "has_catalyst": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["chainores:glacial_catalyst"]}]
+      }
+    }
+  }
+}

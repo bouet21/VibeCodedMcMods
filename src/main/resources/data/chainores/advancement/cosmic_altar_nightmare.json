@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {"id": "chainores:cosmic_trophy"},
+    "title": {"translate": "advancements.chainores.cosmic_altar_nightmare.title"},
+    "description": {"translate": "advancements.chainores.cosmic_altar_nightmare.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:slay_cosmic_sovereign",
+  "criteria": {
+    "has_omnitool_or_trophy": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {"items": ["chainores:cosmic_trophy"]}
+        ]
+      }
+    }
+  }
+}

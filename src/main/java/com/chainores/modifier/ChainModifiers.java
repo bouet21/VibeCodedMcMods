@@ -34,6 +34,7 @@ public class ChainModifiers {
     public static final String GEM_VOID = "void_gem";
     public static final String GEM_CORE = "core_gem";
     public static final String GEM_GENESIS = "genesis_gem";
+    public static final String GEM_EARTH = "earth_gem";
 
     // Reforge Prefix IDs
     public static final String REFORGE_DIVINE = "divine";
@@ -55,6 +56,7 @@ public class ChainModifiers {
         if (gemId.startsWith(GEM_VOID)) return GEM_VOID;
         if (gemId.startsWith(GEM_CORE)) return GEM_CORE;
         if (gemId.startsWith(GEM_GENESIS)) return GEM_GENESIS;
+        if (gemId.startsWith(GEM_EARTH)) return GEM_EARTH;
         return gemId;
     }
 
@@ -62,6 +64,10 @@ public class ChainModifiers {
         if (stack.isEmpty()) return false;
         Item item = stack.getItem();
         return item instanceof ChainArmorItem ||
+               item instanceof com.chainores.gear.MiningExoskeletonItem ||
+               item instanceof com.chainores.gear.LumberjackHauberkItem ||
+               item instanceof com.chainores.gear.CosmicElytraChestplateItem ||
+               item instanceof ChainPickaxeItem ||
                item instanceof ChainSwordItem ||
                item instanceof DragonBreathBowItem ||
                item instanceof GalacticCrossbowItem ||
@@ -77,6 +83,18 @@ public class ChainModifiers {
             return trinket.getMaxSockets();
         }
 
+        if (item instanceof com.chainores.gear.MiningExoskeletonItem) {
+            return 3;
+        }
+
+        if (item instanceof com.chainores.gear.LumberjackHauberkItem) {
+            return 3;
+        }
+
+        if (item instanceof com.chainores.gear.CosmicElytraChestplateItem) {
+            return 4;
+        }
+
         if (item instanceof ChainArmorItem armor) {
             int t = armor.getTier();
             if (t <= 1) return 0;       // T1: Demasiado débil para gemas
@@ -84,6 +102,14 @@ public class ChainModifiers {
             if (t <= 70) return 2;      // T40 - T70: 2 slots
             if (t <= 115) return 3;     // T80 - T115: 3 slots
             return 4;                   // T125, T135, T140, T150 (Las mejores): 4 slots
+        }
+
+        if (item instanceof ChainPickaxeItem pickaxe) {
+            int t = pickaxe.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
         }
 
         if (item instanceof ChainSwordItem sword) {
@@ -220,6 +246,7 @@ public class ChainModifiers {
             int tier = getGemTier(gem);
             if (GEM_CORE.equals(base)) mult += 0.35f * tier;
             if (GEM_GENESIS.equals(base)) mult += cfg.genesisGemMiningBoost * tier;
+            if (GEM_EARTH.equals(base)) mult += 0.40f * tier;
         }
 
         String reforge = getReforge(stack);
@@ -232,6 +259,16 @@ public class ChainModifiers {
             }
         }
         return Math.min(mult, cfg.maxMiningSpeedMultiplier);
+    }
+
+    public static float getEarthGemDoubleDropChance(ItemStack stack) {
+        float chance = 0.0f;
+        for (String gem : getGems(stack)) {
+            if (GEM_EARTH.equals(getBaseGemType(gem))) {
+                chance += 0.25f * getGemTier(gem);
+            }
+        }
+        return Math.min(1.0f, chance);
     }
 
     public static boolean isReforgableGear(ItemStack stack) {
@@ -261,6 +298,82 @@ public class ChainModifiers {
 
     public static void applyReforgeHeldBuffs(net.minecraft.entity.Entity entity, ItemStack stack) {
         if (entity.getEntityWorld().isClient() || !(entity instanceof net.minecraft.entity.player.PlayerEntity player)) return;
+        String reforge = getReforge(stack);
+        if (reforge != null) {
+            switch (reforge) {
+                case REFORGE_DIVINE ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.RESISTANCE, 40, 0, true, false));
+                case REFORGE_SWIFT ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SPEED, 40, 0, true, false));
+                case REFORGE_FIERCE ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.STRENGTH, 40, 0, true, false));
+                case REFORGE_TITANIC ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.RESISTANCE, 40, 0, true, false));
+                case REFORGE_LEGENDARY ->
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.LUCK, 40, 0, true, false));
+            }
+        }
+
+        for (String gem : getGems(stack)) {
+            if (GEM_EARTH.equals(getBaseGemType(gem))) {
+                int tier = getGemTier(gem);
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HASTE, 40, tier - 1, true, false));
+            }
+        }
+    }
+
+    public static void applyArmorGemAndReforgeBuffs(net.minecraft.server.network.ServerPlayerEntity player, ItemStack stack) {
+        List<String> gems = getGems(stack);
+        int bloodCount = 0;
+        int voidCount = 0;
+        int coreCount = 0;
+        int genesisCount = 0;
+        int earthCount = 0;
+
+        for (String gem : gems) {
+            String base = getBaseGemType(gem);
+            int tier = getGemTier(gem);
+            switch (base) {
+                case GEM_BLOOD -> bloodCount += tier;
+                case GEM_VOID -> voidCount += tier;
+                case GEM_CORE -> coreCount += tier;
+                case GEM_GENESIS -> genesisCount += tier;
+                case GEM_EARTH -> earthCount += tier;
+            }
+        }
+
+        if (bloodCount > 0) {
+            int amp = Math.min(bloodCount - 1, 2);
+            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.REGENERATION, 40, amp, true, false));
+        }
+        if (voidCount > 0) {
+            if (player.fallDistance > 1.5f && !player.isOnGround()) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOW_FALLING, 40, 0, true, false));
+                player.fallDistance = 0;
+            }
+        }
+        if (coreCount > 0) {
+            int amp = Math.min(coreCount - 1, 2);
+            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SPEED, 40, amp, true, false));
+            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.FIRE_RESISTANCE, 40, 0, true, false));
+        }
+        if (genesisCount > 0) {
+            if (!player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.ABSORPTION)) {
+                int amp = Math.min(genesisCount, 3);
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.ABSORPTION, 100, amp, true, false));
+            }
+        }
+        if (earthCount > 0) {
+            int luckAmp = Math.min(earthCount - 1, 2);
+            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.LUCK, 40, luckAmp, true, false));
+            if (player.getY() < 60) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.NIGHT_VISION, 240, 0, true, false));
+            }
+            if (earthCount >= 2) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HERO_OF_THE_VILLAGE, 40, 0, true, false));
+            }
+        }
+
         String reforge = getReforge(stack);
         if (reforge != null) {
             switch (reforge) {

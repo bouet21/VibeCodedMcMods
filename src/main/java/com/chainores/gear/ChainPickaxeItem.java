@@ -50,9 +50,15 @@ public class ChainPickaxeItem extends Item {
     public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         super.postHit(stack, target, attacker);
         if (attacker.getEntityWorld() instanceof ServerWorld world) {
-            String gem = com.chainores.modifier.ChainModifiers.getGem(stack);
-            if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(com.chainores.modifier.ChainModifiers.getBaseGemType(gem))) {
-                attacker.heal(2.0f * com.chainores.modifier.ChainModifiers.getGemTier(gem));
+            for (String gem : com.chainores.modifier.ChainModifiers.getGems(stack)) {
+                String base = com.chainores.modifier.ChainModifiers.getBaseGemType(gem);
+                int gemTier = com.chainores.modifier.ChainModifiers.getGemTier(gem);
+                if (com.chainores.modifier.ChainModifiers.GEM_BLOOD.equals(base)) {
+                    attacker.heal(2.0f * gemTier);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_EARTH.equals(base)) {
+                    attacker.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HASTE, 80, gemTier - 1));
+                    target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOWNESS, 60, gemTier));
+                }
             }
             float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
             if (mult > 1.0f) {
@@ -150,6 +156,15 @@ public class ChainPickaxeItem extends Item {
                 if (world.random.nextFloat() < 0.35f) {
                     state.getBlock().afterBreak(world, player, pos, state, null, stack);
                     player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.7f, 1.5f);
+                }
+            }
+
+            // Earth Gem Extra Drop Bonus
+            float earthChance = com.chainores.modifier.ChainModifiers.getEarthGemDoubleDropChance(stack);
+            if (earthChance > 0.0f && (state.getBlock() instanceof ChainOreBlock || isOreBlock(state))) {
+                if (world.random.nextFloat() < earthChance) {
+                    state.getBlock().afterBreak(world, player, pos, state, null, stack);
+                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.7f, 1.8f);
                 }
             }
 

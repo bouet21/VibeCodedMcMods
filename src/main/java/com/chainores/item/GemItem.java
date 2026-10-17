@@ -25,7 +25,11 @@ public class GemItem extends Item {
         GENESIS("Gema del Génesis", Formatting.LIGHT_PURPLE, "Creación Primordial",
                 new String[]{"+50% daño sagrado y castigo de rayos", "+100% daño sagrado y tormenta de rayos", "+160% daño cósmico y aniquilación estelar"},
                 new String[]{"Absorción celestial continua (+4♥) y retribución", "Absorción celestial continua (+8♥) y escudo divino", "Absorción celestial suprema (+14♥) e invulnerabilidad parcial"},
-                "Fragmento condensado del inicio del universo.");
+                "Fragmento condensado del inicio del universo."),
+        EARTH("Gema de la Tierra", Formatting.DARK_GREEN, "Prospección y Fortuna Geológica",
+                new String[]{"+40% velocidad minera, Prisa I y 25% duplicar drops", "+80% velocidad minera, Prisa II y 50% duplicar drops", "+150% velocidad minera, Prisa III y 100% duplicar drops"},
+                new String[]{"Suerte I y Visión Nocturna bajo Y=60", "Suerte II, Visión Nocturna y Héroe de la Aldea", "Suerte III, Visión Nocturna, Imán 8m y Detección de Vetas"},
+                "Extraída de los estratos minerales más puros del mundo.");
 
         public final String displayName;
         public final Formatting color;

@@ -38,13 +38,27 @@ public class GalacticCrossbowItem extends CrossbowItem {
         }
         float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(xbowStack);
 
+        projectile.addCommandTag("galactic_arrow");
         if (projectile instanceof PersistentProjectileEntity arrow) {
             arrow.applyDamageModifier(2.8f * mult);
             arrow.setCritical(true);
         }
-        if (shooter.getEntityWorld() instanceof ServerWorld) {
-            shooter.getEntityWorld().playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
-                    SoundEvents.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.PLAYERS, 0.7f, 1.8f);
+        if (shooter.getEntityWorld() instanceof ServerWorld sw) {
+            sw.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
+                    SoundEvents.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.PLAYERS, 0.8f, 1.8f);
+            sw.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(),
+                    SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.PLAYERS, 1.0f, 2.0f);
+
+            net.minecraft.util.math.Vec3d rot = shooter.getRotationVector();
+            sw.spawnParticles(net.minecraft.particle.ParticleTypes.SONIC_BOOM,
+                    shooter.getX() + rot.x * 1.5, shooter.getEyeY() - 0.1, shooter.getZ() + rot.z * 1.5,
+                    1, 0, 0, 0, 0);
+            sw.spawnParticles(net.minecraft.particle.ParticleTypes.ELECTRIC_SPARK,
+                    shooter.getX() + rot.x * 1.0, shooter.getEyeY() - 0.1, shooter.getZ() + rot.z * 1.0,
+                    15, 0.3, 0.3, 0.3, 0.2);
+            sw.spawnParticles(net.minecraft.particle.ParticleTypes.END_ROD,
+                    shooter.getX() + rot.x * 0.8, shooter.getEyeY(), shooter.getZ() + rot.z * 0.8,
+                    8, 0.1, 0.1, 0.1, 0.05);
         }
     }
 

@@ -34,14 +34,12 @@ public class ChainOresEmiPlugin implements EmiPlugin {
     public static final EmiRecipeCategory CHAIN_FORGE_CATEGORY = new EmiRecipeCategory(
             ChainOresMod.id("chain_forge"),
             EmiStack.of(ModWorkstations.CHAIN_FORGE_ITEM),
-            new EmiTexture(FORGE_SHEET, 79, 35, 24, 17)
-    );
+            new EmiTexture(FORGE_SHEET, 79, 35, 24, 17));
 
     public static final EmiRecipeCategory COSMIC_SMELTER_CATEGORY = new EmiRecipeCategory(
             ChainOresMod.id("cosmic_smelter"),
             EmiStack.of(ModWorkstations.COSMIC_SMELTER_ITEM),
-            new EmiTexture(FORGE_SHEET, 79, 35, 24, 17)
-    );
+            new EmiTexture(FORGE_SHEET, 79, 35, 24, 17));
 
     @Override
     public void register(EmiRegistry registry) {
@@ -69,8 +67,7 @@ public class ChainOresEmiPlugin implements EmiPlugin {
                 catalyst = EmiIngredient.of(List.of(
                         EmiStack.of(next.rawItem),
                         EmiStack.of(ModItems.CHAIN_SMITHING_TEMPLATE),
-                        EmiStack.of(current.ingotItem)
-                ));
+                        EmiStack.of(current.ingotItem)));
             }
             EmiStack output = EmiStack.of(next.ingotItem);
 
@@ -83,8 +80,7 @@ public class ChainOresEmiPlugin implements EmiPlugin {
             EmiIngredient input = EmiStack.of(ore.rawItem);
             EmiIngredient catalyst = EmiIngredient.of(List.of(
                     EmiStack.of(ore.rawItem),
-                    EmiStack.of(ModItems.CHAIN_SMITHING_TEMPLATE)
-            ));
+                    EmiStack.of(ModItems.CHAIN_SMITHING_TEMPLATE)));
             EmiStack output = EmiStack.of(ore.ingotItem);
             Identifier id = ChainOresMod.id("/chain_forge/smelt_raw_tier_" + ore.tier);
             registry.addRecipe(new ChainForgeEmiRecipe(id, input, catalyst, output));
@@ -96,15 +92,24 @@ public class ChainOresEmiPlugin implements EmiPlugin {
             OreTier ore = OreRegistryData.TIERS.get(set.tierData.tier() - 1);
             EmiIngredient catalyst = EmiStack.of(ore.ingotItem);
 
-            addGearRecipe(registry, set.tierData.tier(), "sword", EmiStack.of(Items.DIAMOND_SWORD), catalyst, EmiStack.of(set.sword));
-            addGearRecipe(registry, set.tierData.tier(), "pickaxe", EmiStack.of(Items.DIAMOND_PICKAXE), catalyst, EmiStack.of(set.pickaxe));
-            addGearRecipe(registry, set.tierData.tier(), "axe", EmiStack.of(Items.DIAMOND_AXE), catalyst, EmiStack.of(set.axe));
-            addGearRecipe(registry, set.tierData.tier(), "shovel", EmiStack.of(Items.DIAMOND_SHOVEL), catalyst, EmiStack.of(set.shovel));
-            addGearRecipe(registry, set.tierData.tier(), "hoe", EmiStack.of(Items.DIAMOND_HOE), catalyst, EmiStack.of(set.hoe));
-            addGearRecipe(registry, set.tierData.tier(), "helmet", EmiStack.of(Items.DIAMOND_HELMET), catalyst, EmiStack.of(set.helmet));
-            addGearRecipe(registry, set.tierData.tier(), "chestplate", EmiStack.of(Items.DIAMOND_CHESTPLATE), catalyst, EmiStack.of(set.chestplate));
-            addGearRecipe(registry, set.tierData.tier(), "leggings", EmiStack.of(Items.DIAMOND_LEGGINGS), catalyst, EmiStack.of(set.leggings));
-            addGearRecipe(registry, set.tierData.tier(), "boots", EmiStack.of(Items.DIAMOND_BOOTS), catalyst, EmiStack.of(set.boots));
+            addGearRecipe(registry, set.tierData.tier(), "sword", EmiStack.of(Items.DIAMOND_SWORD), catalyst,
+                    EmiStack.of(set.sword));
+            addGearRecipe(registry, set.tierData.tier(), "pickaxe", EmiStack.of(Items.DIAMOND_PICKAXE), catalyst,
+                    EmiStack.of(set.pickaxe));
+            addGearRecipe(registry, set.tierData.tier(), "axe", EmiStack.of(Items.DIAMOND_AXE), catalyst,
+                    EmiStack.of(set.axe));
+            addGearRecipe(registry, set.tierData.tier(), "shovel", EmiStack.of(Items.DIAMOND_SHOVEL), catalyst,
+                    EmiStack.of(set.shovel));
+            addGearRecipe(registry, set.tierData.tier(), "hoe", EmiStack.of(Items.DIAMOND_HOE), catalyst,
+                    EmiStack.of(set.hoe));
+            addGearRecipe(registry, set.tierData.tier(), "helmet", EmiStack.of(Items.DIAMOND_HELMET), catalyst,
+                    EmiStack.of(set.helmet));
+            addGearRecipe(registry, set.tierData.tier(), "chestplate", EmiStack.of(Items.DIAMOND_CHESTPLATE), catalyst,
+                    EmiStack.of(set.chestplate));
+            addGearRecipe(registry, set.tierData.tier(), "leggings", EmiStack.of(Items.DIAMOND_LEGGINGS), catalyst,
+                    EmiStack.of(set.leggings));
+            addGearRecipe(registry, set.tierData.tier(), "boots", EmiStack.of(Items.DIAMOND_BOOTS), catalyst,
+                    EmiStack.of(set.boots));
         }
 
         // 4. Upgrades Between Mod Gear Sets
@@ -123,36 +128,65 @@ public class ChainOresEmiPlugin implements EmiPlugin {
             } else if (next.tierData.tier() == 150) {
                 catalyst = EmiStack.of(ModBossItems.COSMIC_SINGULARITY);
             } else {
-                catalyst = EmiIngredient.of(List.of(EmiStack.of(nextOre.ingotItem), EmiStack.of(ModItems.CHAIN_SMITHING_TEMPLATE)));
+                catalyst = EmiIngredient
+                        .of(List.of(EmiStack.of(nextOre.ingotItem), EmiStack.of(ModItems.CHAIN_SMITHING_TEMPLATE)));
             }
 
-            addGearRecipe(registry, next.tierData.tier(), "up_sword", EmiStack.of(curr.sword), catalyst, EmiStack.of(next.sword));
-            addGearRecipe(registry, next.tierData.tier(), "up_pickaxe", EmiStack.of(curr.pickaxe), catalyst, EmiStack.of(next.pickaxe));
-            addGearRecipe(registry, next.tierData.tier(), "up_axe", EmiStack.of(curr.axe), catalyst, EmiStack.of(next.axe));
-            addGearRecipe(registry, next.tierData.tier(), "up_shovel", EmiStack.of(curr.shovel), catalyst, EmiStack.of(next.shovel));
-            addGearRecipe(registry, next.tierData.tier(), "up_hoe", EmiStack.of(curr.hoe), catalyst, EmiStack.of(next.hoe));
-            addGearRecipe(registry, next.tierData.tier(), "up_helmet", EmiStack.of(curr.helmet), catalyst, EmiStack.of(next.helmet));
-            addGearRecipe(registry, next.tierData.tier(), "up_chestplate", EmiStack.of(curr.chestplate), catalyst, EmiStack.of(next.chestplate));
-            addGearRecipe(registry, next.tierData.tier(), "up_leggings", EmiStack.of(curr.leggings), catalyst, EmiStack.of(next.leggings));
-            addGearRecipe(registry, next.tierData.tier(), "up_boots", EmiStack.of(curr.boots), catalyst, EmiStack.of(next.boots));
+            addGearRecipe(registry, next.tierData.tier(), "up_sword", EmiStack.of(curr.sword), catalyst,
+                    EmiStack.of(next.sword));
+            addGearRecipe(registry, next.tierData.tier(), "up_pickaxe", EmiStack.of(curr.pickaxe), catalyst,
+                    EmiStack.of(next.pickaxe));
+            addGearRecipe(registry, next.tierData.tier(), "up_axe", EmiStack.of(curr.axe), catalyst,
+                    EmiStack.of(next.axe));
+            addGearRecipe(registry, next.tierData.tier(), "up_shovel", EmiStack.of(curr.shovel), catalyst,
+                    EmiStack.of(next.shovel));
+            addGearRecipe(registry, next.tierData.tier(), "up_hoe", EmiStack.of(curr.hoe), catalyst,
+                    EmiStack.of(next.hoe));
+            addGearRecipe(registry, next.tierData.tier(), "up_helmet", EmiStack.of(curr.helmet), catalyst,
+                    EmiStack.of(next.helmet));
+            addGearRecipe(registry, next.tierData.tier(), "up_chestplate", EmiStack.of(curr.chestplate), catalyst,
+                    EmiStack.of(next.chestplate));
+            addGearRecipe(registry, next.tierData.tier(), "up_leggings", EmiStack.of(curr.leggings), catalyst,
+                    EmiStack.of(next.leggings));
+            addGearRecipe(registry, next.tierData.tier(), "up_boots", EmiStack.of(curr.boots), catalyst,
+                    EmiStack.of(next.boots));
         }
 
         // 5. Legendary Weapons & Shields
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/dragon_bow"), EmiStack.of(Items.BOW), EmiStack.of(OreRegistryData.TIERS.get(114).ingotItem), EmiStack.of(ModGear.DRAGON_BOW)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/galactic_crossbow"), EmiStack.of(Items.CROSSBOW), EmiStack.of(OreRegistryData.TIERS.get(124).ingotItem), EmiStack.of(ModGear.GALACTIC_CROSSBOW)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/sentinel_shield"), EmiStack.of(Items.SHIELD), EmiStack.of(OreRegistryData.TIERS.get(9).ingotItem), EmiStack.of(ModGear.SENTINEL_SHIELD)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/frostguard_shield"), EmiStack.of(ModGear.SENTINEL_SHIELD), EmiStack.of(OreRegistryData.TIERS.get(19).ingotItem), EmiStack.of(ModGear.FROSTGUARD_SHIELD)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/abyssal_aegis"), EmiStack.of(ModGear.FROSTGUARD_SHIELD), EmiStack.of(ModBossItems.ABYSSAL_CATALYST), EmiStack.of(ModGear.ABYSSAL_AEGIS)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/infernal_bulwark"), EmiStack.of(ModGear.ABYSSAL_AEGIS), EmiStack.of(ModBossItems.NETHER_CORE), EmiStack.of(ModGear.INFERNAL_BULWARK)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/aegis_shield"), EmiStack.of(ModGear.INFERNAL_BULWARK), EmiStack.of(OreRegistryData.TIERS.get(99).ingotItem), EmiStack.of(ModGear.AEGIS_SHIELD)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/cosmic_shield"), EmiStack.of(ModGear.AEGIS_SHIELD), EmiStack.of(ModBossItems.COSMIC_SINGULARITY), EmiStack.of(ModGear.COSMIC_SHIELD)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/dragon_bow"), EmiStack.of(Items.BOW),
+                EmiStack.of(OreRegistryData.TIERS.get(114).ingotItem), EmiStack.of(ModGear.DRAGON_BOW)));
+        registry.addRecipe(
+                new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/galactic_crossbow"), EmiStack.of(Items.CROSSBOW),
+                        EmiStack.of(OreRegistryData.TIERS.get(124).ingotItem), EmiStack.of(ModGear.GALACTIC_CROSSBOW)));
+        registry.addRecipe(
+                new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/sentinel_shield"), EmiStack.of(Items.SHIELD),
+                        EmiStack.of(OreRegistryData.TIERS.get(9).ingotItem), EmiStack.of(ModGear.SENTINEL_SHIELD)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/frostguard_shield"),
+                EmiStack.of(ModGear.SENTINEL_SHIELD), EmiStack.of(OreRegistryData.TIERS.get(19).ingotItem),
+                EmiStack.of(ModGear.FROSTGUARD_SHIELD)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/abyssal_aegis"),
+                EmiStack.of(ModGear.FROSTGUARD_SHIELD), EmiStack.of(ModBossItems.ABYSSAL_CATALYST),
+                EmiStack.of(ModGear.ABYSSAL_AEGIS)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/infernal_bulwark"),
+                EmiStack.of(ModGear.ABYSSAL_AEGIS), EmiStack.of(ModBossItems.NETHER_CORE),
+                EmiStack.of(ModGear.INFERNAL_BULWARK)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/aegis_shield"),
+                EmiStack.of(ModGear.INFERNAL_BULWARK), EmiStack.of(OreRegistryData.TIERS.get(99).ingotItem),
+                EmiStack.of(ModGear.AEGIS_SHIELD)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/cosmic_shield"),
+                EmiStack.of(ModGear.AEGIS_SHIELD), EmiStack.of(ModBossItems.COSMIC_SINGULARITY),
+                EmiStack.of(ModGear.COSMIC_SHIELD)));
 
         ModGear.GearSet godSet = ModGear.GEAR_SETS.get(ModGear.GEAR_SETS.size() - 1);
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/god_omnitool"), EmiStack.of(godSet.pickaxe), EmiStack.of(ModBossItems.COSMIC_SINGULARITY), EmiStack.of(ModGear.GOD_OMNITOOL)));
+        registry.addRecipe(
+                new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/god_omnitool"), EmiStack.of(godSet.pickaxe),
+                        EmiStack.of(ModBossItems.COSMIC_SINGULARITY), EmiStack.of(ModGear.GOD_OMNITOOL)));
 
         // 6. Trinkets
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/chain_ring"), EmiStack.of(Items.GOLD_INGOT), EmiStack.of(Items.AMETHYST_SHARD), EmiStack.of(ModItems.CHAIN_RING)));
-        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/chain_amulet"), EmiStack.of(ModItems.CHAIN_RING), EmiStack.of(Items.DIAMOND), EmiStack.of(ModItems.CHAIN_AMULET)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/chain_ring"),
+                EmiStack.of(Items.GOLD_INGOT), EmiStack.of(Items.AMETHYST_SHARD), EmiStack.of(ModItems.CHAIN_RING)));
+        registry.addRecipe(new ChainForgeEmiRecipe(ChainOresMod.id("/chain_forge/chain_amulet"),
+                EmiStack.of(ModItems.CHAIN_RING), EmiStack.of(Items.DIAMOND), EmiStack.of(ModItems.CHAIN_AMULET)));
 
         // 7. Gem Fusions
         addGemFusion(registry, "blood_1_to_2", ModGems.BLOOD_GEM, ModGems.BLOOD_GEM_2);
@@ -171,12 +205,12 @@ public class ChainOresEmiPlugin implements EmiPlugin {
             registry.addRecipe(new CosmicSmelterEmiRecipe(
                     id,
                     EmiStack.of(ore.rawItem),
-                    EmiStack.of(ore.ingotItem, 4)
-            ));
+                    EmiStack.of(ore.ingotItem, 4)));
         }
     }
 
-    private void addGearRecipe(EmiRegistry registry, int tier, String type, EmiIngredient input, EmiIngredient catalyst, EmiStack output) {
+    private void addGearRecipe(EmiRegistry registry, int tier, String type, EmiIngredient input, EmiIngredient catalyst,
+            EmiStack output) {
         Identifier id = ChainOresMod.id("/chain_forge/gear_t" + tier + "_" + type);
         registry.addRecipe(new ChainForgeEmiRecipe(id, input, catalyst, output));
     }

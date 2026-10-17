@@ -1,7 +1,8 @@
 {
-  "parent": "minecraft:block/anvil",
+  "parent": "minecraft:block/template_anvil",
   "textures": {
+    "particle": "chainores:block/chain_anvil",
     "body": "chainores:block/chain_anvil",
-    "top": "chainores:block/chain_anvil"
+    "top": "chainores:block/chain_anvil_top"
   }
 }

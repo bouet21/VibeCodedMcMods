@@ -38,9 +38,9 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
     public static final int CATALYST_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
 
-    private static final int[] TOP_SLOTS = new int[]{INPUT_SLOT};
-    private static final int[] BOTTOM_SLOTS = new int[]{OUTPUT_SLOT};
-    private static final int[] SIDE_SLOTS = new int[]{CATALYST_SLOT, INPUT_SLOT};
+    private static final int[] TOP_SLOTS = new int[] { INPUT_SLOT };
+    private static final int[] BOTTOM_SLOTS = new int[] { OUTPUT_SLOT };
+    private static final int[] SIDE_SLOTS = new int[] { CATALYST_SLOT };
 
     private int forgeProgress = 0;
     private final int totalForgeTime = 15; // 0.75 seconds for fast, responsive feedback
@@ -57,7 +57,8 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
 
         @Override
         public void set(int index, int value) {
-            if (index == 0) forgeProgress = value;
+            if (index == 0)
+                forgeProgress = value;
         }
 
         @Override
@@ -111,7 +112,8 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, ChainForgeBlockEntity entity) {
-        if (world.isClient()) return;
+        if (world.isClient())
+            return;
 
         ItemStack slot0 = entity.inventory.get(INPUT_SLOT);
         ItemStack slot1 = entity.inventory.get(CATALYST_SLOT);
@@ -151,17 +153,21 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
     }
 
     private static boolean canInsertOutput(ItemStack outputSlot, ItemStack result) {
-        if (outputSlot.isEmpty()) return true;
-        if (!ItemStack.areItemsAndComponentsEqual(outputSlot, result)) return false;
+        if (outputSlot.isEmpty())
+            return true;
+        if (!ItemStack.areItemsAndComponentsEqual(outputSlot, result))
+            return false;
         return outputSlot.getCount() + result.getCount() <= outputSlot.getMaxCount();
     }
 
     public ItemStack calculateForgeResult(ItemStack slotA, ItemStack slotB) {
-        if (slotA.isEmpty() || slotB.isEmpty()) return ItemStack.EMPTY;
+        if (slotA.isEmpty() || slotB.isEmpty())
+            return ItemStack.EMPTY;
 
         // Try both directions so slots 0 and 1 are 100% interchangeable
         ItemStack res = evaluateRecipe(slotA, slotB);
-        if (!res.isEmpty()) return res;
+        if (!res.isEmpty())
+            return res;
         return evaluateRecipe(slotB, slotA);
     }
 
@@ -172,7 +178,8 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
         // -------------------------------------------------------------
         // 0. Template Duplication
         // -------------------------------------------------------------
-        if (input.isOf(ModItems.CHAIN_SMITHING_TEMPLATE) && (catalyst.isOf(Items.DIAMOND) || catalyst.isOf(Items.COPPER_INGOT) || catalyst.isOf(t1.ingotItem))) {
+        if (input.isOf(ModItems.CHAIN_SMITHING_TEMPLATE)
+                && (catalyst.isOf(Items.DIAMOND) || catalyst.isOf(Items.COPPER_INGOT) || catalyst.isOf(t1.ingotItem))) {
             return new ItemStack(ModItems.CHAIN_SMITHING_TEMPLATE, 2);
         }
 
@@ -196,8 +203,12 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
                 if (nextIndex < OreRegistryData.TIERS.size()) {
                     OreTier nextOre = OreRegistryData.TIERS.get(nextIndex);
 
-                    // Boss dimension gates
-                    if (i == 69) { // T70 -> T71 requires Abyssal Catalyst
+                    // Boss dimension gates & Mini-boss milestones
+                    if (i == 19 && catalyst.isOf(ModBossItems.GLACIAL_CATALYST)) {
+                        return new ItemStack(nextOre.ingotItem, 2);
+                    } else if (i == 39 && catalyst.isOf(ModBossItems.SYLVA_CATALYST)) {
+                        return new ItemStack(nextOre.ingotItem, 2);
+                    } else if (i == 69) { // T70 -> T71 requires Abyssal Catalyst
                         if (catalyst.isOf(ModBossItems.ABYSSAL_CATALYST)) {
                             return new ItemStack(nextOre.ingotItem);
                         }
@@ -219,8 +230,10 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
                         return ItemStack.EMPTY;
                     }
 
-                    // Flexible catalysts: Raw ore (guide book), template, duplicate ingot, or next ingot
-                    if (isTemplate || catalyst.isOf(nextOre.rawItem) || catalyst.isOf(ore.ingotItem) || catalyst.isOf(nextOre.ingotItem)) {
+                    // Flexible catalysts: Raw ore (guide book), template, duplicate ingot, or next
+                    // ingot
+                    if (isTemplate || catalyst.isOf(nextOre.rawItem) || catalyst.isOf(ore.ingotItem)
+                            || catalyst.isOf(nextOre.ingotItem)) {
                         return new ItemStack(nextOre.ingotItem);
                     }
                 }
@@ -247,7 +260,8 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
         for (int i = 0; i < ModGear.GEAR_SETS.size(); i++) {
             ModGear.GearSet targetSet = ModGear.GEAR_SETS.get(i);
             OreTier targetOre = OreRegistryData.TIERS.get(targetSet.tierData.tier() - 1);
-            boolean validCatalyst = (i == 0 && isTemplate) || catalyst.isOf(targetOre.ingotItem) || catalyst.isOf(targetOre.rawItem);
+            boolean validCatalyst = (i == 0 && isTemplate) || catalyst.isOf(targetOre.ingotItem)
+                    || catalyst.isOf(targetOre.rawItem);
 
             if (validCatalyst) {
                 int targetTier = targetSet.tierData.tier();
@@ -255,15 +269,24 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
                 if (targetTier > 70 && !hasBossToken(catalyst, targetTier)) {
                     // Requires boss catalyst
                 } else {
-                    if (isVanillaSword(input.getItem())) return transferGearData(input, new ItemStack(targetSet.sword));
-                    if (isVanillaPickaxe(input.getItem())) return transferGearData(input, new ItemStack(targetSet.pickaxe));
-                    if (isVanillaAxe(input.getItem())) return transferGearData(input, new ItemStack(targetSet.axe));
-                    if (isVanillaShovel(input.getItem())) return transferGearData(input, new ItemStack(targetSet.shovel));
-                    if (isVanillaHoe(input.getItem())) return transferGearData(input, new ItemStack(targetSet.hoe));
-                    if (isVanillaHelmet(input.getItem())) return transferGearData(input, new ItemStack(targetSet.helmet));
-                    if (isVanillaChestplate(input.getItem())) return transferGearData(input, new ItemStack(targetSet.chestplate));
-                    if (isVanillaLeggings(input.getItem())) return transferGearData(input, new ItemStack(targetSet.leggings));
-                    if (isVanillaBoots(input.getItem())) return transferGearData(input, new ItemStack(targetSet.boots));
+                    if (isVanillaSword(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.sword));
+                    if (isVanillaPickaxe(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.pickaxe));
+                    if (isVanillaAxe(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.axe));
+                    if (isVanillaShovel(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.shovel));
+                    if (isVanillaHoe(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.hoe));
+                    if (isVanillaHelmet(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.helmet));
+                    if (isVanillaChestplate(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.chestplate));
+                    if (isVanillaLeggings(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.leggings));
+                    if (isVanillaBoots(input.getItem()))
+                        return transferGearData(input, new ItemStack(targetSet.boots));
                 }
             }
         }
@@ -278,27 +301,42 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
 
             int nextTier = next.tierData.tier();
             if (nextTier > 70 && current.tierData.tier() <= 70) {
-                if (!catalyst.isOf(ModBossItems.ABYSSAL_CATALYST)) continue;
+                if (!catalyst.isOf(ModBossItems.ABYSSAL_CATALYST))
+                    continue;
             } else if (nextTier > 105 && current.tierData.tier() <= 105) {
-                if (!catalyst.isOf(ModBossItems.NETHER_CORE)) continue;
+                if (!catalyst.isOf(ModBossItems.NETHER_CORE))
+                    continue;
             } else if (nextTier > 135 && current.tierData.tier() <= 135) {
-                if (!catalyst.isOf(ModBossItems.VOID_SHARD)) continue;
+                if (!catalyst.isOf(ModBossItems.VOID_SHARD))
+                    continue;
             } else if (nextTier == 150) {
-                if (!catalyst.isOf(ModBossItems.COSMIC_SINGULARITY)) continue;
+                if (!catalyst.isOf(ModBossItems.COSMIC_SINGULARITY))
+                    continue;
             } else {
-                boolean validCatalyst = isTemplate || catalyst.isOf(nextOre.ingotItem) || catalyst.isOf(nextOre.rawItem);
-                if (!validCatalyst) continue;
+                boolean validCatalyst = isTemplate || catalyst.isOf(nextOre.ingotItem)
+                        || catalyst.isOf(nextOre.rawItem);
+                if (!validCatalyst)
+                    continue;
             }
 
-            if (input.isOf(current.sword)) return transferGearData(input, new ItemStack(next.sword));
-            if (input.isOf(current.pickaxe)) return transferGearData(input, new ItemStack(next.pickaxe));
-            if (input.isOf(current.axe)) return transferGearData(input, new ItemStack(next.axe));
-            if (input.isOf(current.shovel)) return transferGearData(input, new ItemStack(next.shovel));
-            if (input.isOf(current.hoe)) return transferGearData(input, new ItemStack(next.hoe));
-            if (input.isOf(current.helmet)) return transferGearData(input, new ItemStack(next.helmet));
-            if (input.isOf(current.chestplate)) return transferGearData(input, new ItemStack(next.chestplate));
-            if (input.isOf(current.leggings)) return transferGearData(input, new ItemStack(next.leggings));
-            if (input.isOf(current.boots)) return transferGearData(input, new ItemStack(next.boots));
+            if (input.isOf(current.sword))
+                return transferGearData(input, new ItemStack(next.sword));
+            if (input.isOf(current.pickaxe))
+                return transferGearData(input, new ItemStack(next.pickaxe));
+            if (input.isOf(current.axe))
+                return transferGearData(input, new ItemStack(next.axe));
+            if (input.isOf(current.shovel))
+                return transferGearData(input, new ItemStack(next.shovel));
+            if (input.isOf(current.hoe))
+                return transferGearData(input, new ItemStack(next.hoe));
+            if (input.isOf(current.helmet))
+                return transferGearData(input, new ItemStack(next.helmet));
+            if (input.isOf(current.chestplate))
+                return transferGearData(input, new ItemStack(next.chestplate));
+            if (input.isOf(current.leggings))
+                return transferGearData(input, new ItemStack(next.leggings));
+            if (input.isOf(current.boots))
+                return transferGearData(input, new ItemStack(next.boots));
         }
 
         // Direct leap to higher milestone with target tier's ingot
@@ -306,16 +344,25 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
             ModGear.GearSet target = ModGear.GEAR_SETS.get(i);
             OreTier targetOre = OreRegistryData.TIERS.get(target.tierData.tier() - 1);
             if (catalyst.isOf(targetOre.ingotItem)) {
-                if (input.getItem() instanceof ChainSwordItem && !input.isOf(target.sword)) return transferGearData(input, new ItemStack(target.sword));
-                if (input.getItem() instanceof ChainPickaxeItem && !input.isOf(target.pickaxe)) return transferGearData(input, new ItemStack(target.pickaxe));
-                if (input.getItem() instanceof ChainAxeItem && !input.isOf(target.axe)) return transferGearData(input, new ItemStack(target.axe));
-                if (input.getItem() instanceof ChainShovelItem && !input.isOf(target.shovel)) return transferGearData(input, new ItemStack(target.shovel));
-                if (input.getItem() instanceof ChainHoeItem && !input.isOf(target.hoe)) return transferGearData(input, new ItemStack(target.hoe));
+                if (input.getItem() instanceof ChainSwordItem && !input.isOf(target.sword))
+                    return transferGearData(input, new ItemStack(target.sword));
+                if (input.getItem() instanceof ChainPickaxeItem && !input.isOf(target.pickaxe))
+                    return transferGearData(input, new ItemStack(target.pickaxe));
+                if (input.getItem() instanceof ChainAxeItem && !input.isOf(target.axe))
+                    return transferGearData(input, new ItemStack(target.axe));
+                if (input.getItem() instanceof ChainShovelItem && !input.isOf(target.shovel))
+                    return transferGearData(input, new ItemStack(target.shovel));
+                if (input.getItem() instanceof ChainHoeItem && !input.isOf(target.hoe))
+                    return transferGearData(input, new ItemStack(target.hoe));
                 if (input.getItem() instanceof ChainArmorItem armor) {
-                    if (isHelmet(armor) && !input.isOf(target.helmet)) return transferGearData(input, new ItemStack(target.helmet));
-                    if (isChestplate(armor) && !input.isOf(target.chestplate)) return transferGearData(input, new ItemStack(target.chestplate));
-                    if (isLeggings(armor) && !input.isOf(target.leggings)) return transferGearData(input, new ItemStack(target.leggings));
-                    if (isBoots(armor) && !input.isOf(target.boots)) return transferGearData(input, new ItemStack(target.boots));
+                    if (isHelmet(armor) && !input.isOf(target.helmet))
+                        return transferGearData(input, new ItemStack(target.helmet));
+                    if (isChestplate(armor) && !input.isOf(target.chestplate))
+                        return transferGearData(input, new ItemStack(target.chestplate));
+                    if (isLeggings(armor) && !input.isOf(target.leggings))
+                        return transferGearData(input, new ItemStack(target.leggings));
+                    if (isBoots(armor) && !input.isOf(target.boots))
+                        return transferGearData(input, new ItemStack(target.boots));
                 }
             }
         }
@@ -324,53 +371,78 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
         // 5. Legendary Weapons & Shields
         // -------------------------------------------------------------
         // Bows
-        if (input.isOf(Items.BOW) && (catalyst.isOf(OreRegistryData.TIERS.get(114).ingotItem) || catalyst.isOf(ModBossItems.NETHER_CORE) || isTemplate)) {
+        if (input.isOf(Items.BOW) && (catalyst.isOf(OreRegistryData.TIERS.get(114).ingotItem)
+                || catalyst.isOf(ModBossItems.NETHER_CORE) || isTemplate)) {
             return transferGearData(input, new ItemStack(ModGear.DRAGON_BOW));
         }
         // Crossbows
-        if (input.isOf(Items.CROSSBOW) && (catalyst.isOf(OreRegistryData.TIERS.get(124).ingotItem) || catalyst.isOf(ModBossItems.VOID_SHARD) || isTemplate)) {
+        if (input.isOf(Items.CROSSBOW) && (catalyst.isOf(OreRegistryData.TIERS.get(124).ingotItem)
+                || catalyst.isOf(ModBossItems.VOID_SHARD) || isTemplate)) {
             return transferGearData(input, new ItemStack(ModGear.GALACTIC_CROSSBOW));
         }
 
         // Shields
         if (input.isOf(Items.SHIELD)) {
-            if (catalyst.isOf(ModBossItems.COSMIC_SINGULARITY) || catalyst.isOf(OreRegistryData.TIERS.get(149).ingotItem)) return transferGearData(input, new ItemStack(ModGear.COSMIC_SHIELD));
-            if (catalyst.isOf(ModBossItems.NETHER_CORE)) return transferGearData(input, new ItemStack(ModGear.INFERNAL_BULWARK));
-            if (catalyst.isOf(ModBossItems.ABYSSAL_CATALYST)) return transferGearData(input, new ItemStack(ModGear.ABYSSAL_AEGIS));
-            if (catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem)) return transferGearData(input, new ItemStack(ModGear.AEGIS_SHIELD));
-            if (catalyst.isOf(OreRegistryData.TIERS.get(19).ingotItem)) return transferGearData(input, new ItemStack(ModGear.FROSTGUARD_SHIELD));
-            if (catalyst.isOf(OreRegistryData.TIERS.get(9).ingotItem) || catalyst.isOf(t1.ingotItem) || isTemplate) return transferGearData(input, new ItemStack(ModGear.SENTINEL_SHIELD));
+            if (catalyst.isOf(ModBossItems.COSMIC_SINGULARITY)
+                    || catalyst.isOf(OreRegistryData.TIERS.get(149).ingotItem))
+                return transferGearData(input, new ItemStack(ModGear.COSMIC_SHIELD));
+            if (catalyst.isOf(ModBossItems.NETHER_CORE))
+                return transferGearData(input, new ItemStack(ModGear.INFERNAL_BULWARK));
+            if (catalyst.isOf(ModBossItems.ABYSSAL_CATALYST))
+                return transferGearData(input, new ItemStack(ModGear.ABYSSAL_AEGIS));
+            if (catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem))
+                return transferGearData(input, new ItemStack(ModGear.AEGIS_SHIELD));
+            if (catalyst.isOf(OreRegistryData.TIERS.get(19).ingotItem))
+                return transferGearData(input, new ItemStack(ModGear.FROSTGUARD_SHIELD));
+            if (catalyst.isOf(OreRegistryData.TIERS.get(9).ingotItem) || catalyst.isOf(t1.ingotItem) || isTemplate)
+                return transferGearData(input, new ItemStack(ModGear.SENTINEL_SHIELD));
         }
-        if (input.isOf(ModGear.SENTINEL_SHIELD) && (catalyst.isOf(OreRegistryData.TIERS.get(19).ingotItem) || isTemplate)) {
+        if (input.isOf(ModGear.SENTINEL_SHIELD)
+                && (catalyst.isOf(ModBossItems.GLACIAL_CATALYST) || catalyst.isOf(OreRegistryData.TIERS.get(19).ingotItem) || isTemplate)) {
             return transferGearData(input, new ItemStack(ModGear.FROSTGUARD_SHIELD));
         }
-        if (input.isOf(ModGear.FROSTGUARD_SHIELD) && (catalyst.isOf(ModBossItems.ABYSSAL_CATALYST) || catalyst.isOf(OreRegistryData.TIERS.get(69).ingotItem))) {
+
+        // Specialty Armors
+        if ((input.getItem() instanceof ChainArmorItem || isVanillaChestplate(input.getItem())) && catalyst.isOf(ModBossItems.SYLVA_CATALYST)) {
+            return transferGearData(input, new ItemStack(ModGear.LUMBERJACK_HAUBERK));
+        }
+        if ((input.getItem() instanceof ChainArmorItem || isVanillaChestplate(input.getItem())) && (catalyst.isOf(ModGems.EARTH_GEM_2) || catalyst.isOf(ModGems.EARTH_GEM_3))) {
+            return transferGearData(input, new ItemStack(ModGear.MINING_EXOSKELETON));
+        }
+        if (input.isOf(ModGear.FROSTGUARD_SHIELD) && (catalyst.isOf(ModBossItems.ABYSSAL_CATALYST)
+                || catalyst.isOf(OreRegistryData.TIERS.get(69).ingotItem))) {
             return transferGearData(input, new ItemStack(ModGear.ABYSSAL_AEGIS));
         }
-        if (input.isOf(ModGear.ABYSSAL_AEGIS) && (catalyst.isOf(ModBossItems.NETHER_CORE) || catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem))) {
+        if (input.isOf(ModGear.ABYSSAL_AEGIS) && (catalyst.isOf(ModBossItems.NETHER_CORE)
+                || catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem))) {
             return transferGearData(input, new ItemStack(ModGear.INFERNAL_BULWARK));
         }
-        if (input.isOf(ModGear.INFERNAL_BULWARK) && (catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem) || isTemplate)) {
+        if (input.isOf(ModGear.INFERNAL_BULWARK)
+                && (catalyst.isOf(OreRegistryData.TIERS.get(99).ingotItem) || isTemplate)) {
             return transferGearData(input, new ItemStack(ModGear.AEGIS_SHIELD));
         }
-        if ((input.isOf(ModGear.AEGIS_SHIELD) || input.isOf(ModGear.INFERNAL_BULWARK)) && (catalyst.isOf(ModBossItems.COSMIC_SINGULARITY) || catalyst.isOf(OreRegistryData.TIERS.get(149).ingotItem))) {
+        if ((input.isOf(ModGear.AEGIS_SHIELD) || input.isOf(ModGear.INFERNAL_BULWARK))
+                && (catalyst.isOf(ModBossItems.COSMIC_SINGULARITY)
+                        || catalyst.isOf(OreRegistryData.TIERS.get(149).ingotItem))) {
             return transferGearData(input, new ItemStack(ModGear.COSMIC_SHIELD));
         }
 
         // God Omnitool
         if (catalyst.isOf(ModBossItems.COSMIC_SINGULARITY)) {
             ModGear.GearSet godSet = ModGear.GEAR_SETS.get(ModGear.GEAR_SETS.size() - 1);
-            if (input.isOf(godSet.sword) || input.isOf(godSet.pickaxe) || input.isOf(godSet.axe) || input.isOf(godSet.shovel) || input.isOf(godSet.hoe)) {
+            if (input.isOf(godSet.sword) || input.isOf(godSet.pickaxe) || input.isOf(godSet.axe)
+                    || input.isOf(godSet.shovel) || input.isOf(godSet.hoe)) {
                 return transferGearData(input, new ItemStack(ModGear.GOD_OMNITOOL));
             }
         }
 
         // Trinkets (Chain Ring & Chain Amulet)
         if ((input.isOf(Items.GOLD_INGOT) || input.isOf(Items.COPPER_INGOT) || input.isOf(t1.ingotItem)) &&
-            (catalyst.isOf(Items.AMETHYST_SHARD) || isTemplate)) {
+                (catalyst.isOf(Items.AMETHYST_SHARD) || isTemplate)) {
             return new ItemStack(ModItems.CHAIN_RING);
         }
-        if (input.isOf(ModItems.CHAIN_RING) && (catalyst.isOf(Items.DIAMOND) || catalyst.isOf(ModBossItems.ABYSSAL_CATALYST) || isTemplate)) {
+        if (input.isOf(ModItems.CHAIN_RING)
+                && (catalyst.isOf(Items.DIAMOND) || catalyst.isOf(ModBossItems.ABYSSAL_CATALYST) || isTemplate)) {
             return transferGearData(input, new ItemStack(ModItems.CHAIN_AMULET));
         }
 
@@ -391,7 +463,8 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
         // -------------------------------------------------------------
         if (isGear(input.getItem())) {
             // Reforging with Amethyst, Lapis, or Diamond
-            if (catalyst.isOf(Items.AMETHYST_SHARD) || catalyst.isOf(Items.LAPIS_LAZULI) || catalyst.isOf(Items.DIAMOND)) {
+            if (catalyst.isOf(Items.AMETHYST_SHARD) || catalyst.isOf(Items.LAPIS_LAZULI)
+                    || catalyst.isOf(Items.DIAMOND)) {
                 ItemStack out = input.copy();
                 String rolled = ChainModifiers.rollRandomReforge(Random.create());
                 ChainModifiers.setReforge(out, rolled);
@@ -411,7 +484,8 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
                     }
                 }
                 // Repair special weapons/shields
-                if (isSpecialWeapon(input.getItem()) && (isTemplate || catalyst.isOf(Items.DIAMOND) || catalyst.isOf(Items.NETHERITE_INGOT))) {
+                if (isSpecialWeapon(input.getItem())
+                        && (isTemplate || catalyst.isOf(Items.DIAMOND) || catalyst.isOf(Items.NETHERITE_INGOT))) {
                     ItemStack repaired = input.copy();
                     repaired.setDamage(0);
                     return repaired;
@@ -423,14 +497,18 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
     }
 
     private static boolean hasBossToken(ItemStack catalyst, int tier) {
-        if (tier <= 70) return true;
-        if (tier <= 105) return catalyst.isOf(ModBossItems.ABYSSAL_CATALYST);
-        if (tier <= 135) return catalyst.isOf(ModBossItems.NETHER_CORE);
+        if (tier <= 70)
+            return true;
+        if (tier <= 105)
+            return catalyst.isOf(ModBossItems.ABYSSAL_CATALYST);
+        if (tier <= 135)
+            return catalyst.isOf(ModBossItems.NETHER_CORE);
         return catalyst.isOf(ModBossItems.COSMIC_SINGULARITY);
     }
 
     private static ItemStack transferGearData(ItemStack input, ItemStack output) {
-        if (input.isEmpty() || output.isEmpty()) return output;
+        if (input.isEmpty() || output.isEmpty())
+            return output;
 
         if (input.contains(DataComponentTypes.CUSTOM_DATA)) {
             output.set(DataComponentTypes.CUSTOM_DATA, input.get(DataComponentTypes.CUSTOM_DATA));
@@ -552,9 +630,32 @@ public class ChainForgeBlockEntity extends LockableContainerBlockEntity implemen
             return false;
         }
         if (slot == CATALYST_SLOT) {
-            return true;
+            return isValidCatalystOrModifier(stack);
         }
         return slot == INPUT_SLOT;
+    }
+
+    private boolean isValidCatalystOrModifier(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        Item item = stack.getItem();
+        if (item == ModItems.CHAIN_SMITHING_TEMPLATE ||
+            item == ModBossItems.GLACIAL_CATALYST ||
+            item == ModBossItems.SYLVA_CATALYST ||
+            item == ModBossItems.ABYSSAL_CATALYST ||
+            item == ModBossItems.NETHER_CORE ||
+            item == ModBossItems.VOID_SHARD ||
+            item == ModBossItems.COSMIC_SINGULARITY ||
+            item == Items.DIAMOND || item == Items.AMETHYST_SHARD || item == Items.LAPIS_LAZULI ||
+            item == Items.COPPER_INGOT || item == Items.RAW_COPPER ||
+            ModGems.isGem(item)) {
+            return true;
+        }
+        for (OreTier ore : OreRegistryData.TIERS) {
+            if (item == ore.ingotItem || item == ore.rawItem) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

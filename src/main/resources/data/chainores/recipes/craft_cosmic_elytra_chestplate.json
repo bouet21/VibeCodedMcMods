@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "E": "minecraft:elytra",
+    "C": "chainores:chestplate_tier_115",
+    "G": "chainores:ingot_tier_125",
+    "I": "chainores:ingot_tier_115"
+  },
+  "pattern": [
+    "GEG",
+    "ICI",
+    "GIG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "chainores:cosmic_elytra_chestplate"
+  }
+}

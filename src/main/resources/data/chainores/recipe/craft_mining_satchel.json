@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "T": {
+      "item": "chainores:ingot_tier_1"
+    }
+  },
+  "pattern": [
+    "LGL",
+    "ACA",
+    "LTL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "chainores:mining_satchel"
+  }
+}

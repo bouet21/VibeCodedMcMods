@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "chainores:item/blood_gem"
-  }
-}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "chainores:item/blood_gem"}}

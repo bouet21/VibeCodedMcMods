@@ -46,8 +46,24 @@ public class TrinketsCompat {
             registerTrinketMethod.invoke(null, ModItems.CHAIN_RING, trinketProxy);
             registerTrinketMethod.invoke(null, ModItems.CHAIN_AMULET, trinketProxy);
 
+            Object satchelProxy = Proxy.newProxyInstance(
+                TrinketsCompat.class.getClassLoader(),
+                new Class<?>[]{trinketClass},
+                (proxy, method, args) -> {
+                    if ("tick".equals(method.getName()) && args != null && args.length >= 3) {
+                        ItemStack stack = (ItemStack) args[0];
+                        LivingEntity entity = (LivingEntity) args[2];
+                        if (entity instanceof PlayerEntity player && !player.getEntityWorld().isClient() && player.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld sw) {
+                            ModItems.MINING_SATCHEL.inventoryTick(stack, sw, player, net.minecraft.entity.EquipmentSlot.MAINHAND);
+                        }
+                    }
+                    return null;
+                }
+            );
+            registerTrinketMethod.invoke(null, ModItems.MINING_SATCHEL, satchelProxy);
+
             initialized = true;
-            ChainOresMod.LOGGER.info("[Chain Ores] Successfully integrated with Trinkets! Chain Ring and Chain Amulet can now be equipped in Trinkets slots.");
+            ChainOresMod.LOGGER.info("[Chain Ores] Successfully integrated with Trinkets! Chain Ring, Amulet, and Mining Satchel can now be equipped in Trinkets slots.");
         } catch (Throwable t) {
             ChainOresMod.LOGGER.warn("[Chain Ores] Failed to dynamically register Trinkets integration: " + t.getMessage());
         }

@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {"id": "chainores:sylva_catalyst"},
+    "title": {"translate": "advancements.chainores.slay_sylva_ancient.title"},
+    "description": {"translate": "advancements.chainores.slay_sylva_ancient.description"},
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:tier_40",
+  "criteria": {
+    "has_catalyst": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["chainores:sylva_catalyst"]}]
+      }
+    }
+  }
+}

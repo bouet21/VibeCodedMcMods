@@ -16,6 +16,9 @@
     "chainores:chestplate_tier_125",
     "chainores:chestplate_tier_135",
     "chainores:chestplate_tier_140",
-    "chainores:chestplate_tier_150"
+    "chainores:chestplate_tier_150",
+    "chainores:mining_exoskeleton",
+    "chainores:lumberjack_hauberk",
+    "chainores:cosmic_elytra_chestplate"
   ]
 }

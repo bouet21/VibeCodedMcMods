@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {"id": "chainores:earth_gem_3"},
+    "title": {"translate": "advancements.chainores.master_earth_gem.title"},
+    "description": {"translate": "advancements.chainores.master_earth_gem.description"},
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "chainores:fuse_gem_tier_3",
+  "criteria": {
+    "has_gem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["chainores:earth_gem_3"]}]
+      }
+    }
+  }
+}
