@@ -286,6 +286,9 @@ public class CosmicAltarBlockEntity extends BlockEntity {
                 chest.setStack(3, new ItemStack(ModGems.GENESIS_GEM_3, 1));
                 chest.setStack(4, new ItemStack(ModGems.EARTH_GEM_3, 1));
                 chest.setStack(5, new ItemStack(ModBossItems.COSMIC_SINGULARITY, 2));
+                chest.setStack(6, new ItemStack(ModGems.ECHO_GEM_3, 1));
+                chest.setStack(7, new ItemStack(ModGems.MAGNET_GEM_3, 1));
+                chest.setStack(8, new ItemStack(ModGems.CHRONO_GEM_3, 1));
                 if (OreRegistryData.TIERS.size() >= 150) {
                     chest.setStack(12, new ItemStack(OreRegistryData.TIERS.get(149).ingotItem, 4));
                 }
@@ -299,6 +302,9 @@ public class CosmicAltarBlockEntity extends BlockEntity {
                 chest.setStack(3, new ItemStack(ModGems.GENESIS_GEM_3, 2));
                 chest.setStack(4, new ItemStack(ModGems.EARTH_GEM_3, 2));
                 chest.setStack(5, new ItemStack(ModBossItems.COSMIC_SINGULARITY, 4));
+                chest.setStack(6, new ItemStack(ModGems.ECHO_GEM_3, 2));
+                chest.setStack(7, new ItemStack(ModGems.MAGNET_GEM_3, 2));
+                chest.setStack(8, new ItemStack(ModGems.CHRONO_GEM_3, 2));
                 if (OreRegistryData.TIERS.size() >= 150) {
                     chest.setStack(12, new ItemStack(OreRegistryData.TIERS.get(149).ingotItem, 8));
                 }
@@ -312,6 +318,9 @@ public class CosmicAltarBlockEntity extends BlockEntity {
                 chest.setStack(3, new ItemStack(ModGems.GENESIS_GEM_3, 3));
                 chest.setStack(4, new ItemStack(ModGems.EARTH_GEM_3, 3));
                 chest.setStack(5, new ItemStack(ModBossItems.COSMIC_SINGULARITY, 8));
+                chest.setStack(6, new ItemStack(ModGems.ECHO_GEM_3, 3));
+                chest.setStack(7, new ItemStack(ModGems.MAGNET_GEM_3, 3));
+                chest.setStack(8, new ItemStack(ModGems.CHRONO_GEM_3, 3));
                 if (OreRegistryData.TIERS.size() >= 150) {
                     chest.setStack(12, new ItemStack(OreRegistryData.TIERS.get(149).ingotItem, 16));
                 }

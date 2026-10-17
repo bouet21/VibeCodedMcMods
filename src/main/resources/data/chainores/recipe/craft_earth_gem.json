@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " E ",
+    "ENE",
+    " E "
+  ],
+  "key": {
+    "E": "minecraft:emerald_block",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "chainores:earth_gem",
+    "count": 1
+  }
+}

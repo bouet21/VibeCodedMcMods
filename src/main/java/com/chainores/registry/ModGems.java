@@ -41,6 +41,24 @@ public class ModGems {
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("earth_gem")))
     ));
 
+    public static final Item ECHO_GEM = register("echo_gem", new GemItem(
+            GemItem.GemType.ECHO, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("echo_gem")))
+    ));
+
+    public static final Item MAGNET_GEM = register("magnet_gem", new GemItem(
+            GemItem.GemType.MAGNET, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("magnet_gem")))
+    ));
+
+    public static final Item CHRONO_GEM = register("chrono_gem", new GemItem(
+            GemItem.GemType.CHRONO, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chrono_gem")))
+    ));
+
     // Tier II
     public static final Item BLOOD_GEM_2 = register("blood_gem_2", new GemItem(
             GemItem.GemType.BLOOD, 2,
@@ -70,6 +88,24 @@ public class ModGems {
             GemItem.GemType.EARTH, 2,
             new Item.Settings().maxCount(16).rarity(Rarity.RARE)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("earth_gem_2")))
+    ));
+
+    public static final Item ECHO_GEM_2 = register("echo_gem_2", new GemItem(
+            GemItem.GemType.ECHO, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("echo_gem_2")))
+    ));
+
+    public static final Item MAGNET_GEM_2 = register("magnet_gem_2", new GemItem(
+            GemItem.GemType.MAGNET, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("magnet_gem_2")))
+    ));
+
+    public static final Item CHRONO_GEM_2 = register("chrono_gem_2", new GemItem(
+            GemItem.GemType.CHRONO, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chrono_gem_2")))
     ));
 
     // Tier III (Transcendent)
@@ -103,6 +139,24 @@ public class ModGems {
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("earth_gem_3")))
     ));
 
+    public static final Item ECHO_GEM_3 = register("echo_gem_3", new GemItem(
+            GemItem.GemType.ECHO, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("echo_gem_3")))
+    ));
+
+    public static final Item MAGNET_GEM_3 = register("magnet_gem_3", new GemItem(
+            GemItem.GemType.MAGNET, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("magnet_gem_3")))
+    ));
+
+    public static final Item CHRONO_GEM_3 = register("chrono_gem_3", new GemItem(
+            GemItem.GemType.CHRONO, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chrono_gem_3")))
+    ));
+
     public static boolean isGem(Item item) {
         return item instanceof GemItem;
     }
@@ -122,6 +176,15 @@ public class ModGems {
 
         if (item == EARTH_GEM) return EARTH_GEM_2;
         if (item == EARTH_GEM_2) return EARTH_GEM_3;
+
+        if (item == ECHO_GEM) return ECHO_GEM_2;
+        if (item == ECHO_GEM_2) return ECHO_GEM_3;
+
+        if (item == MAGNET_GEM) return MAGNET_GEM_2;
+        if (item == MAGNET_GEM_2) return MAGNET_GEM_3;
+
+        if (item == CHRONO_GEM) return CHRONO_GEM_2;
+        if (item == CHRONO_GEM_2) return CHRONO_GEM_3;
 
         return null;
     }
@@ -146,6 +209,18 @@ public class ModGems {
         if (item == EARTH_GEM) return "earth_gem";
         if (item == EARTH_GEM_2) return "earth_gem_2";
         if (item == EARTH_GEM_3) return "earth_gem_3";
+
+        if (item == ECHO_GEM) return "echo_gem";
+        if (item == ECHO_GEM_2) return "echo_gem_2";
+        if (item == ECHO_GEM_3) return "echo_gem_3";
+
+        if (item == MAGNET_GEM) return "magnet_gem";
+        if (item == MAGNET_GEM_2) return "magnet_gem_2";
+        if (item == MAGNET_GEM_3) return "magnet_gem_3";
+
+        if (item == CHRONO_GEM) return "chrono_gem";
+        if (item == CHRONO_GEM_2) return "chrono_gem_2";
+        if (item == CHRONO_GEM_3) return "chrono_gem_3";
 
         return null;
     }

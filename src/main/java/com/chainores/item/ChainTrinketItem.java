@@ -46,6 +46,11 @@ public abstract class ChainTrinketItem extends Item {
         int corePower = 0;
         int genesisPower = 0;
 
+        int earthPower = 0;
+        int echoPower = 0;
+        int magnetPower = 0;
+        int chronoPower = 0;
+
         for (String gem : gems) {
             String base = ChainModifiers.getBaseGemType(gem);
             int tier = ChainModifiers.getGemTier(gem);
@@ -54,6 +59,10 @@ public abstract class ChainTrinketItem extends Item {
                 case ChainModifiers.GEM_VOID -> voidPower += tier;
                 case ChainModifiers.GEM_CORE -> corePower += tier;
                 case ChainModifiers.GEM_GENESIS -> genesisPower += tier;
+                case ChainModifiers.GEM_EARTH -> earthPower += tier;
+                case ChainModifiers.GEM_ECHO -> echoPower += tier;
+                case ChainModifiers.GEM_MAGNET -> magnetPower += tier;
+                case ChainModifiers.GEM_CHRONO -> chronoPower += tier;
             }
         }
 
@@ -70,7 +79,6 @@ public abstract class ChainTrinketItem extends Item {
                 player.fallDistance = 0;
             }
             if (voidPower >= 4 && player.isSneaking() && !player.isOnGround()) {
-                // Ethereal glide
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 10, 0, true, false, false));
             }
         }
@@ -88,12 +96,56 @@ public abstract class ChainTrinketItem extends Item {
         // 4. Genesis Gem: Bonus Absorption Hearts & Strength
         if (genesisPower > 0) {
             if (!player.hasStatusEffect(StatusEffects.ABSORPTION)) {
-                int absorbAmp = Math.min(genesisPower, 4); // +4 to +10 hearts
+                int absorbAmp = Math.min(genesisPower, 4);
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 120, absorbAmp, true, false, true));
             }
             if (genesisPower >= 2) {
                 int strAmp = Math.min((genesisPower - 2) / 2, 1);
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 60, strAmp, true, false, true));
+            }
+        }
+
+        // 5. Earth Gem: Haste, Luck & Night Vision
+        if (earthPower > 0) {
+            int hasteAmp = Math.min((earthPower - 1) / 2, 2);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 60, hasteAmp, true, false, true));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 60, Math.min(earthPower - 1, 1), true, false, true));
+            if (player.getY() < 60) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, 260, 0, true, false, true));
+            }
+        }
+
+        // 6. Echo Gem: Darkness cure & Cave Vision
+        if (echoPower > 0) {
+            if (player.hasStatusEffect(StatusEffects.DARKNESS)) player.removeStatusEffect(StatusEffects.DARKNESS);
+            if (player.hasStatusEffect(StatusEffects.BLINDNESS)) player.removeStatusEffect(StatusEffects.BLINDNESS);
+            if (player.getY() < 60) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, 260, 0, true, false, true));
+            }
+        }
+
+        // 7. Magnet Gem: Item attraction in radius
+        if (magnetPower > 0 && player.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld sw) {
+            double r = 6.0 + 4.0 * magnetPower;
+            net.minecraft.util.math.Box box = player.getBoundingBox().expand(r);
+            for (net.minecraft.entity.ItemEntity it : sw.getEntitiesByClass(net.minecraft.entity.ItemEntity.class, box, e -> !e.cannotPickup() && !e.isRemoved())) {
+                net.minecraft.util.math.Vec3d pull = player.getEntityPos().add(0, 0.5, 0).subtract(it.getEntityPos()).normalize().multiply(0.35);
+                it.setVelocity(pull);
+                it.velocityDirty = true;
+            }
+            for (net.minecraft.entity.ExperienceOrbEntity orb : sw.getEntitiesByClass(net.minecraft.entity.ExperienceOrbEntity.class, box, e -> !e.isRemoved())) {
+                net.minecraft.util.math.Vec3d pull = player.getEntityPos().add(0, 0.5, 0).subtract(orb.getEntityPos()).normalize().multiply(0.40);
+                orb.setVelocity(pull);
+                orb.velocityDirty = true;
+            }
+        }
+
+        // 8. Chrono Gem: Speed & Temporal Mending
+        if (chronoPower > 0) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 60, Math.min(chronoPower - 1, 1), true, false, true));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 60, Math.min(chronoPower - 1, 1), true, false, true));
+            if (player.age % 40 == 0 && stack.isDamaged()) {
+                stack.setDamage(Math.max(0, stack.getDamage() - 1));
             }
         }
 

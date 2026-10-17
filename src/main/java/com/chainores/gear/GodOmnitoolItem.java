@@ -116,6 +116,15 @@ public class GodOmnitoolItem extends Item {
                 } else if (com.chainores.modifier.ChainModifiers.GEM_EARTH.equals(base)) {
                     attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 100, gemTier - 1));
                     target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 80, gemTier));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_ECHO.equals(base)) {
+                    target.damage(serverWorld, serverWorld.getDamageSources().magic(), 12.0f * gemTier);
+                    target.takeKnockback(0.8f * gemTier, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+                    serverWorld.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.PLAYERS, 0.6f, 1.6f);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_MAGNET.equals(base)) {
+                    target.takeKnockback(-0.8f * gemTier, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+                } else if (com.chainores.modifier.ChainModifiers.GEM_CHRONO.equals(base)) {
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60 * gemTier, 3));
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 60 * gemTier, 1));
                 }
             }
 
@@ -242,6 +251,15 @@ public class GodOmnitoolItem extends Item {
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient() && world instanceof ServerWorld serverWorld && miner instanceof ServerPlayerEntity player) {
+            int magnetTier = com.chainores.modifier.ChainModifiers.getGemHighestTier(stack, com.chainores.modifier.ChainModifiers.GEM_MAGNET);
+            if (magnetTier > 0) {
+                collectDropsToInventory(serverWorld, player, pos, magnetTier);
+            }
+            int echoTier = com.chainores.modifier.ChainModifiers.getGemHighestTier(stack, com.chainores.modifier.ChainModifiers.GEM_ECHO);
+            if (echoTier > 0) {
+                player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.9f, 1.8f);
+            }
+
             if (!IS_WORKING.get()) {
                 if (state.isIn(BlockTags.LOGS) && com.chainores.config.ChainOresConfig.get().enableTreeCapitator) {
                     fellFullTree(serverWorld, player, stack, pos);
@@ -459,6 +477,21 @@ public class GodOmnitoolItem extends Item {
                     }
                 }
             }
+        }
+    }
+
+    private void collectDropsToInventory(ServerWorld world, ServerPlayerEntity player, BlockPos pos, int magnetTier) {
+        net.minecraft.util.math.Box box = new net.minecraft.util.math.Box(pos).expand(3.0);
+        world.getEntitiesByClass(ItemEntity.class, box, e -> !e.isRemoved()).forEach(itemEntity -> {
+            ItemStack drop = itemEntity.getStack();
+            if (magnetTier >= 2) {
+                drop = com.chainores.modifier.ChainModifiers.applyMagnetAutoSmelt(drop);
+            }
+            player.getInventory().offerOrDrop(drop);
+            itemEntity.discard();
+        });
+        if (magnetTier >= 3 && world.random.nextFloat() < 0.40f) {
+            net.minecraft.entity.ExperienceOrbEntity.spawn(world, player.getEntityPos(), world.random.nextInt(4) + 2);
         }
     }
 }

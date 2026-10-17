@@ -67,6 +67,22 @@ public class ModItemGroups {
                     entries.add(ModGems.GENESIS_GEM_2);
                     entries.add(ModGems.GENESIS_GEM_3);
 
+                    entries.add(ModGems.EARTH_GEM);
+                    entries.add(ModGems.EARTH_GEM_2);
+                    entries.add(ModGems.EARTH_GEM_3);
+
+                    entries.add(ModGems.ECHO_GEM);
+                    entries.add(ModGems.ECHO_GEM_2);
+                    entries.add(ModGems.ECHO_GEM_3);
+
+                    entries.add(ModGems.MAGNET_GEM);
+                    entries.add(ModGems.MAGNET_GEM_2);
+                    entries.add(ModGems.MAGNET_GEM_3);
+
+                    entries.add(ModGems.CHRONO_GEM);
+                    entries.add(ModGems.CHRONO_GEM_2);
+                    entries.add(ModGems.CHRONO_GEM_3);
+
                     // Trinkets & Accessories
                     entries.add(ModItems.CHAIN_RING);
                     entries.add(ModItems.CHAIN_AMULET);

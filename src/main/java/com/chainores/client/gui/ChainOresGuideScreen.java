@@ -158,7 +158,7 @@ public class ChainOresGuideScreen extends Screen {
             case ARSENAL -> 6;
             case BOSSES -> 4;
             case WORKSTATIONS -> 4;
-            case MODIFIERS -> 3;
+            case MODIFIERS -> 4;
             default -> 1;
         };
     }
@@ -877,6 +877,44 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, earth, cx, cy + 92, mouseX, mouseY);
 
         } else if (subPage == 1) {
+            context.drawText(this.textRenderer, Text.literal("✦ GEMAS DE MINERÍA Y UTILIDAD ✦").formatted(Formatting.AQUA, Formatting.BOLD),
+                    cx, cy, 0xFF55FFFF, false);
+
+            ItemStack echo = new ItemStack(ModGems.ECHO_GEM);
+            context.drawItem(echo, cx, cy + 12);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema del Eco: ").formatted(Formatting.DARK_AQUA, Formatting.BOLD)
+                            .append(Text.literal("Sonar de vetas 32m, sigilo Warden, inmune Oscuridad").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 12, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Al picar emite pulso sonar y silencia toda vibración Sculk.", cx + 20, cy + 22, 0xFFAAAAAA, false);
+
+            ItemStack magnet = new ItemStack(ModGems.MAGNET_GEM);
+            context.drawItem(magnet, cx, cy + 38);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema Magnética: ").formatted(Formatting.BLUE, Formatting.BOLD)
+                            .append(Text.literal("Drops directo a inventario, Auto-Fundición y Vacío").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 38, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "¡Nunca pierdes minerales en lava! Funde metales y atrae XP.", cx + 20, cy + 48, 0xFFAAAAAA, false);
+
+            ItemStack chrono = new ItemStack(ModGems.CHRONO_GEM);
+            context.drawItem(chrono, cx, cy + 64);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema Crono: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                            .append(Text.literal("Auto-reparación pasiva, acelera cultivos 7x7").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 64, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Repara herramientas solas con el tiempo y acelera hornos.", cx + 20, cy + 74, 0xFFAAAAAA, false);
+
+            int boxY = cy + 92;
+            drawCustomBorder(context, cx, boxY, 332, 38, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "💡 CONSEJO DE INGENIERÍA EN CADENA:", cx + 6, boxY + 5, 0xFFFFD700, false);
+            context.drawText(this.textRenderer, "• Combina Imán + Eco en tu Pico para minar a ciegas seguro.", cx + 6, boxY + 16, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "• Engarza Crono en tu Peto para cosechas instantáneas y auto-mending.", cx + 6, boxY + 26, 0xFF88FF88, false);
+
+            checkTooltip(context, echo, cx, cy + 12, mouseX, mouseY);
+            checkTooltip(context, magnet, cx, cy + 38, mouseX, mouseY);
+            checkTooltip(context, chrono, cx, cy + 64, mouseX, mouseY);
+
+        } else if (subPage == 2) {
             context.drawText(this.textRenderer, Text.literal("✦ REFORJADO, PREFIJOS Y ENCANTAMIENTOS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
@@ -898,7 +936,7 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, amethyst, cx, cy + 12, mouseX, mouseY);
 
         } else {
-            // subPage 2: Fusión de Gemas T1-T3
+            // subPage 3: Fusión de Gemas T1-T3
             context.drawText(this.textRenderer, Text.literal("✦ FUSIÓN Y NIVELES DE GEMAS (TIER I-III) ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
@@ -907,32 +945,40 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "• Combina 2 gemas de Tier II para forjar Tier III (Máx).", cx, cy + 34, 0xFFE0E0E0, false);
 
             context.drawText(this.textRenderer, "💎 ESCALADO DE PODER DE TIER III:", cx, cy + 46, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "• Sangre III: Regen III letal. | Vacío III: Inmune caída.", cx, cy + 56, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "• Núcleo III: Inmune fuego, Vel II y Prisa II.", cx, cy + 66, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "• Génesis III: ¡Hasta +10 Corazones Amarillos y Fuerza II!", cx, cy + 76, 0xFFFFF1A8, false);
-            context.drawText(this.textRenderer, "• Tierra III: +60% minería, Prisa II, 50% doble mena y +4 HP.", cx, cy + 86, 0xFFA5D6A7, false);
+            context.drawText(this.textRenderer, "• Sangre III: Regen III | Vacío III: Inmune caída | Núcleo III: Fuego/Vel", cx, cy + 56, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "• Génesis III: +10 Corazones | Tierra III: +100% minería doble drop", cx, cy + 66, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "• Eco III: Sonar 32m | Imán III: Auto-smelt | Crono III: Auto-repara", cx, cy + 76, 0xFFA5D6A7, false);
 
-            int dockY = cy + 102;
+            int dockY = cy + 96;
             drawCustomBorder(context, cx, dockY, 332, 28, 0xFF4A3E31);
-            context.drawText(this.textRenderer, "Gemas Tier III:", cx + 6, dockY + 10, 0xFFAAAAAA, false);
+            context.drawText(this.textRenderer, "Gemas Tier III:", cx + 4, dockY + 10, 0xFFAAAAAA, false);
 
             ItemStack b3 = new ItemStack(ModGems.BLOOD_GEM_3);
             ItemStack v3 = new ItemStack(ModGems.VOID_GEM_3);
             ItemStack c3 = new ItemStack(ModGems.CORE_GEM_3);
             ItemStack g3 = new ItemStack(ModGems.GENESIS_GEM_3);
             ItemStack e3 = new ItemStack(ModGems.EARTH_GEM_3);
+            ItemStack ec3 = new ItemStack(ModGems.ECHO_GEM_3);
+            ItemStack m3 = new ItemStack(ModGems.MAGNET_GEM_3);
+            ItemStack ch3 = new ItemStack(ModGems.CHRONO_GEM_3);
 
-            context.drawItem(b3, cx + 110, dockY + 5);
-            context.drawItem(v3, cx + 135, dockY + 5);
-            context.drawItem(c3, cx + 160, dockY + 5);
-            context.drawItem(g3, cx + 185, dockY + 5);
-            context.drawItem(e3, cx + 210, dockY + 5);
+            context.drawItem(b3, cx + 80, dockY + 5);
+            context.drawItem(v3, cx + 105, dockY + 5);
+            context.drawItem(c3, cx + 130, dockY + 5);
+            context.drawItem(g3, cx + 155, dockY + 5);
+            context.drawItem(e3, cx + 180, dockY + 5);
+            context.drawItem(ec3, cx + 205, dockY + 5);
+            context.drawItem(m3, cx + 230, dockY + 5);
+            context.drawItem(ch3, cx + 255, dockY + 5);
 
-            checkTooltip(context, b3, cx + 110, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, v3, cx + 135, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, c3, cx + 160, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, g3, cx + 185, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, e3, cx + 210, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, b3, cx + 80, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, v3, cx + 105, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, c3, cx + 130, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, g3, cx + 155, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, e3, cx + 180, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, ec3, cx + 205, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, m3, cx + 230, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, ch3, cx + 255, dockY + 5, mouseX, mouseY);
         }
     }
 

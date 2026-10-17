@@ -29,7 +29,19 @@ public class GemItem extends Item {
         EARTH("Gema de la Tierra", Formatting.DARK_GREEN, "Prospección y Fortuna Geológica",
                 new String[]{"+40% velocidad minera, Prisa I y 25% duplicar drops", "+80% velocidad minera, Prisa II y 50% duplicar drops", "+150% velocidad minera, Prisa III y 100% duplicar drops"},
                 new String[]{"Suerte I y Visión Nocturna bajo Y=60", "Suerte II, Visión Nocturna y Héroe de la Aldea", "Suerte III, Visión Nocturna, Imán 8m y Detección de Vetas"},
-                "Extraída de los estratos minerales más puros del mundo.");
+                "Extraída de los estratos minerales más puros del mundo."),
+        ECHO("Gema del Eco", Formatting.DARK_AQUA, "Resonancia Sónica y Percepción Espectral",
+                new String[]{"+30% vel. minera, pulso sónico y silencio de vibraciones", "+60% vel. minera, inmunidad a sensores Sculk y radar de vetas 16m", "+100% vel. minera, sonar de minerales 32m y explosión sónica al golpear"},
+                new String[]{"Inmunidad total a Oscuridad y Ceguera subterránea", "Inmunidad a Oscuridad/Ceguera y sigilo absoluto ante el Warden", "Inmunidad total, sigilo espectral y pulso de ecolocalización continuo (24m)"},
+                "Cristal resonante pulsando con las frecuencias ocultas de las profundidades del mundo."),
+        MAGNET("Gema Magnética", Formatting.BLUE, "Atracción Gravitatoria y Fundición Polar",
+                new String[]{"+35% vel. minera y drops teletransportados directo a tu inventario", "+70% vel. minera, drops a inventario y Auto-Fundición de metales en bruto", "+120% vel. minera, drops a inventario, Auto-Fundición y doble experiencia al minar"},
+                new String[]{"Imán de ítems y orbes de experiencia en radio de 8 bloques", "Imán de ítems y orbes en 16 bloques + Campo deflector de proyectiles lentos", "Vórtice magnético total (24 bloques) + Campo de fuerza que desvía flechas y proyectiles"},
+                "Canaliza las líneas de fuerza electromagnética de los núcleos planetarios."),
+        CHRONO("Gema Crono", Formatting.GOLD, "Dilatación Temporal y Auto-Reparación",
+                new String[]{"+25% vel. minera/ataque y auto-repara la durabilidad del ítem cada 3s", "+50% vel. minera/ataque, auto-repara cada 1.5s y probabilidad de estasis temporal", "+75% vel. minera/ataque, auto-reparación continua (0.5s) y congelación temporal de enemigos"},
+                new String[]{"Aceleración de crecimiento vegetal (3x3) y acelera fundición en hornos cercanos (2x)", "Aceleración vegetal (5x5), hornos (3x) y auto-repara armaduras equipadas pasivamente", "Aceleración vegetal (7x7), hornos (5x), auto-reparación total y Prisa/Velocidad temporal constante"},
+                "Encapsula un fragmento detenido del tejido mismo del flujo del tiempo.");
 
         public final String displayName;
         public final Formatting color;

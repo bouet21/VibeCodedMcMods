@@ -20,6 +20,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.server.world.ServerWorld;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -35,6 +36,9 @@ public class ChainModifiers {
     public static final String GEM_CORE = "core_gem";
     public static final String GEM_GENESIS = "genesis_gem";
     public static final String GEM_EARTH = "earth_gem";
+    public static final String GEM_ECHO = "echo_gem";
+    public static final String GEM_MAGNET = "magnet_gem";
+    public static final String GEM_CHRONO = "chrono_gem";
 
     // Reforge Prefix IDs
     public static final String REFORGE_DIVINE = "divine";
@@ -57,6 +61,9 @@ public class ChainModifiers {
         if (gemId.startsWith(GEM_CORE)) return GEM_CORE;
         if (gemId.startsWith(GEM_GENESIS)) return GEM_GENESIS;
         if (gemId.startsWith(GEM_EARTH)) return GEM_EARTH;
+        if (gemId.startsWith(GEM_ECHO)) return GEM_ECHO;
+        if (gemId.startsWith(GEM_MAGNET)) return GEM_MAGNET;
+        if (gemId.startsWith(GEM_CHRONO)) return GEM_CHRONO;
         return gemId;
     }
 
@@ -69,6 +76,10 @@ public class ChainModifiers {
                item instanceof com.chainores.gear.CosmicElytraChestplateItem ||
                item instanceof ChainPickaxeItem ||
                item instanceof ChainSwordItem ||
+               item instanceof ChainAxeItem ||
+               item instanceof ChainShovelItem ||
+               item instanceof ChainHoeItem ||
+               item instanceof ChainShieldItem ||
                item instanceof DragonBreathBowItem ||
                item instanceof GalacticCrossbowItem ||
                item instanceof GodOmnitoolItem ||
@@ -110,6 +121,34 @@ public class ChainModifiers {
             if (t <= 30) return 1;
             if (t <= 115) return 2;
             return 3;
+        }
+
+        if (item instanceof ChainAxeItem axe) {
+            int t = axe.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof ChainShovelItem shovel) {
+            int t = shovel.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof ChainHoeItem hoe) {
+            int t = hoe.getTier();
+            if (t <= 1) return 0;
+            if (t <= 30) return 1;
+            if (t <= 115) return 2;
+            return 3;
+        }
+
+        if (item instanceof ChainShieldItem) {
+            return 2;
         }
 
         if (item instanceof ChainSwordItem sword) {
@@ -247,6 +286,9 @@ public class ChainModifiers {
             if (GEM_CORE.equals(base)) mult += 0.35f * tier;
             if (GEM_GENESIS.equals(base)) mult += cfg.genesisGemMiningBoost * tier;
             if (GEM_EARTH.equals(base)) mult += 0.40f * tier;
+            if (GEM_ECHO.equals(base)) mult += 0.30f * tier;
+            if (GEM_MAGNET.equals(base)) mult += 0.35f * tier;
+            if (GEM_CHRONO.equals(base)) mult += 0.25f * tier;
         }
 
         String reforge = getReforge(stack);
@@ -296,6 +338,50 @@ public class ChainModifiers {
                stack.isOf(net.minecraft.item.Items.CROSSBOW);
     }
 
+    public static boolean hasGem(ItemStack stack, String baseGem) {
+        if (stack == null || stack.isEmpty() || baseGem == null) return false;
+        for (String g : getGems(stack)) {
+            if (baseGem.equals(getBaseGemType(g))) return true;
+        }
+        return false;
+    }
+
+    public static int getGemHighestTier(ItemStack stack, String baseGem) {
+        if (stack == null || stack.isEmpty() || baseGem == null) return 0;
+        int max = 0;
+        for (String g : getGems(stack)) {
+            if (baseGem.equals(getBaseGemType(g))) {
+                max = Math.max(max, getGemTier(g));
+            }
+        }
+        return max;
+    }
+
+    public static ItemStack applyMagnetAutoSmelt(ItemStack original) {
+        if (original == null || original.isEmpty()) return original;
+        Item item = original.getItem();
+        int count = original.getCount();
+
+        if (item == net.minecraft.item.Items.RAW_IRON) return new ItemStack(net.minecraft.item.Items.IRON_INGOT, count);
+        if (item == net.minecraft.item.Items.RAW_GOLD) return new ItemStack(net.minecraft.item.Items.GOLD_INGOT, count);
+        if (item == net.minecraft.item.Items.RAW_COPPER) return new ItemStack(net.minecraft.item.Items.COPPER_INGOT, count);
+        if (item == net.minecraft.item.Items.ANCIENT_DEBRIS) return new ItemStack(net.minecraft.item.Items.NETHERITE_SCRAP, count);
+        if (item == net.minecraft.item.Items.COBBLESTONE) return new ItemStack(net.minecraft.item.Items.STONE, count);
+        if (item == net.minecraft.item.Items.COBBLED_DEEPSLATE) return new ItemStack(net.minecraft.item.Items.DEEPSLATE, count);
+        if (item == net.minecraft.item.Items.SAND || item == net.minecraft.item.Items.RED_SAND) return new ItemStack(net.minecraft.item.Items.GLASS, count);
+        if (item == net.minecraft.item.Items.CLAY_BALL) return new ItemStack(net.minecraft.item.Items.BRICK, count);
+        if (item == net.minecraft.item.Items.WET_SPONGE) return new ItemStack(net.minecraft.item.Items.SPONGE, count);
+
+        // Chain Ores progressive raw smelting
+        for (com.chainores.ore.OreTier ore : com.chainores.ore.OreRegistryData.TIERS) {
+            if (item == ore.rawItem) {
+                return new ItemStack(ore.ingotItem, count);
+            }
+        }
+
+        return original;
+    }
+
     public static void applyReforgeHeldBuffs(net.minecraft.entity.Entity entity, ItemStack stack) {
         if (entity.getEntityWorld().isClient() || !(entity instanceof net.minecraft.entity.player.PlayerEntity player)) return;
         String reforge = getReforge(stack);
@@ -315,9 +401,19 @@ public class ChainModifiers {
         }
 
         for (String gem : getGems(stack)) {
-            if (GEM_EARTH.equals(getBaseGemType(gem))) {
-                int tier = getGemTier(gem);
+            String base = getBaseGemType(gem);
+            int tier = getGemTier(gem);
+            if (GEM_EARTH.equals(base)) {
                 player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HASTE, 40, tier - 1, true, false));
+            } else if (GEM_CHRONO.equals(base)) {
+                int interval = switch (tier) {
+                    case 3 -> 15;
+                    case 2 -> 30;
+                    default -> 60;
+                };
+                if (player.age % interval == 0 && stack.isDamaged()) {
+                    stack.setDamage(Math.max(0, stack.getDamage() - 1));
+                }
             }
         }
     }
@@ -329,6 +425,9 @@ public class ChainModifiers {
         int coreCount = 0;
         int genesisCount = 0;
         int earthCount = 0;
+        int echoCount = 0;
+        int magnetCount = 0;
+        int chronoCount = 0;
 
         for (String gem : gems) {
             String base = getBaseGemType(gem);
@@ -339,6 +438,9 @@ public class ChainModifiers {
                 case GEM_CORE -> coreCount += tier;
                 case GEM_GENESIS -> genesisCount += tier;
                 case GEM_EARTH -> earthCount += tier;
+                case GEM_ECHO -> echoCount += tier;
+                case GEM_MAGNET -> magnetCount += tier;
+                case GEM_CHRONO -> chronoCount += tier;
             }
         }
 
@@ -371,6 +473,77 @@ public class ChainModifiers {
             }
             if (earthCount >= 2) {
                 player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HERO_OF_THE_VILLAGE, 40, 0, true, false));
+            }
+        }
+        if (echoCount > 0) {
+            if (player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.DARKNESS)) {
+                player.removeStatusEffect(net.minecraft.entity.effect.StatusEffects.DARKNESS);
+            }
+            if (player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.BLINDNESS)) {
+                player.removeStatusEffect(net.minecraft.entity.effect.StatusEffects.BLINDNESS);
+            }
+            if (player.getY() < 60) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.NIGHT_VISION, 240, 0, true, false));
+            }
+            if (player.age % 80 == 0) {
+                ServerWorld sw = (ServerWorld) player.getEntityWorld();
+                double r = 8.0 + 6.0 * echoCount;
+                net.minecraft.util.math.Box box = player.getBoundingBox().expand(r);
+                for (net.minecraft.entity.mob.HostileEntity mob : sw.getEntitiesByClass(net.minecraft.entity.mob.HostileEntity.class, box, e -> e.isAlive())) {
+                    mob.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.GLOWING, 60, 0, true, false));
+                }
+            }
+        }
+        if (magnetCount > 0) {
+            ServerWorld sw = (ServerWorld) player.getEntityWorld();
+            double r = 6.0 + 5.0 * magnetCount;
+            net.minecraft.util.math.Box box = player.getBoundingBox().expand(r);
+            for (net.minecraft.entity.ItemEntity item : sw.getEntitiesByClass(net.minecraft.entity.ItemEntity.class, box, e -> !e.cannotPickup() && !e.isRemoved())) {
+                net.minecraft.util.math.Vec3d pull = player.getEntityPos().add(0, 0.5, 0).subtract(item.getEntityPos()).normalize().multiply(0.38);
+                item.setVelocity(pull);
+                item.velocityDirty = true;
+            }
+            for (net.minecraft.entity.ExperienceOrbEntity orb : sw.getEntitiesByClass(net.minecraft.entity.ExperienceOrbEntity.class, box, e -> !e.isRemoved())) {
+                net.minecraft.util.math.Vec3d pull = player.getEntityPos().add(0, 0.5, 0).subtract(orb.getEntityPos()).normalize().multiply(0.42);
+                orb.setVelocity(pull);
+                orb.velocityDirty = true;
+            }
+            if (magnetCount >= 2 && player.age % 5 == 0) {
+                net.minecraft.util.math.Box deflectorBox = player.getBoundingBox().expand(3.5);
+                for (net.minecraft.entity.projectile.ProjectileEntity proj : sw.getEntitiesByClass(net.minecraft.entity.projectile.ProjectileEntity.class, deflectorBox, e -> e.getOwner() != player && !e.isRemoved())) {
+                    net.minecraft.util.math.Vec3d push = proj.getEntityPos().subtract(player.getEntityPos()).normalize().multiply(0.85);
+                    proj.setVelocity(push);
+                    proj.velocityDirty = true;
+                }
+            }
+        }
+        if (chronoCount > 0) {
+            int speedAmp = Math.min(chronoCount - 1, 1);
+            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SPEED, 40, speedAmp, true, false));
+            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HASTE, 40, speedAmp, true, false));
+
+            if (player.age % 40 == 0 && stack.isDamaged()) {
+                stack.setDamage(Math.max(0, stack.getDamage() - 1));
+            }
+
+            if (player.age % 20 == 0) {
+                ServerWorld sw = (ServerWorld) player.getEntityWorld();
+                int cropRadius = 2 + chronoCount;
+                int rx = player.getBlockX() + player.getRandom().nextInt(cropRadius * 2 + 1) - cropRadius;
+                int rz = player.getBlockZ() + player.getRandom().nextInt(cropRadius * 2 + 1) - cropRadius;
+                for (int dy = -2; dy <= 2; dy++) {
+                    net.minecraft.util.math.BlockPos cp = new net.minecraft.util.math.BlockPos(rx, player.getBlockY() + dy, rz);
+                    net.minecraft.block.BlockState cState = sw.getBlockState(cp);
+                    if (cState.getBlock() instanceof net.minecraft.block.CropBlock ||
+                        cState.getBlock() instanceof net.minecraft.block.SaplingBlock ||
+                        cState.getBlock() instanceof net.minecraft.block.SugarCaneBlock ||
+                        cState.getBlock() instanceof net.minecraft.block.NetherWartBlock ||
+                        cState.getBlock() instanceof net.minecraft.block.StemBlock) {
+                        cState.randomTick(sw, cp, player.getRandom());
+                        sw.spawnParticles(net.minecraft.particle.ParticleTypes.HAPPY_VILLAGER, cp.getX() + 0.5, cp.getY() + 0.5, cp.getZ() + 0.5, 3, 0.2, 0.2, 0.2, 0.0);
+                        break;
+                    }
+                }
             }
         }
 
@@ -490,6 +663,10 @@ public class ChainModifiers {
                         case GEM_VOID -> socketLine.append(Text.literal("[◆ Vacío" + roman + "] ").formatted(Formatting.DARK_PURPLE, Formatting.BOLD));
                         case GEM_CORE -> socketLine.append(Text.literal("[◆ Núcleo" + roman + "] ").formatted(Formatting.GOLD, Formatting.BOLD));
                         case GEM_GENESIS -> socketLine.append(Text.literal("[◆ Génesis" + roman + "] ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD));
+                        case GEM_EARTH -> socketLine.append(Text.literal("[◆ Tierra" + roman + "] ").formatted(Formatting.DARK_GREEN, Formatting.BOLD));
+                        case GEM_ECHO -> socketLine.append(Text.literal("[◆ Eco" + roman + "] ").formatted(Formatting.DARK_AQUA, Formatting.BOLD));
+                        case GEM_MAGNET -> socketLine.append(Text.literal("[◆ Imán" + roman + "] ").formatted(Formatting.BLUE, Formatting.BOLD));
+                        case GEM_CHRONO -> socketLine.append(Text.literal("[◆ Crono" + roman + "] ").formatted(Formatting.GOLD, Formatting.BOLD));
                         default -> socketLine.append(Text.literal("[◆ Gema" + roman + "] ").formatted(Formatting.AQUA));
                     }
                 } else {

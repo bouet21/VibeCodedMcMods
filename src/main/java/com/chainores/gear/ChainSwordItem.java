@@ -95,6 +95,18 @@ public class ChainSwordItem extends Item {
                 target.damage(world, attacker.getDamageSources().magic(), 10.0f * gemTier);
             } else if (com.chainores.modifier.ChainModifiers.GEM_CORE.equals(base)) {
                 target.setOnFireFor(6 * gemTier);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_EARTH.equals(base)) {
+                attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 80, gemTier - 1));
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, gemTier));
+            } else if (com.chainores.modifier.ChainModifiers.GEM_ECHO.equals(base)) {
+                target.damage(world, attacker.getDamageSources().magic(), 12.0f * gemTier);
+                target.takeKnockback(0.7f * gemTier, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+                world.playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sound.SoundEvents.ENTITY_WARDEN_SONIC_BOOM, net.minecraft.sound.SoundCategory.PLAYERS, 0.4f, 1.8f);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_MAGNET.equals(base)) {
+                target.takeKnockback(-0.6f * gemTier, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+            } else if (com.chainores.modifier.ChainModifiers.GEM_CHRONO.equals(base)) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40 * gemTier, 3));
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 40 * gemTier, 1));
             }
         }
 

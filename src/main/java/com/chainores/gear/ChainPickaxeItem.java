@@ -58,6 +58,15 @@ public class ChainPickaxeItem extends Item {
                 } else if (com.chainores.modifier.ChainModifiers.GEM_EARTH.equals(base)) {
                     attacker.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.HASTE, 80, gemTier - 1));
                     target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOWNESS, 60, gemTier));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_ECHO.equals(base)) {
+                    target.damage(world, world.getDamageSources().magic(), 8.0f * gemTier);
+                    target.takeKnockback(0.6f * gemTier, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+                    world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.PLAYERS, 0.4f, 1.8f);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_MAGNET.equals(base)) {
+                    target.takeKnockback(-0.5f * gemTier, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+                } else if (com.chainores.modifier.ChainModifiers.GEM_CHRONO.equals(base)) {
+                    target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOWNESS, 40 * gemTier, 3));
+                    target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.WEAKNESS, 40 * gemTier, 1));
                 }
             }
             float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);
@@ -166,6 +175,19 @@ public class ChainPickaxeItem extends Item {
                     state.getBlock().afterBreak(world, player, pos, state, null, stack);
                     player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.7f, 1.8f);
                 }
+            }
+
+            // Magnet Gem: Direct-to-Inventory Drops & Auto-Smelt
+            int magnetTier = com.chainores.modifier.ChainModifiers.getGemHighestTier(stack, com.chainores.modifier.ChainModifiers.GEM_MAGNET);
+            if (magnetTier > 0) {
+                collectDropsToInventory(serverWorld, player, pos, magnetTier);
+            }
+
+            // Echo Gem: Sonar Ping on Ore Break
+            int echoTier = com.chainores.modifier.ChainModifiers.getGemHighestTier(stack, com.chainores.modifier.ChainModifiers.GEM_ECHO);
+            if (echoTier > 0 && (state.getBlock() instanceof ChainOreBlock || isOreBlock(state))) {
+                player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 0.8f, 1.7f);
+                serverWorld.spawnParticles(net.minecraft.particle.ParticleTypes.SCULK_SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4 * echoTier, 0.3, 0.3, 0.3, 0.05);
             }
 
             // Tier 60: 1x2 tunnel forward
@@ -384,6 +406,21 @@ public class ChainPickaxeItem extends Item {
                     }
                 }
             }
+        }
+    }
+
+    private void collectDropsToInventory(ServerWorld world, ServerPlayerEntity player, BlockPos pos, int magnetTier) {
+        Box box = new Box(pos).expand(2.5);
+        world.getEntitiesByClass(ItemEntity.class, box, e -> !e.isRemoved()).forEach(itemEntity -> {
+            ItemStack drop = itemEntity.getStack();
+            if (magnetTier >= 2) {
+                drop = com.chainores.modifier.ChainModifiers.applyMagnetAutoSmelt(drop);
+            }
+            player.getInventory().offerOrDrop(drop);
+            itemEntity.discard();
+        });
+        if (magnetTier >= 3 && world.random.nextFloat() < 0.35f) {
+            net.minecraft.entity.ExperienceOrbEntity.spawn(world, player.getEntityPos(), world.random.nextInt(3) + 2);
         }
     }
 }
