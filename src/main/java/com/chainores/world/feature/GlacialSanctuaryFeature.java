@@ -44,18 +44,22 @@ public class GlacialSanctuaryFeature extends Feature<DefaultFeatureConfig> {
         }
 
         BlockPos basePos = origin;
-        while (basePos.getY() > 50 && (world.getBlockState(basePos).isAir() || world.getBlockState(basePos).isOf(Blocks.WATER) || world.getBlockState(basePos).isOf(Blocks.SNOW))) {
+        while (basePos.getY() > 50 && (world.getBlockState(basePos).isAir() || world.getBlockState(basePos).isOf(Blocks.WATER)
+                || world.getBlockState(basePos).isOf(Blocks.SNOW) || world.getBlockState(basePos).isOf(Blocks.POWDER_SNOW)
+                || world.getBlockState(basePos).isIn(net.minecraft.registry.tag.BlockTags.LEAVES)
+                || world.getBlockState(basePos).isIn(net.minecraft.registry.tag.BlockTags.LOGS))) {
             basePos = basePos.down();
         }
 
         int radius = 10;
-        int height = 7;
+        int clearRadius = radius + 3; // 13 blocks radius to eliminate any surrounding trees/ice spikes
+        int clearHeight = 18;         // 18 blocks vertical clearance eliminates all taiga spruce tree canopies
 
         // 1. Foundation
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 if (x * x + z * z <= radius * radius) {
-                    for (int y = -1; y >= -3; y--) {
+                    for (int y = -1; y >= -4; y--) {
                         BlockPos p = basePos.add(x, y, z);
                         world.setBlockState(p, Blocks.PACKED_ICE.getDefaultState(), 2);
                     }
@@ -63,7 +67,19 @@ public class GlacialSanctuaryFeature extends Feature<DefaultFeatureConfig> {
             }
         }
 
-        // 2. Floor & Air clearance
+        // 2. Air & Vegetation clearance
+        for (int x = -clearRadius; x <= clearRadius; x++) {
+            for (int z = -clearRadius; z <= clearRadius; z++) {
+                int distSq = x * x + z * z;
+                if (distSq <= clearRadius * clearRadius) {
+                    for (int y = 1; y <= clearHeight; y++) {
+                        world.setBlockState(basePos.add(x, y, z), Blocks.AIR.getDefaultState(), 2);
+                    }
+                }
+            }
+        }
+
+        // 3. Floor placement
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 int distSq = x * x + z * z;
@@ -75,11 +91,6 @@ public class GlacialSanctuaryFeature extends Feature<DefaultFeatureConfig> {
                         world.setBlockState(floorPos, Blocks.CALCITE.getDefaultState(), 2);
                     } else {
                         world.setBlockState(floorPos, (random.nextFloat() < 0.6f) ? Blocks.PACKED_ICE.getDefaultState() : Blocks.SNOW_BLOCK.getDefaultState(), 2);
-                    }
-
-                    // Clear air
-                    for (int y = 1; y <= height; y++) {
-                        world.setBlockState(basePos.add(x, y, z), Blocks.AIR.getDefaultState(), 2);
                     }
                 }
             }

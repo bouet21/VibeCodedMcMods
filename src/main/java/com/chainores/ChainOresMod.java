@@ -43,6 +43,7 @@ public class ChainOresMod implements ModInitializer {
         ModWorldGen.initialize();
         com.chainores.event.DimensionalMobHandler.initialize();
         com.chainores.compat.trinkets.TrinketsCompat.init();
+        com.chainores.entity.BossArenaHelper.registerBlockProtection();
 
         // Register C2S Dash packet for dedicated keybind
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playC2S().register(

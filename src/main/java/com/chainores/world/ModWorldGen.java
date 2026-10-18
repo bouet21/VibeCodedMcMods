@@ -16,35 +16,35 @@ public class ModWorldGen {
     public static void initialize() {
         ModFeatures.initialize();
 
-        // 1. Structure Features
+        // 1. Structure Features (Generated at TOP_LAYER_MODIFICATION to run after vegetal decoration/trees)
         BiomeModifications.addFeature(
                 BiomeSelectors.tag(BiomeTags.IS_HILL).or(BiomeSelectors.includeByKey(
                         BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.FROZEN_PEAKS,
                         BiomeKeys.JAGGED_PEAKS, BiomeKeys.SNOWY_SLOPES, BiomeKeys.GROVE
                 )),
-                GenerationStep.Feature.SURFACE_STRUCTURES,
+                GenerationStep.Feature.TOP_LAYER_MODIFICATION,
                 ModFeatures.GLACIAL_SANCTUARY_PLACED
         );
         BiomeModifications.addFeature(
                 BiomeSelectors.tag(BiomeTags.IS_FOREST).or(BiomeSelectors.tag(BiomeTags.IS_TAIGA)).or(BiomeSelectors.includeByKey(
                         BiomeKeys.DARK_FOREST, BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE, BiomeKeys.BAMBOO_JUNGLE
                 )),
-                GenerationStep.Feature.SURFACE_STRUCTURES,
+                GenerationStep.Feature.TOP_LAYER_MODIFICATION,
                 ModFeatures.SYLVA_GROVE_PLACED
         );
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInOverworld(),
-                GenerationStep.Feature.SURFACE_STRUCTURES,
+                GenerationStep.Feature.TOP_LAYER_MODIFICATION,
                 ModFeatures.ABANDONED_FORGE_PLACED
         );
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInTheNether(),
-                GenerationStep.Feature.SURFACE_STRUCTURES,
+                GenerationStep.Feature.TOP_LAYER_MODIFICATION,
                 ModFeatures.NETHER_SHRINE_PLACED
         );
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInTheEnd(),
-                GenerationStep.Feature.SURFACE_STRUCTURES,
+                GenerationStep.Feature.TOP_LAYER_MODIFICATION,
                 ModFeatures.COSMIC_ALTAR_PLACED
         );
 

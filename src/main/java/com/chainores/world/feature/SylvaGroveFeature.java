@@ -45,18 +45,21 @@ public class SylvaGroveFeature extends Feature<DefaultFeatureConfig> {
         }
 
         BlockPos basePos = origin;
-        while (basePos.getY() > 45 && (world.getBlockState(basePos).isAir() || world.getBlockState(basePos).isOf(Blocks.WATER) || world.getBlockState(basePos).isOf(Blocks.OAK_LEAVES))) {
+        while (basePos.getY() > 45 && (world.getBlockState(basePos).isAir() || world.getBlockState(basePos).isOf(Blocks.WATER)
+                || world.getBlockState(basePos).isIn(net.minecraft.registry.tag.BlockTags.LEAVES)
+                || world.getBlockState(basePos).isIn(net.minecraft.registry.tag.BlockTags.LOGS))) {
             basePos = basePos.down();
         }
 
         int radius = 10;
-        int height = 7;
+        int clearRadius = radius + 3; // 13 blocks radius to eliminate any encroaching tree trunks/leaves
+        int clearHeight = 18;         // 18 blocks vertical clearance removes all forest canopies
 
-        // 1. Foundation downwards
+        // 1. Foundation downwards - solid clean base
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 if (x * x + z * z <= radius * radius) {
-                    for (int y = -1; y >= -3; y--) {
+                    for (int y = -1; y >= -4; y--) {
                         BlockPos p = basePos.add(x, y, z);
                         world.setBlockState(p, Blocks.DIRT.getDefaultState(), 2);
                     }
@@ -64,7 +67,19 @@ public class SylvaGroveFeature extends Feature<DefaultFeatureConfig> {
             }
         }
 
-        // 2. Floor & Interior clearance
+        // 2. Air & Vegetation clearance - wipe out all trees, branches, foliage and obstructions
+        for (int x = -clearRadius; x <= clearRadius; x++) {
+            for (int z = -clearRadius; z <= clearRadius; z++) {
+                int distSq = x * x + z * z;
+                if (distSq <= clearRadius * clearRadius) {
+                    for (int y = 1; y <= clearHeight; y++) {
+                        world.setBlockState(basePos.add(x, y, z), Blocks.AIR.getDefaultState(), 2);
+                    }
+                }
+            }
+        }
+
+        // 3. Floor placement
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 int distSq = x * x + z * z;
@@ -83,11 +98,6 @@ public class SylvaGroveFeature extends Feature<DefaultFeatureConfig> {
                         } else {
                             world.setBlockState(floorPos, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
                         }
-                    }
-
-                    // Clear air
-                    for (int y = 1; y <= height; y++) {
-                        world.setBlockState(basePos.add(x, y, z), Blocks.AIR.getDefaultState(), 2);
                     }
                 }
             }

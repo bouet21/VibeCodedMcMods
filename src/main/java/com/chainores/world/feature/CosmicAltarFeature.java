@@ -61,7 +61,8 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
         }
 
         int radius = 14;  // 29x29 Grand Astral Arena
-        int skyClear = 16; // 16 blocks vertical clear air for boss combat
+        int clearRadius = radius + 2;
+        int skyClear = 20;
 
         // 1. Foundation downwards
         for (int x = -radius; x <= radius; x++) {
@@ -78,7 +79,19 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
             }
         }
 
-        // 2. Arena Floor & Sky Clearance
+        // 2. Air & Chorus clearance
+        for (int x = -clearRadius; x <= clearRadius; x++) {
+            for (int z = -clearRadius; z <= clearRadius; z++) {
+                int distSq = x * x + z * z;
+                if (distSq <= clearRadius * clearRadius) {
+                    for (int y = 1; y <= skyClear; y++) {
+                        world.setBlockState(basePos.add(x, y, z), Blocks.AIR.getDefaultState(), 2);
+                    }
+                }
+            }
+        }
+
+        // 3. Arena Floor placement
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 int distSq = x * x + z * z;
@@ -98,11 +111,6 @@ public class CosmicAltarFeature extends Feature<DefaultFeatureConfig> {
                     world.setBlockState(floorPos, ((x * x + z * z) % 3 == 0) ? Blocks.PURPUR_PILLAR.getDefaultState() : Blocks.END_STONE_BRICKS.getDefaultState(), 2);
                 } else {
                     world.setBlockState(floorPos, Blocks.END_STONE_BRICKS.getDefaultState(), 2);
-                }
-
-                // Clear sky above arena (y = 1 to skyClear)
-                for (int y = 1; y <= skyClear; y++) {
-                    world.setBlockState(basePos.add(x, y, z), Blocks.AIR.getDefaultState(), 2);
                 }
 
                 // 2-block high outer safety barrier/parapet (so players don't fly into the void)
