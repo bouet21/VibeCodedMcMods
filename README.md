@@ -3,13 +3,13 @@
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.2%20%2F%201.21.11-brightgreen.svg?logo=minecraft)](https://fabricmc.net/)
 [![Fabric Loader](https://img.shields.io/badge/Fabric-0.16%2B-blue.svg)](https://fabricmc.net/)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg?logo=openjdk)](https://adoptium.net/)
-[![Version](https://img.shields.io/badge/Release-v1.1.0-brightgreen.svg?logo=github)](https://github.com/bouet21/VibeCodedMcMods/releases)
+[![Version](https://img.shields.io/badge/Release-v1.2.0-brightgreen.svg?logo=github)](https://github.com/bouet21/VibeCodedMcMods/releases)
 [![EMI Compatible](https://img.shields.io/badge/EMI-Recipe%20Viewer-yellowgreen.svg)](https://modrinth.com/mod/emi)
 [![Trinkets Compatible](https://img.shields.io/badge/Trinkets-Accessory%20Slots-blueviolet.svg)](https://modrinth.com/mod/trinkets)
 [![GitHub Branch](https://img.shields.io/badge/Branch-extendido-purple.svg?logo=github)](https://github.com/bouet21/VibeCodedMcMods/tree/extendido)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Un mod masivo de progresión y aventura épica para **Minecraft Fabric 1.21.x** que transforma la minería y el equipamiento en una odisea de **150 minerales consecutivos**, 4 jefes dimensionales y 2 mini-jefes con escalado dinámico en multijugador, estaciones de trabajo con automatización nativa (`SidedInventory`), 5 gemas fusionables con niveles (Tiers I a III), joyería arcana con soporte para Trinkets, visor de recetas EMI interactivo, reforjado con prefijos y un arsenal legendario con habilidades activas y pasivas.
+Un mod masivo de progresión y aventura épica para **Minecraft Fabric 1.21.x** que transforma la minería y el equipamiento en una odisea de **150 minerales consecutivos**, 4 jefes dimensionales y 2 mini-jefes con escalado dinámico en multijugador, santuarios en el mundo con protección anti-griefing, 6 armas míticas con habilidades activas, estaciones de trabajo con automatización nativa (`SidedInventory`), 12 gemas fusionables con niveles (Tiers I a III), joyería arcana con soporte para Trinkets, visor de recetas EMI interactivo, reforjado con prefijos y un arsenal legendario con habilidades activas y pasivas.
 
 > 🌐 **Repositorio Oficial de GitHub:** [bouet21/VibeCodedMcMods](https://github.com/bouet21/VibeCodedMcMods)  
 > 🌿 **Rama Activa de Desarrollo (Enhanced Edition):** [`extendido`](https://github.com/bouet21/VibeCodedMcMods/tree/extendido)  
@@ -38,11 +38,11 @@ Un mod masivo de progresión y aventura épica para **Minecraft Fabric 1.21.x** 
 
 | Módulo | Categoría | Características Principales |
 |:---:|:---|:---|
-| **Arsenal & Herramientas** | **Progresión Completa** | 16 hachas *TreeCapitator*, 16 palas 3x3, 16 azadas 9x9, Arco Dragón con partículas y rugido, Ballesta Galáctica con choque sónico, 6 Escudos Temáticos, Omnitool T150 con límites balanceados, bonus de armadura y Dash `[V]`. |
+| **Arsenal & Herramientas** | **Progresión Completa** | 6 Armas Míticas de Jefes con habilidades activas, 16 hachas *TreeCapitator*, 16 palas 3x3, 16 azadas 9x9, Arco Dragón con partículas y rugido, Ballesta Galáctica con choque sónico, 6 Escudos Temáticos, Omnitool T150 con límites balanceados, bonus de armadura y Dash `[V]`. |
 | **Joyería Arcana & Satchel** | **Accesorios & Almacenamiento** | Bolsa de Minería en Cadena (54 ranuras profundas e imán de 8m), Anillo (2 ranuras) y Amuleto (4 ranuras) con soporte nativo para **Trinkets** (cinturón/cuello/pecho) o inventario. |
 | **Estaciones de Trabajo** | **Fabricación & Alquimia** | Forja en Cadena con GUI interactiva y automatización; Yunque Indestructible 3D con cresta dorada y 0 coste creciente; Fundidor Cósmico (x4 lingotes con tolvas automáticas); Altar Cósmico con 3 modos (Normal, Difícil, Pesadilla). |
-| **Jefes y Mundo** | **Encuentros Épicos** | 4 Jefes Supremos + 2 Mini-Jefes del Overworld con **escalado dinámico multijugador** (+35% vida, +15% daño por jugador), Mobs Infundidos en Nether y End, Invocadores, 3 Estructuras y Brújula de Resonancia. |
-| **Gemas & Reforjado** | **Personalización RPG** | 5 Gemas Arcanas (Sangre, Vacío, Núcleo, Génesis y Tierra) con **fusión de niveles Tier I, II y III** en Yunque, ranuras en armaduras y armas, 5 Prefijos aleatorios y 3 Encantamientos de área exclusivos. |
+| **Jefes y Mundo** | **Encuentros Épicos** | 4 Jefes Supremos + 2 Mini-Jefes del Overworld con **escalado dinámico multijugador** (+35% vida, +15% daño por jugador), Santuarios con protección de arena anti-griefing, Mobs Infundidos en Nether y End, Invocadores, Estructuras y Brújula de Resonancia. |
+| **Gemas & Reforjado** | **Personalización RPG** | 12 Gemas Arcanas, Utilitarias y Elementales con **fusión de niveles Tier I, II y III** en Yunque, ranuras en armaduras y armas, siluetas personalizadas, 5 Prefijos aleatorios y drops garantizados de jefes. |
 | **Compatibilidad & QoL** | **Soporte & Logros** | Árbol expandido de **Avances (Advancements)**, integración nativa con visor de recetas **EMI**, radar sonar de vetas, rescate del vacío con cooldown, auto-imán de drops, configuración JSON y Códice interactivo de 5 pestañas. |
 
 ---
@@ -73,16 +73,23 @@ Cada mineral requiere el lingote anterior para forjarse, creando una escalera in
 - **Azadas de Cultivo del Edén 9x9:** Convierten tierra en campos de cultivo fértiles e hidratados en radio 9x9 de un solo uso y cosechan cultivos maduros replantándolos automáticamente.
 
 ### Armas y Escudos Temáticos
-1. **Arco del Aliento de Dragón (Tier 115):** Dispara flechas teledirigidas envueltas en llamas dracónicas persistentes que generan nubes de daño de área.
-2. **Ballesta Galáctica (Tier 125):** Disparo estelar en abanico de 5 proyectiles a velocidad de la luz con recarga ultrarrápida.
-3. **6 Escudos Temáticos Especiales:**
+1. **6 Armas Míticas de Jefes (Habilidades Activas con Clic Derecho):**
+   - ❄️ **Hoja Glacial (`chainores:glacial_blade`):** Recompensa del Guardián Criogénico. Desata una *Nova Glacial* expansiva que congela e inmoviliza a los enemigos circundantes.
+   - 🌿 **Látigo de Zarzas (`chainores:bramble_whip`):** Recompensa del Titán Silvestre. Lanza raíces espinosas que atrapan a los enemigos en el suelo y provocan sangrado continuo.
+   - 🔱 **Tridente Abisal (`chainores:abyssal_trident`):** Recompensa del Guardián del Abismo. Canaliza ondas sónicas destructivas que atraviesan obstáculos e infligen daño abisal masivo.
+   - 🪓 **Hacha de Guerra Infernal (`chainores:infernal_waraxe`):** Recompensa del Behemoth del Nether. Abre una fisura en el suelo que detona en erupciones de fuego e inmolación profunda.
+   - 🌌 **Espada de la Singularidad (`chainores:singularity_blade`):** Recompensa del Coloso del Vacío. Genera un vórtice de colapso gravitacional que succiona y devora a los enemigos en un área cerrada.
+   - ☄️ **Cetro de Supernova (`chainores:supernova_scepter`):** Recompensa del Soberano Cósmico. Invoca un bombardeo celestial de meteoros estelares y pulsos luminosos de aniquilación cósmica.
+2. **Arco del Aliento de Dragón (Tier 115):** Dispara flechas teledirigidas envueltas en llamas dracónicas persistentes que generan nubes de daño de área.
+3. **Ballesta Galáctica (Tier 125):** Disparo estelar en abanico de 5 proyectiles a velocidad de la luz con recarga ultrarrápida.
+4. **6 Escudos Temáticos Especiales:**
    - *Escudo Centinela (T10):* Bloqueo firme con absorción temporal.
    - *Escudo de Escarcha (T30):* Onda glacial que congela y ralentiza a los atacantes.
    - *Escudo Égida de Esculcro (T70):* Refleja proyectiles (200% daño devuelto).
    - *Égida Abisal (T105):* Emite la onda sónica destructiva del Warden al bloquear impactos pesados.
    - *Baluarte Infernal (T135):* Inmola agresores cuerpo a cuerpo y prende fuego en radio de 5 bloques.
    - *Escudo Cósmico (T150):* Distorsión gravitatoria que repele y expulsa a los enemigos cercanos.
-4. **★ HERRAMIENTA UNIVERSAL DE LOS DIOSES (Tier 150):**
+5. **★ HERRAMIENTA UNIVERSAL DE LOS DIOSES (Tier 150):**
    - Fusiona pico 5x5, hacha forestal, pala y azada.
    - Mina **cualquier bloque del juego** a velocidad 65.
    - Inflige **120 de daño sagrado**, invoca rayos celestiales y sana al portador.
@@ -224,30 +231,57 @@ Para ofrecer una experiencia desafiante tanto en solitario como en servidores co
 
 ---
 
-## 💎 Gemas Engarzables (5 Tipos), Niveles (T1-T3), Reforje y Ranuras
+## 💎 Gemas Engarzables (12 Tipos), Niveles (T1-T3), Reforje y Ranuras
 
 ### Sistema de Niveles de Gemas (Tiers I, II y III)
-Combina dos gemas idénticas en el Yunque en Cadena para desbloquear niveles superiores:
-- 🩸 **Gema de Sangre (Carmesí):**
+Combina dos gemas idénticas en el Yunque en Cadena para desbloquear niveles superiores con texturas y siluetas únicas:
+
+#### 🔮 Gemas Arcanas Primordiales
+- 🩸 **Gema de Sangre (Blood Gem):**
   - *Tier I:* +15% Robo de vida y Regeneración I pasiva.
   - *Tier II:* +25% Robo de vida y Regeneración II continua.
-  - *Tier III:* Robo de vida letal masivo y Regeneración III con salvavidas.
-- 🌌 **Gema del Vacío:**
-  - *Tier I:* Inmunidad a caídas y levitación en enemigos.
-  - *Tier II:* Caída lenta continua al descender.
-  - *Tier III:* Planeo etéreo sostenido (*Ethereal Glide* al agacharse en el aire).
-- ⚡ **Gema del Núcleo:**
-  - *Tier I:* Inmunidad al fuego y Velocidad I.
-  - *Tier II:* Velocidad II y Prisa minera I.
-  - *Tier III:* Velocidad III, Prisa II e ignición expansiva en enemigos.
-- ☀️ **Gema del Génesis:**
-  - *Tier I:* Rayos sagrados en golpes críticos y +4 corazones de absorción.
-  - *Tier II:* +6 corazones de absorción y Fuerza I.
-  - *Tier III:* ¡Hasta **+10 Corazones Amarillos de Absorción** y Fuerza II permanente!
-- 🌿 **Gema de la Tierra (Utilidad y Minería):**
-  - *Tier I:* +25% velocidad minera, Prisa I pasiva en herramientas, Suerte I en armadura.
-  - *Tier II:* +40% velocidad minera, 25% de probabilidad de duplicar mineral y gemas minadas, Visión Nocturna y radar sísmico.
-  - *Tier III:* **+60% velocidad minera**, Prisa II permanente, **50% probabilidad de duplicar drops de minerales**, Suerte II continua y +4 de salud máxima.
+  - *Tier III:* Robo de vida letal masivo y Regeneración III con efecto salvavidas ante golpes fatales.
+- 🌌 **Gema del Vacío (Void Gem):**
+  - *Tier I:* Inmunidad a caídas, +15% daño y levitación en enemigos atacados.
+  - *Tier II:* Caída lenta continua al descender y +30% daño.
+  - *Tier III:* Planeo etéreo sostenido (*Ethereal Glide* al agacharse en el aire) y +45% daño.
+- ⚡ **Gema del Núcleo (Core Gem):**
+  - *Tier I:* Inmunidad al fuego, Velocidad I y +35% velocidad minera.
+  - *Tier II:* Velocidad II, Prisa minera I y +70% velocidad minera.
+  - *Tier III:* Velocidad III, Prisa II, +105% velocidad minera e ignición expansiva en enemigos.
+- ☀️ **Gema del Génesis (Genesis Gem):**
+  - *Tier I:* Rayos sagrados en golpes críticos, +25% daño y +4 corazones de absorción.
+  - *Tier II:* +50% daño, +6 corazones de absorción y Fuerza I.
+  - *Tier III:* ¡Hasta **+10 Corazones Amarillos de Absorción**, +75% daño masivo y Fuerza II permanente!
+
+#### 🛠️ Gemas Utilitarias, Minería y Automatización
+- 🌿 **Gema de la Tierra (Earth Gem):**
+  - *Tier I:* +25% a +40% velocidad minera, Prisa I pasiva en herramientas, Suerte I en armadura.
+  - *Tier II:* +40% a +80% velocidad minera, 25% de probabilidad de duplicar mineral y gemas minadas, Visión Nocturna y radar sísmico.
+  - *Tier III:* **+60% a +120% velocidad minera**, Prisa II permanente, **50% probabilidad de duplicar drops de minerales**, Suerte II continua y +4 de salud máxima.
+- 🔊 **Gema del Eco (Echo Gem):**
+  - *Herramientas:* Pulso de ecolocalización que resalta entidades a través de muros y +30% a +90% velocidad de minado.
+  - *Armaduras:* Inmunidad total a Ceguera y Oscuridad del Warden/Sculk; Visión Nocturna subterránea y radar pasivo de hostiles en 8-24m.
+- 🧲 **Gema Magnética (Magnet Gem):**
+  - *Herramientas:* **Recolección directa al inventario** (los drops no caen a la lava). En **Tier II y III añade Auto-Fundición progresiva** de minerales de vainilla y los 150 tiers del mod con bonus de XP.
+  - *Armaduras:* Vacío magnético de ítems y orbes en radio de 6 a 18 bloques. En Tier II y III despliega un campo deflector cinético que desvía proyectiles.
+- ⏳ **Gema Crono / Temporal (Chrono Gem):**
+  - *Herramientas:* Celeridad temporal en minería. Al impactar enemigos aplica congelación temporal (Stasis / Lentitud severa).
+  - *Armaduras:* **Auto-reparación temporal pasiva** (restaura la durabilidad del equipo y herramientas con el tiempo) y aceleración del crecimiento de cultivos en radio 5x5 a 7x7.
+
+#### ⚔️ Gemas Elementales de Combate
+- ❄️ **Gema de Escarcha (Frost Gem):**
+  - *Herramientas/Armas:* Congelación profunda al atacar, ralentización progresiva y +15% daño por tier.
+  - *Armaduras:* Inmunidad absoluta a congelación y aura glacial que ralentiza atacantes cuerpo a cuerpo.
+- 🌩️ **Gema de la Tormenta (Storm Gem):**
+  - *Herramientas/Armas:* Convoca relámpagos devastadores en golpes críticos y electrocuta a objetivos adyacentes (+15% daño por tier).
+  - *Armaduras:* Velocidad de movimiento incrementada y amortiguación estática.
+- 🧪 **Gema de Veneno (Venom Gem):**
+  - *Herramientas/Armas:* Inoculación de toxina mortal en área, debilidad y marchitamiento a enemigos (+10% daño por tier).
+  - *Armaduras:* Inmunidad total a Veneno y efecto pasivo de espinas venenosas.
+- 🔥 **Gema Solar (Solar Gem):**
+  - *Herramientas/Armas:* Ignición solar explosiva, llamaradas celestiales y daño de fuego divino.
+  - *Armaduras:* Visión Nocturna pasiva en profundidades (Y < 60) e inmunidad prolongada al fuego.
 
 ### Ranuras de Gemas en Equipamiento
 - **Armaduras y Herramientas estándar:** T1-9 (0 ranuras) | T10-39 (1 ranura) | T40-79 (2 ranuras) | T80-135 (3 ranuras) | T136-150 (4 ranuras).
