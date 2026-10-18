@@ -41,7 +41,23 @@ public class GemItem extends Item {
         CHRONO("Gema Crono", Formatting.GOLD, "Dilatación Temporal y Auto-Reparación",
                 new String[]{"+25% vel. minera/ataque y auto-repara la durabilidad del ítem cada 3s", "+50% vel. minera/ataque, auto-repara cada 1.5s y probabilidad de estasis temporal", "+75% vel. minera/ataque, auto-reparación continua (0.5s) y congelación temporal de enemigos"},
                 new String[]{"Aceleración de crecimiento vegetal (3x3) y acelera fundición en hornos cercanos (2x)", "Aceleración vegetal (5x5), hornos (3x) y auto-repara armaduras equipadas pasivamente", "Aceleración vegetal (7x7), hornos (5x), auto-reparación total y Prisa/Velocidad temporal constante"},
-                "Encapsula un fragmento detenido del tejido mismo del flujo del tiempo.");
+                "Encapsula un fragmento detenido del tejido mismo del flujo del tiempo."),
+        FROST("Gema Glacial", Formatting.AQUA, "Cero Absoluto Criogénico",
+                new String[]{"+25% daño criogénico, congelación (5s) y Lentitud II", "+50% daño criogénico, congelación (8s) y fragmentación de hielo en área", "+100% daño criogénico, congelación instantánea (12s) y explosión glacial masiva"},
+                new String[]{"Inmunidad al frío/nieve en polvo y efecto Caminante de Hielo", "Inmunidad al frío, Caminante de Hielo y contraataque que congela al atacante", "Inmunidad total, Caminante de Hielo y Aura de Ventisca continua en 6 bloques"},
+                "Cristal polar eterno extraído del corazón de los glaciares."),
+        STORM("Gema de la Tempestad", Formatting.YELLOW, "Descarga Voltaica en Cadena",
+                new String[]{"+20% daño y arco eléctrico que salta a 2 enemigos cercanos", "+45% daño, arco eléctrico a 4 enemigos y chispas de aturdimiento", "+80% daño eléctrico, arco a 7 enemigos y llamada de relámpago celestial"},
+                new String[]{"+15% velocidad de movimiento e inmunidad a daño por rayos", "+25% velocidad, Salto I y espinas eléctricas que repelen atacantes", "+40% velocidad, Salto II, inmunidad a rayos y aura de estática continua (4m)"},
+                "Condensa la furia pura de una tormenta eléctrica primordial."),
+        VENOM("Gema de Veneno", Formatting.DARK_GREEN, "Corrosión Ácida y Neurotoxina",
+                new String[]{"Infecta con Veneno II (5s) y reduce la armadura del objetivo -20%", "Veneno III + Wither I (6s), funde armadura -40% y charco ácido", "Veneno IV + Wither II (8s), funde armadura -60% y plaga contagiosa"},
+                new String[]{"Inmunidad total a Veneno y Hambre putrefacta", "Inmunidad a Veneno, Wither y efectos negativos en cuevas", "Caparazón Tóxico: Inmunidad total y nube de esporas venenosas al recibir daño"},
+                "Gema viscosa destilada del veneno de las bestias más letales."),
+        SOLAR("Gema Solar", Formatting.GOLD, "Purificación Radiante del Amanecer",
+                new String[]{"+50% daño a No-Muertos e ilumina objetivos con Brillo radiante", "+100% daño a No-Muertos, Fuego Solar continuo y ceguera al objetivo", "+180% daño a No-Muertos, desintegración letal (<30% vida) y pulso solar"},
+                new String[]{"Fotosíntesis: regenera hambre y saturación bajo la luz del sol", "Fotosíntesis + Regeneración I bajo el sol y Visión Nocturna en cuevas", "Avatar Solar: regeneración vital acelerada, aura que quema no-muertos cercanos"},
+                "Fragmento tallado a partir de una corona solar pura.");
 
         public final String displayName;
         public final Formatting color;

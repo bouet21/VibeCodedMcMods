@@ -1,0 +1,8 @@
+{
+  "parent": "chainores:block/boss_trophy_template",
+  "textures": {
+    "base": "chainores:block/cosmic_altar_side",
+    "post": "chainores:block/cosmic_altar_bottom",
+    "top": "chainores:block/cosmic_altar_top"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "boss.spawn": {
+    "subtitle": "subtitles.chainores.boss_spawn",
+    "sounds": [
+      "minecraft:entity/wither/spawn",
+      "minecraft:item/trident/thunder"
+    ]
+  },
+  "boss.death": {
+    "subtitle": "subtitles.chainores.boss_death",
+    "sounds": [
+      "minecraft:entity/generic/explode",
+      "minecraft:ui/toast/challenge_complete"
+    ]
+  },
+  "weapon.glacial_blade": {
+    "subtitle": "subtitles.chainores.glacial_blade",
+    "sounds": [
+      "minecraft:block/glass/break",
+      "minecraft:entity/player/hurt_freeze"
+    ]
+  },
+  "weapon.bramble_whip": {
+    "subtitle": "subtitles.chainores.bramble_whip",
+    "sounds": [
+      "minecraft:block/vine/step",
+      "minecraft:entity/evoker/fangs_attack"
+    ]
+  },
+  "weapon.abyssal_trident": {
+    "subtitle": "subtitles.chainores.abyssal_trident",
+    "sounds": [
+      "minecraft:entity/warden/sonic_boom"
+    ]
+  },
+  "weapon.infernal_waraxe": {
+    "subtitle": "subtitles.chainores.infernal_waraxe",
+    "sounds": [
+      "minecraft:entity/blaze/shoot",
+      "minecraft:item/firecharge/use"
+    ]
+  },
+  "weapon.singularity_blade": {
+    "subtitle": "subtitles.chainores.singularity_blade",
+    "sounds": [
+      "minecraft:entity/enderman/teleport",
+      "minecraft:block/respawn_anchor/deplete"
+    ]
+  },
+  "weapon.supernova_scepter": {
+    "subtitle": "subtitles.chainores.supernova_scepter",
+    "sounds": [
+      "minecraft:entity/lightning_bolt/thunder",
+      "minecraft:ui/toast/challenge_complete"
+    ]
+  },
+  "block.trophy_beacon": {
+    "subtitle": "subtitles.chainores.trophy_beacon",
+    "sounds": [
+      "minecraft:block/beacon/power_select",
+      "minecraft:block/amethyst_block/chime"
+    ]
+  }
+}

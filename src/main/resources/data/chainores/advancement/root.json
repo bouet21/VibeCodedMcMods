@@ -3,7 +3,7 @@
     "icon": {"id": "chainores:guide_book"},
     "title": {"text": "La Cadena Eterna"},
     "description": {"text": "Comienza tu viaje a través de los 150 minerales progresivos"},
-    "background": "minecraft:textures/block/deepslate.png",
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,

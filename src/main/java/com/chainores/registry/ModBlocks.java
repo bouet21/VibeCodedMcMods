@@ -31,7 +31,33 @@ public class ModBlocks {
         return 0;
     }
 
+    public static Block GLACIAL_TROPHY_BLOCK;
+    public static Block SYLVA_TROPHY_BLOCK;
+    public static Block ABYSSAL_TROPHY_BLOCK;
+    public static Block INFERNAL_TROPHY_BLOCK;
+    public static Block VOID_TROPHY_BLOCK;
+    public static Block COSMIC_TROPHY_BLOCK;
+    public static net.minecraft.block.entity.BlockEntityType<com.chainores.block.entity.BossTrophyBlockEntity> BOSS_TROPHY_BLOCK_ENTITY;
+
     public static void initialize() {
+        // Register 6 Boss Trophy Blocks
+        GLACIAL_TROPHY_BLOCK = registerTrophy("glacial_trophy", com.chainores.block.BossTrophyBlock.TrophyType.GLACIAL);
+        SYLVA_TROPHY_BLOCK = registerTrophy("sylva_trophy", com.chainores.block.BossTrophyBlock.TrophyType.SYLVA);
+        ABYSSAL_TROPHY_BLOCK = registerTrophy("abyssal_trophy", com.chainores.block.BossTrophyBlock.TrophyType.ABYSSAL);
+        INFERNAL_TROPHY_BLOCK = registerTrophy("infernal_trophy", com.chainores.block.BossTrophyBlock.TrophyType.INFERNAL);
+        VOID_TROPHY_BLOCK = registerTrophy("void_trophy", com.chainores.block.BossTrophyBlock.TrophyType.VOID);
+        COSMIC_TROPHY_BLOCK = registerTrophy("cosmic_trophy", com.chainores.block.BossTrophyBlock.TrophyType.COSMIC);
+
+        BOSS_TROPHY_BLOCK_ENTITY = Registry.register(
+                Registries.BLOCK_ENTITY_TYPE,
+                ChainOresMod.id("boss_trophy"),
+                net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                        com.chainores.block.entity.BossTrophyBlockEntity::new,
+                        GLACIAL_TROPHY_BLOCK, SYLVA_TROPHY_BLOCK, ABYSSAL_TROPHY_BLOCK,
+                        INFERNAL_TROPHY_BLOCK, VOID_TROPHY_BLOCK, COSMIC_TROPHY_BLOCK
+                ).build()
+        );
+
         for (OreTier ore : OreRegistryData.TIERS) {
             RegistryKey<Block> oreKey = RegistryKey.of(RegistryKeys.BLOCK, ChainOresMod.id("ore_tier_" + ore.tier));
 
@@ -77,5 +103,16 @@ public class ModBlocks {
         }
 
         ChainOresMod.LOGGER.info("Registered 300 blocks with required registry keys, dynamic luminance and particles for 1.21.11.");
+    }
+
+    private static Block registerTrophy(String path, com.chainores.block.BossTrophyBlock.TrophyType type) {
+        RegistryKey<Block> key = RegistryKey.of(RegistryKeys.BLOCK, ChainOresMod.id(path));
+        AbstractBlock.Settings settings = AbstractBlock.Settings.copy(Blocks.OBSIDIAN)
+                .registryKey(key)
+                .strength(4.0f, 1200.0f)
+                .nonOpaque()
+                .luminance(state -> 10)
+                .requiresTool();
+        return Registry.register(Registries.BLOCK, key, new com.chainores.block.BossTrophyBlock(type, settings));
     }
 }

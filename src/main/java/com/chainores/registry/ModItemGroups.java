@@ -39,7 +39,11 @@ public class ModItemGroups {
                     entries.add(ModWorkstations.COSMIC_SMELTER_ITEM);
                     entries.add(ModWorkstations.COSMIC_ALTAR_ITEM);
 
-                    // Boss Summoners and Milestone Transition Catalysts
+                    // Boss Summoners & Progression Catalysts
+                    entries.add(ModBossItems.GLACIAL_HORN);
+                    entries.add(ModBossItems.GLACIAL_CATALYST);
+                    entries.add(ModBossItems.VERDANT_HEART);
+                    entries.add(ModBossItems.SYLVA_CATALYST);
                     entries.add(ModBossItems.ABYSSAL_EYE);
                     entries.add(ModBossItems.ABYSSAL_CATALYST);
                     entries.add(ModBossItems.FLAME_HEART);
@@ -48,6 +52,21 @@ public class ModItemGroups {
                     entries.add(ModBossItems.VOID_SHARD);
                     entries.add(ModBossItems.COSMIC_ALTAR_CORE);
                     entries.add(ModBossItems.COSMIC_SINGULARITY);
+
+                    // Mythic Boss Weapons (Active Skills)
+                    entries.add(ModBossItems.GLACIAL_BLADE);
+                    entries.add(ModBossItems.BRAMBLE_WHIP);
+                    entries.add(ModBossItems.ABYSSAL_TRIDENT);
+                    entries.add(ModBossItems.INFERNAL_WARAXE);
+                    entries.add(ModBossItems.SINGULARITY_BLADE);
+                    entries.add(ModBossItems.SUPERNOVA_SCEPTER);
+
+                    // 3D Boss Base Trophies (Beacon Auras)
+                    entries.add(ModBossItems.GLACIAL_TROPHY);
+                    entries.add(ModBossItems.SYLVA_TROPHY);
+                    entries.add(ModBossItems.ABYSSAL_TROPHY);
+                    entries.add(ModBossItems.INFERNAL_TROPHY);
+                    entries.add(ModBossItems.VOID_TROPHY);
                     entries.add(ModBossItems.COSMIC_TROPHY);
 
                     // Phase 4 & 5 Socketable Gems (Tiers I, II, III)
@@ -82,6 +101,22 @@ public class ModItemGroups {
                     entries.add(ModGems.CHRONO_GEM);
                     entries.add(ModGems.CHRONO_GEM_2);
                     entries.add(ModGems.CHRONO_GEM_3);
+
+                    entries.add(ModGems.FROST_GEM);
+                    entries.add(ModGems.FROST_GEM_2);
+                    entries.add(ModGems.FROST_GEM_3);
+
+                    entries.add(ModGems.STORM_GEM);
+                    entries.add(ModGems.STORM_GEM_2);
+                    entries.add(ModGems.STORM_GEM_3);
+
+                    entries.add(ModGems.VENOM_GEM);
+                    entries.add(ModGems.VENOM_GEM_2);
+                    entries.add(ModGems.VENOM_GEM_3);
+
+                    entries.add(ModGems.SOLAR_GEM);
+                    entries.add(ModGems.SOLAR_GEM_2);
+                    entries.add(ModGems.SOLAR_GEM_3);
 
                     // Trinkets & Accessories
                     entries.add(ModItems.CHAIN_RING);

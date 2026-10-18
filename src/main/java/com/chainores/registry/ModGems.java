@@ -59,6 +59,30 @@ public class ModGems {
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chrono_gem")))
     ));
 
+    public static final Item FROST_GEM = register("frost_gem", new GemItem(
+            GemItem.GemType.FROST, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("frost_gem")))
+    ));
+
+    public static final Item STORM_GEM = register("storm_gem", new GemItem(
+            GemItem.GemType.STORM, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("storm_gem")))
+    ));
+
+    public static final Item VENOM_GEM = register("venom_gem", new GemItem(
+            GemItem.GemType.VENOM, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("venom_gem")))
+    ));
+
+    public static final Item SOLAR_GEM = register("solar_gem", new GemItem(
+            GemItem.GemType.SOLAR, 1,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("solar_gem")))
+    ));
+
     // Tier II
     public static final Item BLOOD_GEM_2 = register("blood_gem_2", new GemItem(
             GemItem.GemType.BLOOD, 2,
@@ -106,6 +130,30 @@ public class ModGems {
             GemItem.GemType.CHRONO, 2,
             new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chrono_gem_2")))
+    ));
+
+    public static final Item FROST_GEM_2 = register("frost_gem_2", new GemItem(
+            GemItem.GemType.FROST, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("frost_gem_2")))
+    ));
+
+    public static final Item STORM_GEM_2 = register("storm_gem_2", new GemItem(
+            GemItem.GemType.STORM, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("storm_gem_2")))
+    ));
+
+    public static final Item VENOM_GEM_2 = register("venom_gem_2", new GemItem(
+            GemItem.GemType.VENOM, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.RARE)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("venom_gem_2")))
+    ));
+
+    public static final Item SOLAR_GEM_2 = register("solar_gem_2", new GemItem(
+            GemItem.GemType.SOLAR, 2,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("solar_gem_2")))
     ));
 
     // Tier III (Transcendent)
@@ -157,6 +205,30 @@ public class ModGems {
                     .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("chrono_gem_3")))
     ));
 
+    public static final Item FROST_GEM_3 = register("frost_gem_3", new GemItem(
+            GemItem.GemType.FROST, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("frost_gem_3")))
+    ));
+
+    public static final Item STORM_GEM_3 = register("storm_gem_3", new GemItem(
+            GemItem.GemType.STORM, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("storm_gem_3")))
+    ));
+
+    public static final Item VENOM_GEM_3 = register("venom_gem_3", new GemItem(
+            GemItem.GemType.VENOM, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("venom_gem_3")))
+    ));
+
+    public static final Item SOLAR_GEM_3 = register("solar_gem_3", new GemItem(
+            GemItem.GemType.SOLAR, 3,
+            new Item.Settings().maxCount(16).rarity(Rarity.EPIC)
+                    .registryKey(RegistryKey.of(RegistryKeys.ITEM, ChainOresMod.id("solar_gem_3")))
+    ));
+
     public static boolean isGem(Item item) {
         return item instanceof GemItem;
     }
@@ -185,6 +257,18 @@ public class ModGems {
 
         if (item == CHRONO_GEM) return CHRONO_GEM_2;
         if (item == CHRONO_GEM_2) return CHRONO_GEM_3;
+
+        if (item == FROST_GEM) return FROST_GEM_2;
+        if (item == FROST_GEM_2) return FROST_GEM_3;
+
+        if (item == STORM_GEM) return STORM_GEM_2;
+        if (item == STORM_GEM_2) return STORM_GEM_3;
+
+        if (item == VENOM_GEM) return VENOM_GEM_2;
+        if (item == VENOM_GEM_2) return VENOM_GEM_3;
+
+        if (item == SOLAR_GEM) return SOLAR_GEM_2;
+        if (item == SOLAR_GEM_2) return SOLAR_GEM_3;
 
         return null;
     }
@@ -221,6 +305,22 @@ public class ModGems {
         if (item == CHRONO_GEM) return "chrono_gem";
         if (item == CHRONO_GEM_2) return "chrono_gem_2";
         if (item == CHRONO_GEM_3) return "chrono_gem_3";
+
+        if (item == FROST_GEM) return "frost_gem";
+        if (item == FROST_GEM_2) return "frost_gem_2";
+        if (item == FROST_GEM_3) return "frost_gem_3";
+
+        if (item == STORM_GEM) return "storm_gem";
+        if (item == STORM_GEM_2) return "storm_gem_2";
+        if (item == STORM_GEM_3) return "storm_gem_3";
+
+        if (item == VENOM_GEM) return "venom_gem";
+        if (item == VENOM_GEM_2) return "venom_gem_2";
+        if (item == VENOM_GEM_3) return "venom_gem_3";
+
+        if (item == SOLAR_GEM) return "solar_gem";
+        if (item == SOLAR_GEM_2) return "solar_gem_2";
+        if (item == SOLAR_GEM_3) return "solar_gem_3";
 
         return null;
     }

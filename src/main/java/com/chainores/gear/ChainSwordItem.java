@@ -107,6 +107,54 @@ public class ChainSwordItem extends Item {
             } else if (com.chainores.modifier.ChainModifiers.GEM_CHRONO.equals(base)) {
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40 * gemTier, 3));
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 40 * gemTier, 1));
+            } else if (com.chainores.modifier.ChainModifiers.GEM_FROST.equals(base)) {
+                target.setFrozenTicks(120 * gemTier);
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60 * gemTier, Math.min(gemTier, 3)));
+                target.damage(world, attacker.getDamageSources().freeze(), 10.0f * gemTier);
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.SNOWFLAKE, target.getX(), target.getY() + 1.0, target.getZ(), 8 * gemTier, 0.3, 0.4, 0.3, 0.05);
+                if (gemTier >= 2) {
+                    Box frostBox = target.getBoundingBox().expand(3.0 * gemTier);
+                    for (LivingEntity nearby : world.getEntitiesByClass(LivingEntity.class, frostBox, e -> e != target && e != attacker && e.isAlive() && !(e instanceof PlayerEntity))) {
+                        nearby.setFrozenTicks(80 * gemTier);
+                        nearby.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40 * gemTier, 1));
+                    }
+                }
+            } else if (com.chainores.modifier.ChainModifiers.GEM_STORM.equals(base)) {
+                Box arcBox = target.getBoundingBox().expand(4.0 + 2.0 * gemTier);
+                int maxJumps = 2 * gemTier;
+                int jumped = 0;
+                for (LivingEntity nearby : world.getEntitiesByClass(LivingEntity.class, arcBox, e -> e != target && e != attacker && e.isAlive() && !(e instanceof PlayerEntity))) {
+                    if (jumped++ >= maxJumps) break;
+                    nearby.damage(world, attacker.getDamageSources().magic(), 8.0f * gemTier);
+                    nearby.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 30, 0));
+                    world.spawnParticles(net.minecraft.particle.ParticleTypes.ELECTRIC_SPARK, nearby.getX(), nearby.getY() + 1.0, nearby.getZ(), 6, 0.2, 0.2, 0.2, 0.1);
+                }
+                if (gemTier >= 3) {
+                    LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.TRIGGERED);
+                    if (bolt != null) {
+                        bolt.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
+                        bolt.setCosmetic(true);
+                        world.spawnEntity(bolt);
+                    }
+                }
+            } else if (com.chainores.modifier.ChainModifiers.GEM_VENOM.equals(base)) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 + 30 * gemTier, gemTier - 1));
+                if (gemTier >= 2) {
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 50 * gemTier, 0));
+                }
+                target.damage(world, attacker.getDamageSources().magic(), 7.0f * gemTier);
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.ITEM_SLIME, target.getX(), target.getY() + 1.0, target.getZ(), 5 * gemTier, 0.2, 0.3, 0.2, 0.05);
+            } else if (com.chainores.modifier.ChainModifiers.GEM_SOLAR.equals(base)) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 100 * gemTier, 0));
+                if (target.getType().isIn(net.minecraft.registry.tag.EntityTypeTags.UNDEAD)) {
+                    float undeadBonus = 16.0f * gemTier;
+                    target.damage(world, attacker.getDamageSources().magic(), undeadBonus);
+                    target.setOnFireFor(6 * gemTier);
+                }
+                if (gemTier >= 2) {
+                    target.setOnFireFor(5 * gemTier);
+                }
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.FLAME, target.getX(), target.getY() + 1.0, target.getZ(), 6 * gemTier, 0.2, 0.3, 0.2, 0.05);
             }
         }
 

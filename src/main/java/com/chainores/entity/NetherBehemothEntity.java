@@ -29,6 +29,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -42,6 +43,9 @@ public class NetherBehemothEntity extends HostileEntity {
     private int chargeCooldown = 150;
     private boolean isEnraged = false;
     private int scaledPlayerCount = 1;
+    private BlockPos domainOrigin = null;
+    private boolean isDying = false;
+    private int deathTicks = 0;
 
     public NetherBehemothEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -82,6 +86,19 @@ public class NetherBehemothEntity extends HostileEntity {
 
     @Override
     public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        if (this.isDying) {
+            return false;
+        }
+        if (amount >= this.getHealth()) {
+            this.isDying = true;
+            this.setHealth(1.0f);
+            this.setInvulnerable(true);
+            this.bossBar.setPercent(0.0f);
+            world.playSound(null, this.getX(), this.getY(), this.getZ(),
+                    SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.8f, 0.7f);
+            return true;
+        }
+
         boolean damaged = super.damage(world, source, amount);
         if (damaged && source.getAttacker() instanceof LivingEntity attacker && attacker != this) {
             // Molten Thorns: burns close attackers
@@ -114,6 +131,20 @@ public class NetherBehemothEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+
+        if (this.domainOrigin == null) {
+            this.domainOrigin = this.getBlockPos();
+        }
+
+        if (this.isDying) {
+            this.deathTicks++;
+            BossCinematicsHelper.tickBossDeath(this, world, this.deathTicks, ParticleTypes.FLAME, () -> {
+                dropLootAndFinish(world);
+            });
+            return;
+        }
+
+        BossArenaHelper.enforceDomain(this, world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.FLAME);
         this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 950.0, 42.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
@@ -234,6 +265,7 @@ public class NetherBehemothEntity extends HostileEntity {
 
     private void executeMeteorRain(ServerWorld world, LivingEntity target) {
         world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GHAST_SHOOT, SoundCategory.HOSTILE, 2.0f, 0.7f);
+        BossCinematicsHelper.triggerScreenShake(world, this.getEntityPos(), 26.0, 0.28);
 
         int meteors = isEnraged ? 4 : 2;
         for (int i = 0; i < meteors; i++) {
@@ -273,6 +305,7 @@ public class NetherBehemothEntity extends HostileEntity {
     private void executeMagmaQuake(ServerWorld world) {
         world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.HOSTILE, 2.0f, 0.6f);
         world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.HOSTILE, 1.5f, 0.8f);
+        BossCinematicsHelper.triggerScreenShake(world, this.getEntityPos(), 22.0, 0.25);
 
         // Ring of flame particles
         for (int angle = 0; angle < 360; angle += 15) {
@@ -308,13 +341,18 @@ public class NetherBehemothEntity extends HostileEntity {
         this.bossBar.removePlayer(player);
     }
 
-    @Override
-    protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
-        super.dropLoot(world, damageSource, causedByPlayer);
-        this.dropStack(world, new ItemStack(ModBossItems.NETHER_CORE, 1 + world.random.nextInt(2)));
-        if (OreRegistryData.TIERS.size() >= 105) {
-            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(104).ingotItem, 4 + world.random.nextInt(5)));
+    private void dropLootAndFinish(ServerWorld world) {
+        if (this.domainOrigin != null) {
+            BossArenaHelper.breakDomain(world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.FLAME);
         }
+        this.dropStack(world, new ItemStack(ModBossItems.NETHER_CORE, 2));
+        this.dropStack(world, new ItemStack(ModBossItems.INFERNAL_WARAXE, 1));
+        this.dropStack(world, new ItemStack(ModBossItems.INFERNAL_TROPHY, 1));
+        if (OreRegistryData.TIERS.size() >= 105) {
+            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(104).ingotItem, 6));
+        }
+        this.bossBar.clearPlayers();
+        this.discard();
     }
 
     @Override

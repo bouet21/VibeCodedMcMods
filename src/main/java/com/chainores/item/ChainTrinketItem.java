@@ -50,6 +50,10 @@ public abstract class ChainTrinketItem extends Item {
         int echoPower = 0;
         int magnetPower = 0;
         int chronoPower = 0;
+        int frostPower = 0;
+        int stormPower = 0;
+        int venomPower = 0;
+        int solarPower = 0;
 
         for (String gem : gems) {
             String base = ChainModifiers.getBaseGemType(gem);
@@ -63,6 +67,10 @@ public abstract class ChainTrinketItem extends Item {
                 case ChainModifiers.GEM_ECHO -> echoPower += tier;
                 case ChainModifiers.GEM_MAGNET -> magnetPower += tier;
                 case ChainModifiers.GEM_CHRONO -> chronoPower += tier;
+                case ChainModifiers.GEM_FROST -> frostPower += tier;
+                case ChainModifiers.GEM_STORM -> stormPower += tier;
+                case ChainModifiers.GEM_VENOM -> venomPower += tier;
+                case ChainModifiers.GEM_SOLAR -> solarPower += tier;
             }
         }
 
@@ -149,7 +157,77 @@ public abstract class ChainTrinketItem extends Item {
             }
         }
 
-        // 5. Reforge Buffs
+        // 9. Frost Gem: Absolute Zero Immunity & Frost Aura
+        if (frostPower > 0) {
+            player.setFrozenTicks(0);
+            net.minecraft.util.math.BlockPos under = player.getBlockPos().down();
+            if (player.getEntityWorld().getBlockState(under).isOf(net.minecraft.block.Blocks.WATER) && player.isOnGround()) {
+                player.getEntityWorld().setBlockState(under, net.minecraft.block.Blocks.FROSTED_ICE.getDefaultState());
+            }
+            if (frostPower >= 2 && player.age % 40 == 0 && player.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld sw) {
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(3.0 + frostPower);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e != player && e.isAlive() && !(e instanceof net.minecraft.entity.player.PlayerEntity))) {
+                    target.setFrozenTicks(Math.max(target.getFrozenTicks(), 100));
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1, true, false));
+                }
+            }
+        }
+
+        // 10. Storm Gem: Lightning Speed & Static Aura
+        if (stormPower > 0) {
+            int spdAmp = Math.min(stormPower - 1, 2);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 60, spdAmp, true, false, true));
+            if (stormPower >= 2) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 60, 1, true, false, true));
+            }
+            if (stormPower >= 2 && player.age % 30 == 0 && player.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld sw) {
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(4.0);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e != player && e.isAlive() && !(e instanceof net.minecraft.entity.player.PlayerEntity))) {
+                    target.damage(sw, player.getDamageSources().magic(), 4.0f * stormPower);
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.ELECTRIC_SPARK, target.getX(), target.getY() + 1.0, target.getZ(), 5, 0.2, 0.2, 0.2, 0.1);
+                }
+            }
+        }
+
+        // 11. Venom Gem: Toxin Immunity & Corrosive Spore Aura
+        if (venomPower > 0) {
+            if (player.hasStatusEffect(StatusEffects.POISON)) player.removeStatusEffect(StatusEffects.POISON);
+            if (player.hasStatusEffect(StatusEffects.HUNGER)) player.removeStatusEffect(StatusEffects.HUNGER);
+            if (venomPower >= 2 && player.hasStatusEffect(StatusEffects.WITHER)) player.removeStatusEffect(StatusEffects.WITHER);
+            if (player.age % 50 == 0 && player.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld sw) {
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(3.0 + venomPower);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e != player && e.isAlive() && !(e instanceof net.minecraft.entity.player.PlayerEntity))) {
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 80, Math.min(venomPower - 1, 2), true, false));
+                }
+            }
+        }
+
+        // 12. Solar Gem: Sunfire Photosynthesis & Undead Smite
+        if (solarPower > 0) {
+            boolean isDay = player.getEntityWorld().isDay();
+            boolean isSky = player.getEntityWorld().isSkyVisible(player.getBlockPos());
+            if (isDay && isSky) {
+                if (player.age % 40 == 0) {
+                    player.getHungerManager().add(1, 0.5f);
+                }
+                if (solarPower >= 2) {
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 60, 0, true, false, true));
+                }
+            }
+            if (solarPower >= 2 && player.getY() < 60) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, 260, 0, true, false, true));
+            }
+            if (solarPower >= 3 && player.age % 40 == 0 && player.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld sw) {
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(8.0);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e.getType().isIn(net.minecraft.registry.tag.EntityTypeTags.UNDEAD) && e.isAlive())) {
+                    target.setOnFireFor(5);
+                    target.damage(sw, player.getDamageSources().onFire(), 8.0f);
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.FLAME, target.getX(), target.getY() + 1.0, target.getZ(), 4, 0.2, 0.3, 0.2, 0.05);
+                }
+            }
+        }
+
+        // Reforge Buffs
         String reforge = ChainModifiers.getReforge(stack);
         if (reforge != null) {
             switch (reforge) {

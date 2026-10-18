@@ -1,0 +1,8 @@
+{
+  "parent": "chainores:block/boss_trophy_template",
+  "textures": {
+    "base": "minecraft:block/packed_ice",
+    "post": "minecraft:block/snow",
+    "top": "minecraft:block/blue_ice"
+  }
+}

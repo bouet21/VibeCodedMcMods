@@ -29,6 +29,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -40,6 +41,9 @@ public class SylvaAncientEntity extends HostileEntity {
     private int rootCooldown = 100;
     private int quakeCooldown = 140;
     private int scaledPlayerCount = 1;
+    private BlockPos domainOrigin = null;
+    private boolean isDying = false;
+    private int deathTicks = 0;
 
     public SylvaAncientEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -75,6 +79,23 @@ public class SylvaAncientEntity extends HostileEntity {
     }
 
     @Override
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        if (this.isDying) {
+            return false;
+        }
+        if (amount >= this.getHealth()) {
+            this.isDying = true;
+            this.setHealth(1.0f);
+            this.setInvulnerable(true);
+            this.bossBar.setPercent(0.0f);
+            world.playSound(null, this.getX(), this.getY(), this.getZ(),
+                    SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.5f, 1.0f);
+            return true;
+        }
+        return super.damage(world, source, amount);
+    }
+
+    @Override
     public boolean tryAttack(ServerWorld world, Entity target) {
         boolean success = super.tryAttack(world, target);
         if (success && target instanceof LivingEntity living) {
@@ -89,6 +110,20 @@ public class SylvaAncientEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+
+        if (this.domainOrigin == null) {
+            this.domainOrigin = this.getBlockPos();
+        }
+
+        if (this.isDying) {
+            this.deathTicks++;
+            BossCinematicsHelper.tickBossDeath(this, world, this.deathTicks, ParticleTypes.HAPPY_VILLAGER, () -> {
+                dropLootAndFinish(world);
+            });
+            return;
+        }
+
+        BossArenaHelper.enforceDomain(this, world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.HAPPY_VILLAGER);
         this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 480.0, 24.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
@@ -135,6 +170,7 @@ public class SylvaAncientEntity extends HostileEntity {
     private void performGaiaQuake(ServerWorld world) {
         world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.HOSTILE, 1.5f, 0.7f);
         world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.HOSTILE, 1.2f, 0.5f);
+        BossCinematicsHelper.triggerScreenShake(world, this.getEntityPos(), 22.0, 0.25);
 
         Box box = this.getBoundingBox().expand(8.0, 2.0, 8.0);
         List<LivingEntity> enemies = world.getEntitiesByClass(LivingEntity.class, box,
@@ -161,13 +197,18 @@ public class SylvaAncientEntity extends HostileEntity {
         this.bossBar.removePlayer(player);
     }
 
-    @Override
-    protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
-        super.dropLoot(world, damageSource, causedByPlayer);
-        this.dropStack(world, new ItemStack(ModBossItems.SYLVA_CATALYST, 1 + world.random.nextInt(2)));
-        if (OreRegistryData.TIERS.size() >= 40) {
-            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(39).ingotItem, 4 + world.random.nextInt(5)));
+    private void dropLootAndFinish(ServerWorld world) {
+        if (this.domainOrigin != null) {
+            BossArenaHelper.breakDomain(world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.HAPPY_VILLAGER);
         }
+        this.dropStack(world, new ItemStack(ModBossItems.SYLVA_CATALYST, 2));
+        this.dropStack(world, new ItemStack(ModBossItems.BRAMBLE_WHIP, 1));
+        this.dropStack(world, new ItemStack(ModBossItems.SYLVA_TROPHY, 1));
+        if (OreRegistryData.TIERS.size() >= 40) {
+            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(39).ingotItem, 6));
+        }
+        this.bossBar.clearPlayers();
+        this.discard();
     }
 
     @Override

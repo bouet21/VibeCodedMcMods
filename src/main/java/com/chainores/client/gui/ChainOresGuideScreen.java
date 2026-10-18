@@ -156,9 +156,9 @@ public class ChainOresGuideScreen extends Screen {
     private int getMaxSubPages(Tab tab) {
         return switch (tab) {
             case ARSENAL -> 6;
-            case BOSSES -> 4;
+            case BOSSES -> 5;
             case WORKSTATIONS -> 4;
-            case MODIFIERS -> 4;
+            case MODIFIERS -> 5;
             default -> 1;
         };
     }
@@ -686,139 +686,222 @@ public class ChainOresGuideScreen extends Screen {
         int cy = y + 32;
 
         if (subPage == 0) {
-            context.drawText(this.textRenderer, Text.literal("✦ MINI-JEFES DEL OVERWORLD (T20 & T40) ✦").formatted(Formatting.AQUA, Formatting.BOLD),
+            context.drawText(this.textRenderer, Text.literal("✦ BESTIARIO I: MINI-JEFES DEL OVERWORLD ✦").formatted(Formatting.AQUA, Formatting.BOLD),
                     cx, cy, 0xFF55FFFF, false);
 
             ItemStack horn = new ItemStack(ModBossItems.GLACIAL_HORN);
+            ItemStack blade1 = new ItemStack(ModBossItems.GLACIAL_BLADE);
+            ItemStack trophy1 = new ItemStack(ModBossItems.GLACIAL_TROPHY);
             context.drawItem(horn, cx, cy + 14);
+            context.drawItem(blade1, cx + 18, cy + 14);
+            context.drawItem(trophy1, cx + 36, cy + 14);
+
             context.drawText(this.textRenderer,
                     Text.literal("1. Guardián Criogénico ").formatted(Formatting.AQUA, Formatting.BOLD)
-                            .append(Text.literal("(T20 - Santuario Glacial / Nieve)").formatted(Formatting.DARK_AQUA)),
-                    cx + 22, cy + 14, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer,
-                    Text.literal("  Spawn: Santuario Glacial o Cuerno. ").formatted(Formatting.GRAY)
-                            .append(Text.literal("Drop: Catalizador Glacial.").formatted(Formatting.YELLOW)),
-                    cx + 22, cy + 24, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "  Habilidades: Golpe sísmico helado, Congelación y Nova.", cx + 22, cy + 34, 0xFFB3E5FC, false);
+                            .append(Text.literal("[350 HP | 16 ATK | 10 ARM]").formatted(Formatting.GRAY)),
+                    cx + 56, cy + 14, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  • Ataques: Salto con golpe sísmico, estacas y ventisca helada.", cx + 56, cy + 24, 0xFFB3E5FC, false);
+            context.drawText(this.textRenderer, "  • Debilidad: FUEGO (+200% daño). Salta para esquivar el golpe.", cx + 56, cy + 34, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "  • Botín Mítico: Hoja Glacial + Trofeo Criogénico + Cat. Glacial.", cx + 56, cy + 44, 0xFF88FF88, false);
 
             ItemStack heartS = new ItemStack(ModBossItems.VERDANT_HEART);
-            context.drawItem(heartS, cx, cy + 48);
+            ItemStack whip = new ItemStack(ModBossItems.BRAMBLE_WHIP);
+            ItemStack trophy2 = new ItemStack(ModBossItems.SYLVA_TROPHY);
+            context.drawItem(heartS, cx, cy + 60);
+            context.drawItem(whip, cx + 18, cy + 60);
+            context.drawItem(trophy2, cx + 36, cy + 60);
+
             context.drawText(this.textRenderer,
                     Text.literal("2. Titán Silvestre ").formatted(Formatting.GREEN, Formatting.BOLD)
-                            .append(Text.literal("(T40 - Arboleda Ancestral / Bosque)").formatted(Formatting.DARK_GREEN)),
-                    cx + 22, cy + 48, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer,
-                    Text.literal("  Spawn: Arboleda Ancestral o Corazón. ").formatted(Formatting.GRAY)
-                            .append(Text.literal("Drop: Catalizador Silvestre.").formatted(Formatting.YELLOW)),
-                    cx + 22, cy + 58, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "  Habilidades: Raíces inmovilizadoras, Terremoto y Fotosíntesis.", cx + 22, cy + 68, 0xFFA5D6A7, false);
+                            .append(Text.literal("[550 HP | 24 ATK | 15 ARM]").formatted(Formatting.GRAY)),
+                    cx + 56, cy + 60, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  • Ataques: Raíces vivientes que enraízan (3s), Terremoto y Cura.", cx + 56, cy + 70, 0xFFA5D6A7, false);
+            context.drawText(this.textRenderer, "  • Debilidad: Hachas y Fuego. Usa Dash lateral al ver grietas.", cx + 56, cy + 80, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "  • Botín Mítico: Látigo de Espinas + Trofeo Silvestre + Cat. T40.", cx + 56, cy + 90, 0xFF88FF88, false);
 
-            // Recompensa de Forja box
-            int boxY = cy + 82;
-            drawCustomBorder(context, cx, boxY, 332, 42, 0xFF4A3E31);
-            context.drawText(this.textRenderer, "⚒ RECETAS DE FORJA CON SUS CATALIZADORES:", cx + 6, boxY + 6, 0xFFFFD700, false);
-            context.drawText(this.textRenderer, "• Cat. Glacial: Escudo Criogénico (Rebote helado) y x2 lingote T20.", cx + 6, boxY + 17, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "• Cat. Silvestre: Coraza del Guardabosques (Tala masiva) y x2 lingote T40.", cx + 6, boxY + 28, 0xFFE0E0E0, false);
+            int boxY = cy + 106;
+            drawCustomBorder(context, cx, boxY, 332, 28, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "💡 Invocación: Usa el Cuerno Glacial en nieve o Corazón en bosque.", cx + 6, boxY + 6, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "   Generan un Domo de 38 bloques: ¡No huyas ni snipes a distancia!", cx + 6, boxY + 16, 0xFFFF7777, false);
 
             checkTooltip(context, horn, cx, cy + 14, mouseX, mouseY);
-            checkTooltip(context, heartS, cx, cy + 48, mouseX, mouseY);
+            checkTooltip(context, blade1, cx + 18, cy + 14, mouseX, mouseY);
+            checkTooltip(context, trophy1, cx + 36, cy + 14, mouseX, mouseY);
+            checkTooltip(context, heartS, cx, cy + 60, mouseX, mouseY);
+            checkTooltip(context, whip, cx + 18, cy + 60, mouseX, mouseY);
+            checkTooltip(context, trophy2, cx + 36, cy + 60, mouseX, mouseY);
 
         } else if (subPage == 1) {
-            context.drawText(this.textRenderer, Text.literal("✦ JEFES SUPREMOS DE DIMENSIÓN ✦").formatted(Formatting.RED, Formatting.BOLD),
+            context.drawText(this.textRenderer, Text.literal("✦ BESTIARIO II: GUARDIANES ABISAL Y DEL NETHER ✦").formatted(Formatting.RED, Formatting.BOLD),
                     cx, cy, 0xFFFF5555, false);
 
             ItemStack eye = new ItemStack(ModBossItems.ABYSSAL_EYE);
+            ItemStack trident = new ItemStack(ModBossItems.ABYSSAL_TRIDENT);
+            ItemStack trophy3 = new ItemStack(ModBossItems.ABYSSAL_TROPHY);
             context.drawItem(eye, cx, cy + 14);
+            context.drawItem(trident, cx + 18, cy + 14);
+            context.drawItem(trophy3, cx + 36, cy + 14);
+
             context.drawText(this.textRenderer,
-                    Text.literal("1. Guardián del Abismo ").formatted(Formatting.AQUA, Formatting.BOLD)
-                            .append(Text.literal("(T70 - Overworld, Y < 0)").formatted(Formatting.DARK_AQUA)),
-                    cx + 22, cy + 14, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer,
-                    Text.literal("  Forja Abandonada u Ojo Abisal. ").formatted(Formatting.GRAY)
-                            .append(Text.literal("Drop: Catalizador.").formatted(Formatting.YELLOW)),
-                    cx + 22, cy + 24, 0xFFFFFFFF, false);
+                    Text.literal("1. Guardián del Abismo ").formatted(Formatting.DARK_AQUA, Formatting.BOLD)
+                            .append(Text.literal("[850 HP | 36 ATK | 20 ARM]").formatted(Formatting.GRAY)),
+                    cx + 56, cy + 14, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  • Ataques: Haz sónico penetramuros, rugido aturdidor y ceguera.", cx + 56, cy + 24, 0xFF80DEEA, false);
+            context.drawText(this.textRenderer, "  • Debilidad: Ataques elevados y flechas rúnicas. Movimiento zigzag.", cx + 56, cy + 34, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "  • Botín Mítico: Tridente del Abismo + Trofeo Abisal + Cat. T70.", cx + 56, cy + 44, 0xFF88FF88, false);
 
             ItemStack heart = new ItemStack(ModBossItems.FLAME_HEART);
-            context.drawItem(heart, cx, cy + 40);
+            ItemStack axe = new ItemStack(ModBossItems.INFERNAL_WARAXE);
+            ItemStack trophy4 = new ItemStack(ModBossItems.INFERNAL_TROPHY);
+            context.drawItem(heart, cx, cy + 60);
+            context.drawItem(axe, cx + 18, cy + 60);
+            context.drawItem(trophy4, cx + 36, cy + 60);
+
             context.drawText(this.textRenderer,
                     Text.literal("2. Behemoth del Nether ").formatted(Formatting.RED, Formatting.BOLD)
-                            .append(Text.literal("(T105 - Nether, Y 25-100)").formatted(Formatting.DARK_RED)),
-                    cx + 22, cy + 40, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer,
-                    Text.literal("  Santuario Nether o Corazón Ígneo. ").formatted(Formatting.GRAY)
-                            .append(Text.literal("Drop: Cat. Ígneo.").formatted(Formatting.YELLOW)),
-                    cx + 22, cy + 50, 0xFFFFFFFF, false);
+                            .append(Text.literal("[1100 HP | 44 ATK | 25 ARM]").formatted(Formatting.GRAY)),
+                    cx + 56, cy + 60, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  • Ataques: Erupciones de magma volcánico, meteoros y onda aérea.", cx + 56, cy + 70, 0xFFFF8A80, false);
+            context.drawText(this.textRenderer, "  • Debilidad: AGUA / CONGELACIÓN (+250% daño). Evita el suelo.", cx + 56, cy + 80, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "  • Botín Mítico: Gran Hacha Ígnea + Trofeo Ígneo + Núcleo T105.", cx + 56, cy + 90, 0xFF88FF88, false);
 
-            ItemStack beacon = new ItemStack(ModBossItems.VOID_BEACON);
-            context.drawItem(beacon, cx, cy + 66);
-            context.drawText(this.textRenderer,
-                    Text.literal("3. Coloso del Vacío ").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD)
-                            .append(Text.literal("(T135 - The End, Islas)").formatted(Formatting.DARK_PURPLE)),
-                    cx + 22, cy + 66, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer,
-                    Text.literal("  Altar Cósmico o Baliza Vacío. ").formatted(Formatting.GRAY)
-                            .append(Text.literal("Drop: Cat. del Vacío.").formatted(Formatting.YELLOW)),
-                    cx + 22, cy + 76, 0xFFFFFFFF, false);
-
-            ItemStack core = new ItemStack(ModBossItems.COSMIC_ALTAR_CORE);
-            context.drawItem(core, cx, cy + 92);
-            context.drawText(this.textRenderer,
-                    Text.literal("4. Soberano Cósmico ").formatted(Formatting.GOLD, Formatting.BOLD)
-                            .append(Text.literal("(T150 - Boss Final)").formatted(Formatting.YELLOW)),
-                    cx + 22, cy + 92, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer,
-                    Text.literal("  Invocado con Núcleo del Altar. ").formatted(Formatting.GRAY)
-                            .append(Text.literal("Drop: Singularidad.").formatted(Formatting.GOLD)),
-                    cx + 22, cy + 102, 0xFFFFFFFF, false);
-
-            context.drawText(this.textRenderer, "⚠ ¡CUIDADO! Poseen regeneración, resistencia, furia <50% y devoran almas.", cx, cy + 118, 0xFFFF7777, false);
+            int boxY = cy + 106;
+            drawCustomBorder(context, cx, boxY, 332, 28, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "⚠ Al 50% de vida entran en FURIA desatando ataques dobles.", cx + 6, boxY + 6, 0xFFFF5555, false);
+            context.drawText(this.textRenderer, "  Si mueres en combate, ¡devoran tu alma y curan 100% de vida!", cx + 6, boxY + 16, 0xFFFF7777, false);
 
             checkTooltip(context, eye, cx, cy + 14, mouseX, mouseY);
-            checkTooltip(context, heart, cx, cy + 40, mouseX, mouseY);
-            checkTooltip(context, beacon, cx, cy + 66, mouseX, mouseY);
-            checkTooltip(context, core, cx, cy + 92, mouseX, mouseY);
+            checkTooltip(context, trident, cx + 18, cy + 14, mouseX, mouseY);
+            checkTooltip(context, trophy3, cx + 36, cy + 14, mouseX, mouseY);
+            checkTooltip(context, heart, cx, cy + 60, mouseX, mouseY);
+            checkTooltip(context, axe, cx + 18, cy + 60, mouseX, mouseY);
+            checkTooltip(context, trophy4, cx + 36, cy + 60, mouseX, mouseY);
 
         } else if (subPage == 2) {
-            context.drawText(this.textRenderer, Text.literal("✦ ESTRUCTURAS ÉPICAS Y BRÚJULA RÚNICA ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+            context.drawText(this.textRenderer, Text.literal("✦ BESTIARIO III: SEÑORES DEL VACÍO Y COSMOLOGÍA ✦").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD),
+                    cx, cy, 0xFFFF55FF, false);
+
+            ItemStack beacon = new ItemStack(ModBossItems.VOID_BEACON);
+            ItemStack singBlade = new ItemStack(ModBossItems.SINGULARITY_BLADE);
+            ItemStack trophy5 = new ItemStack(ModBossItems.VOID_TROPHY);
+            context.drawItem(beacon, cx, cy + 14);
+            context.drawItem(singBlade, cx + 18, cy + 14);
+            context.drawItem(trophy5, cx + 36, cy + 14);
+
+            context.drawText(this.textRenderer,
+                    Text.literal("1. Coloso del Vacío ").formatted(Formatting.DARK_PURPLE, Formatting.BOLD)
+                            .append(Text.literal("[1350 HP | 54 ATK | 25 ARM]").formatted(Formatting.GRAY)),
+                    cx + 56, cy + 14, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  • Ataques: Mini agujero negro que succiona jugadores e implosiona.", cx + 56, cy + 24, 0xFFCE93D8, false);
+            context.drawText(this.textRenderer, "  • Debilidad: Cuerpo a cuerpo pesado tras el vórtice. Usa Ender Pearls.", cx + 56, cy + 34, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "  • Botín Mítico: Filo de Singularidad + Trofeo Vacío + Frag. T135.", cx + 56, cy + 44, 0xFF88FF88, false);
+
+            ItemStack core = new ItemStack(ModBossItems.COSMIC_ALTAR_CORE);
+            ItemStack scepter = new ItemStack(ModBossItems.SUPERNOVA_SCEPTER);
+            ItemStack trophy6 = new ItemStack(ModBossItems.COSMIC_TROPHY);
+            context.drawItem(core, cx, cy + 60);
+            context.drawItem(scepter, cx + 18, cy + 60);
+            context.drawItem(trophy6, cx + 36, cy + 60);
+
+            context.drawText(this.textRenderer,
+                    Text.literal("2. Soberano Cósmico ").formatted(Formatting.GOLD, Formatting.BOLD)
+                            .append(Text.literal("[2500 HP | 75 ATK | 30 ARM]").formatted(Formatting.GRAY)),
+                    cx + 56, cy + 60, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "  • Ataques: Escudo antibalas 100%, Rayos del Big Bang y Supernova.", cx + 56, cy + 70, 0xFFFFF59D, false);
+            context.drawText(this.textRenderer, "  • Debilidad: Inmune a flechas. Atacar cuerpo a cuerpo en círculos.", cx + 56, cy + 80, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "  • Botín Mítico: Cetro Supernova + Trofeo Cósmico + Singularidad.", cx + 56, cy + 90, 0xFF88FF88, false);
+
+            int boxY = cy + 106;
+            drawCustomBorder(context, cx, boxY, 332, 28, 0xFF4A3E31);
+            context.drawText(this.textRenderer, "☠ Secuencia de muerte: Al morir levitan 3s emitiendo rayos", cx + 6, boxY + 6, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "  celestiales antes de implosionar y romper la barrera de arena.", cx + 6, boxY + 16, 0xFFE0E0E0, false);
+
+            checkTooltip(context, beacon, cx, cy + 14, mouseX, mouseY);
+            checkTooltip(context, singBlade, cx + 18, cy + 14, mouseX, mouseY);
+            checkTooltip(context, trophy5, cx + 36, cy + 14, mouseX, mouseY);
+            checkTooltip(context, core, cx, cy + 60, mouseX, mouseY);
+            checkTooltip(context, scepter, cx + 18, cy + 60, mouseX, mouseY);
+            checkTooltip(context, trophy6, cx + 36, cy + 60, mouseX, mouseY);
+
+        } else if (subPage == 3) {
+            context.drawText(this.textRenderer, Text.literal("✦ ARSENAL MÍTICO DE JEFES (HABILIDADES ACTIVAS) ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
-            context.drawText(this.textRenderer, "• Generación de Estructuras Legendarias:", cx, cy + 14, 0xFFFFAA00, false);
-            context.drawText(this.textRenderer, "  1 en 8.000 a 10.000 chunks con 2.000-2.500 bloques", cx, cy + 24, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "  de distancia mínima. ¡Tienen arena y cofre del tesoro!", cx, cy + 34, 0xFFE0E0E0, false);
+            ItemStack w1 = new ItemStack(ModBossItems.GLACIAL_BLADE);
+            ItemStack w2 = new ItemStack(ModBossItems.BRAMBLE_WHIP);
+            ItemStack w3 = new ItemStack(ModBossItems.ABYSSAL_TRIDENT);
+            ItemStack w4 = new ItemStack(ModBossItems.INFERNAL_WARAXE);
+            ItemStack w5 = new ItemStack(ModBossItems.SINGULARITY_BLADE);
+            ItemStack w6 = new ItemStack(ModBossItems.SUPERNOVA_SCEPTER);
 
-            context.drawText(this.textRenderer, "🧭 CÓMO USAR LA BRÚJULA DE ESTRUCTURAS:", cx, cy + 50, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "• Shift + Clic der.: Alterna entre los 6 objetivos:", cx, cy + 60, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "  0: Auto | 1: Forja | 2: Glacial | 3: Arboleda | 4: Nether | 5: Altar", cx, cy + 70, 0xFF88FF88, false);
+            context.drawItem(w1, cx, cy + 14);
+            context.drawText(this.textRenderer, "Hoja Glacial: Clic der. dispara 7 estacas de hielo (Lent. IV / Congela) [CD: 6s]", cx + 20, cy + 14, 0xFFB3E5FC, false);
 
-            context.drawText(this.textRenderer, "• Clic der. normal: Pulso sonar de resonancia rúnica.", cx, cy + 84, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "  Calcula distancia, rumbo y envía coordenadas al chat.", cx, cy + 94, 0xFFE0E0E0, false);
+            context.drawItem(w2, cx, cy + 34);
+            context.drawText(this.textRenderer, "Látigo de Espinas: Clic der. enraíza enemigos 3s y absorbe vida [CD: 9s]", cx + 20, cy + 34, 0xFFA5D6A7, false);
 
-            int compassBoxY = cy + 108;
-            drawCustomBorder(context, cx, compassBoxY, 332, 24, 0xFF4A3E31);
+            context.drawItem(w3, cx, cy + 54);
+            context.drawText(this.textRenderer, "Tridente del Abismo: Clic der. onda sónica recta que perfora muros [CD: 8s]", cx + 20, cy + 54, 0xFF80DEEA, false);
 
-            ItemStack compass = new ItemStack(ModItems.STRUCTURE_COMPASS);
-            context.drawItem(compass, cx + 4, compassBoxY + 4);
-            context.drawText(this.textRenderer, "Brújula de Estructuras (Crafteable con cadenas)", cx + 24, compassBoxY + 8, 0xFFFFD700, false);
+            context.drawItem(w4, cx, cy + 74);
+            context.drawText(this.textRenderer, "Gran Hacha Ígnea: Clic der. fisura de magma que eleva enemigos [CD: 7s]", cx + 20, cy + 74, 0xFFFF8A80, false);
 
-            checkTooltip(context, compass, cx + 4, compassBoxY + 4, mouseX, mouseY);
+            context.drawItem(w5, cx, cy + 94);
+            context.drawText(this.textRenderer, "Filo de la Singularidad: Clic der. agujero negro atractor e implosión [CD: 12s]", cx + 20, cy + 94, 0xFFCE93D8, false);
+
+            context.drawItem(w6, cx, cy + 114);
+            context.drawText(this.textRenderer, "Cetro Supernova: Clic der. marca área con 3 meteoros estelares y buffs [CD: 16s]", cx + 20, cy + 114, 0xFFFFF59D, false);
+
+            checkTooltip(context, w1, cx, cy + 14, mouseX, mouseY);
+            checkTooltip(context, w2, cx, cy + 34, mouseX, mouseY);
+            checkTooltip(context, w3, cx, cy + 54, mouseX, mouseY);
+            checkTooltip(context, w4, cx, cy + 74, mouseX, mouseY);
+            checkTooltip(context, w5, cx, cy + 94, mouseX, mouseY);
+            checkTooltip(context, w6, cx, cy + 114, mouseX, mouseY);
 
         } else {
-            // subPage 3: Escalado Multijugador, Mobs Infundidos y EMI
-            context.drawText(this.textRenderer, Text.literal("✦ MULTIJUGADOR, MOBS INFUNDIDOS Y EMI ✦").formatted(Formatting.AQUA, Formatting.BOLD),
+            // subPage 4: Dominio de Arena y Trofeos 3D de Base
+            context.drawText(this.textRenderer, Text.literal("✦ BARRERA DE ARENA Y TROFEOS 3D DE BASE ✦").formatted(Formatting.AQUA, Formatting.BOLD),
                     cx, cy, 0xFF55FFFF, false);
 
-            context.drawText(this.textRenderer, "⚔ ESCALADO DINÁMICO EN MULTIJUGADOR:", cx, cy + 14, 0xFFFF5555, false);
-            context.drawText(this.textRenderer, "• Los 4 Jefes escalan según jugadores cercanos (64b):", cx, cy + 24, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "  +35% Vida y +15% Daño por cada jugador adicional.", cx, cy + 34, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "🔮 BARRERA DE ARENA ANTI-CHEESING (DOMAIN EXPANSION):", cx, cy + 14, 0xFFFF55FF, false);
+            context.drawText(this.textRenderer, "• Al invocar un jefe se crea un domo mágico translúcido de 38 bloques.", cx, cy + 24, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "• Vaporiza flechas/proyectiles francotiradores y repele jugadores huidos.", cx, cy + 34, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "• Al derrotar al jefe, ¡el domo estalla en un espectáculo de partículas!", cx, cy + 44, 0xFF88FF88, false);
 
-            context.drawText(this.textRenderer, "👹 CRIATURAS INFUNDIDAS DIMENSIONALES:", cx, cy + 48, 0xFFFFAA00, false);
-            context.drawText(this.textRenderer, "• En el Nether y en el End aparecen mobs con auras.", cx, cy + 58, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "• Tienen mayor dureza y dropean lingotes y gemas.", cx, cy + 68, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "🏆 TROFEOS 3D COLOCABLES CON AURA DE BASE (32 Bloques):", cx, cy + 58, 0xFFFFCC00, false);
+            context.drawText(this.textRenderer, "• Bloques decorativos 3D sobre pedestal que otorgan buffs permanentes:", cx, cy + 68, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "  - Glacial: Prisa Minera II (+20% vel.) | Silvestre: Regen II", cx, cy + 78, 0xFFA5D6A7, false);
+            context.drawText(this.textRenderer, "  - Abisal: Resistencia II y Visión Noct. | Ígneo: Fuego Inmune", cx, cy + 88, 0xFFFF8A80, false);
+            context.drawText(this.textRenderer, "  - Vacío: Velocidad II y Caída Pluma | Cósmico: Fuerza II + Suerte III", cx, cy + 98, 0xFFFFF59D, false);
 
-            context.drawText(this.textRenderer, "📖 VISOR DE RECETAS EMI INTEGRADO:", cx, cy + 82, 0xFF55FF55, false);
-            context.drawText(this.textRenderer, "• Pulsa [R] sobre un lingote o ítem para ver su receta.", cx, cy + 92, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "• Pulsa [U] para ver todos sus usos en la Forja/Altar.", cx, cy + 102, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "• La tecla de Dash universal se ubica en [V].", cx, cy + 114, 0xFF88FF88, false);
+            int dockY = cy + 112;
+            drawCustomBorder(context, cx, dockY, 332, 26, 0xFF4A3E31);
+
+            ItemStack t1 = new ItemStack(ModBossItems.GLACIAL_TROPHY);
+            ItemStack t2 = new ItemStack(ModBossItems.SYLVA_TROPHY);
+            ItemStack t3 = new ItemStack(ModBossItems.ABYSSAL_TROPHY);
+            ItemStack t4 = new ItemStack(ModBossItems.INFERNAL_TROPHY);
+            ItemStack t5 = new ItemStack(ModBossItems.VOID_TROPHY);
+            ItemStack t6 = new ItemStack(ModBossItems.COSMIC_TROPHY);
+            ItemStack comp = new ItemStack(ModItems.STRUCTURE_COMPASS);
+
+            context.drawItem(t1, cx + 6, dockY + 5);
+            context.drawItem(t2, cx + 32, dockY + 5);
+            context.drawItem(t3, cx + 58, dockY + 5);
+            context.drawItem(t4, cx + 84, dockY + 5);
+            context.drawItem(t5, cx + 110, dockY + 5);
+            context.drawItem(t6, cx + 136, dockY + 5);
+            context.drawItem(comp, cx + 170, dockY + 5);
+            context.drawText(this.textRenderer, "◀ Trofeos 3D y Brújula Rúnica", cx + 192, dockY + 9, 0xFFD4AF37, false);
+
+            checkTooltip(context, t1, cx + 6, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, t2, cx + 32, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, t3, cx + 58, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, t4, cx + 84, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, t5, cx + 110, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, t6, cx + 136, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, comp, cx + 170, dockY + 5, mouseX, mouseY);
         }
     }
 
@@ -877,6 +960,47 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, earth, cx, cy + 92, mouseX, mouseY);
 
         } else if (subPage == 1) {
+            context.drawText(this.textRenderer, Text.literal("✦ GEMAS ELEMENTALES Y AVANZADAS ✦").formatted(Formatting.AQUA, Formatting.BOLD),
+                    cx, cy, 0xFF55FFFF, false);
+
+            ItemStack frost = new ItemStack(ModGems.FROST_GEM);
+            context.drawItem(frost, cx, cy + 12);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema Glacial: ").formatted(Formatting.AQUA, Formatting.BOLD)
+                            .append(Text.literal("Congelación, caminata helada, aura de frío").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 12, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Inmune a frío. Golpes congelan e infligen estallido glacial en área.", cx + 20, cy + 22, 0xFFAAAAAA, false);
+
+            ItemStack storm = new ItemStack(ModGems.STORM_GEM);
+            context.drawItem(storm, cx, cy + 38);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema de la Tempestad: ").formatted(Formatting.YELLOW, Formatting.BOLD)
+                            .append(Text.literal("Arcos voltaicos en cadena, velocidad y salto").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 38, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Chispas eléctricas saltan entre enemigos y electrocutan en masa.", cx + 20, cy + 48, 0xFFAAAAAA, false);
+
+            ItemStack venom = new ItemStack(ModGems.VENOM_GEM);
+            context.drawItem(venom, cx, cy + 64);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema de Veneno: ").formatted(Formatting.DARK_GREEN, Formatting.BOLD)
+                            .append(Text.literal("Neurotoxina, Wither, inmunidad a veneno").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 64, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Disuelve armaduras, inmunidad a veneno/wither y esporas corrosivas.", cx + 20, cy + 74, 0xFFAAAAAA, false);
+
+            ItemStack solar = new ItemStack(ModGems.SOLAR_GEM);
+            context.drawItem(solar, cx, cy + 90);
+            context.drawText(this.textRenderer,
+                    Text.literal("Gema Solar: ").formatted(Formatting.GOLD, Formatting.BOLD)
+                            .append(Text.literal("+180% a No-Muertos, fotosíntesis, visión nocturna").formatted(Formatting.WHITE)),
+                    cx + 20, cy + 90, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "Fuego solar abrasador. De día regenera comida/vida; visión en cavernas.", cx + 20, cy + 100, 0xFFAAAAAA, false);
+
+            checkTooltip(context, frost, cx, cy + 12, mouseX, mouseY);
+            checkTooltip(context, storm, cx, cy + 38, mouseX, mouseY);
+            checkTooltip(context, venom, cx, cy + 64, mouseX, mouseY);
+            checkTooltip(context, solar, cx, cy + 90, mouseX, mouseY);
+
+        } else if (subPage == 2) {
             context.drawText(this.textRenderer, Text.literal("✦ GEMAS DE MINERÍA Y UTILIDAD ✦").formatted(Formatting.AQUA, Formatting.BOLD),
                     cx, cy, 0xFF55FFFF, false);
 
@@ -914,7 +1038,7 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, magnet, cx, cy + 38, mouseX, mouseY);
             checkTooltip(context, chrono, cx, cy + 64, mouseX, mouseY);
 
-        } else if (subPage == 2) {
+        } else if (subPage == 3) {
             context.drawText(this.textRenderer, Text.literal("✦ REFORJADO, PREFIJOS Y ENCANTAMIENTOS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
@@ -936,7 +1060,7 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, amethyst, cx, cy + 12, mouseX, mouseY);
 
         } else {
-            // subPage 3: Fusión de Gemas T1-T3
+            // subPage 4: Fusión de Gemas T1-T3 (All 12 Gems)
             context.drawText(this.textRenderer, Text.literal("✦ FUSIÓN Y NIVELES DE GEMAS (TIER I-III) ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
@@ -944,14 +1068,14 @@ public class ChainOresGuideScreen extends Screen {
             context.drawText(this.textRenderer, "• Combina 2 gemas iguales de Tier I para forjar Tier II.", cx, cy + 24, 0xFFE0E0E0, false);
             context.drawText(this.textRenderer, "• Combina 2 gemas de Tier II para forjar Tier III (Máx).", cx, cy + 34, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "💎 ESCALADO DE PODER DE TIER III:", cx, cy + 46, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "• Sangre III: Regen III | Vacío III: Inmune caída | Núcleo III: Fuego/Vel", cx, cy + 56, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "• Génesis III: +10 Corazones | Tierra III: +100% minería doble drop", cx, cy + 66, 0xFFFFF1A8, false);
-            context.drawText(this.textRenderer, "• Eco III: Sonar 32m | Imán III: Auto-smelt | Crono III: Auto-repara", cx, cy + 76, 0xFFA5D6A7, false);
+            context.drawText(this.textRenderer, "💎 ESCALADO DE PODER DE TIER III (12 GEMAS ÚNICAS):", cx, cy + 46, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, "• Sangre / Vacío / Núcleo / Génesis / Tierra / Eco / Imán / Crono", cx, cy + 56, 0xFFFFFFFF, false);
+            context.drawText(this.textRenderer, "• Glacial (Cero Absoluto) | Tempestad (Rayo) | Veneno (Ácido) | Solar (Luz)", cx, cy + 66, 0xFFFFF1A8, false);
+            context.drawText(this.textRenderer, "• Todas las gemas multiplican drásticamente sus estadísticas en Tier III.", cx, cy + 76, 0xFFA5D6A7, false);
 
             int dockY = cy + 96;
             drawCustomBorder(context, cx, dockY, 332, 28, 0xFF4A3E31);
-            context.drawText(this.textRenderer, "Gemas Tier III:", cx + 4, dockY + 10, 0xFFAAAAAA, false);
+            context.drawText(this.textRenderer, "Tier III:", cx + 4, dockY + 10, 0xFFAAAAAA, false);
 
             ItemStack b3 = new ItemStack(ModGems.BLOOD_GEM_3);
             ItemStack v3 = new ItemStack(ModGems.VOID_GEM_3);
@@ -961,24 +1085,38 @@ public class ChainOresGuideScreen extends Screen {
             ItemStack ec3 = new ItemStack(ModGems.ECHO_GEM_3);
             ItemStack m3 = new ItemStack(ModGems.MAGNET_GEM_3);
             ItemStack ch3 = new ItemStack(ModGems.CHRONO_GEM_3);
+            ItemStack f3 = new ItemStack(ModGems.FROST_GEM_3);
+            ItemStack s3 = new ItemStack(ModGems.STORM_GEM_3);
+            ItemStack vn3 = new ItemStack(ModGems.VENOM_GEM_3);
+            ItemStack sl3 = new ItemStack(ModGems.SOLAR_GEM_3);
 
-            context.drawItem(b3, cx + 80, dockY + 5);
-            context.drawItem(v3, cx + 105, dockY + 5);
-            context.drawItem(c3, cx + 130, dockY + 5);
-            context.drawItem(g3, cx + 155, dockY + 5);
-            context.drawItem(e3, cx + 180, dockY + 5);
-            context.drawItem(ec3, cx + 205, dockY + 5);
-            context.drawItem(m3, cx + 230, dockY + 5);
-            context.drawItem(ch3, cx + 255, dockY + 5);
+            int startX = cx + 55;
+            int step = 23;
+            context.drawItem(b3, startX, dockY + 5);
+            context.drawItem(v3, startX + step, dockY + 5);
+            context.drawItem(c3, startX + step * 2, dockY + 5);
+            context.drawItem(g3, startX + step * 3, dockY + 5);
+            context.drawItem(e3, startX + step * 4, dockY + 5);
+            context.drawItem(ec3, startX + step * 5, dockY + 5);
+            context.drawItem(m3, startX + step * 6, dockY + 5);
+            context.drawItem(ch3, startX + step * 7, dockY + 5);
+            context.drawItem(f3, startX + step * 8, dockY + 5);
+            context.drawItem(s3, startX + step * 9, dockY + 5);
+            context.drawItem(vn3, startX + step * 10, dockY + 5);
+            context.drawItem(sl3, startX + step * 11, dockY + 5);
 
-            checkTooltip(context, b3, cx + 80, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, v3, cx + 105, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, c3, cx + 130, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, g3, cx + 155, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, e3, cx + 180, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, ec3, cx + 205, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, m3, cx + 230, dockY + 5, mouseX, mouseY);
-            checkTooltip(context, ch3, cx + 255, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, b3, startX, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, v3, startX + step, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, c3, startX + step * 2, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, g3, startX + step * 3, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, e3, startX + step * 4, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, ec3, startX + step * 5, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, m3, startX + step * 6, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, ch3, startX + step * 7, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, f3, startX + step * 8, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, s3, startX + step * 9, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, vn3, startX + step * 10, dockY + 5, mouseX, mouseY);
+            checkTooltip(context, sl3, startX + step * 11, dockY + 5, mouseX, mouseY);
         }
     }
 

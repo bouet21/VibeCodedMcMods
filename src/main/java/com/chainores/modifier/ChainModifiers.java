@@ -39,6 +39,10 @@ public class ChainModifiers {
     public static final String GEM_ECHO = "echo_gem";
     public static final String GEM_MAGNET = "magnet_gem";
     public static final String GEM_CHRONO = "chrono_gem";
+    public static final String GEM_FROST = "frost_gem";
+    public static final String GEM_STORM = "storm_gem";
+    public static final String GEM_VENOM = "venom_gem";
+    public static final String GEM_SOLAR = "solar_gem";
 
     // Reforge Prefix IDs
     public static final String REFORGE_DIVINE = "divine";
@@ -64,6 +68,10 @@ public class ChainModifiers {
         if (gemId.startsWith(GEM_ECHO)) return GEM_ECHO;
         if (gemId.startsWith(GEM_MAGNET)) return GEM_MAGNET;
         if (gemId.startsWith(GEM_CHRONO)) return GEM_CHRONO;
+        if (gemId.startsWith(GEM_FROST)) return GEM_FROST;
+        if (gemId.startsWith(GEM_STORM)) return GEM_STORM;
+        if (gemId.startsWith(GEM_VENOM)) return GEM_VENOM;
+        if (gemId.startsWith(GEM_SOLAR)) return GEM_SOLAR;
         return gemId;
     }
 
@@ -265,12 +273,15 @@ public class ChainModifiers {
             };
         }
 
-        // Also scale with Void and Genesis gems
+        // Also scale with Void, Genesis, Frost, Storm and Venom gems
         for (String gem : getGems(stack)) {
             String base = getBaseGemType(gem);
             int tier = getGemTier(gem);
             if (GEM_VOID.equals(base)) mult += 0.15f * tier;
             if (GEM_GENESIS.equals(base)) mult += 0.25f * tier;
+            if (GEM_FROST.equals(base)) mult += 0.15f * tier;
+            if (GEM_STORM.equals(base)) mult += 0.15f * tier;
+            if (GEM_VENOM.equals(base)) mult += 0.10f * tier;
         }
 
         return Math.min(mult, cfg.maxCumulativeDamageMultiplier);
@@ -289,6 +300,7 @@ public class ChainModifiers {
             if (GEM_ECHO.equals(base)) mult += 0.30f * tier;
             if (GEM_MAGNET.equals(base)) mult += 0.35f * tier;
             if (GEM_CHRONO.equals(base)) mult += 0.25f * tier;
+            if (GEM_STORM.equals(base)) mult += 0.20f * tier;
         }
 
         String reforge = getReforge(stack);
@@ -414,6 +426,12 @@ public class ChainModifiers {
                 if (player.age % interval == 0 && stack.isDamaged()) {
                     stack.setDamage(Math.max(0, stack.getDamage() - 1));
                 }
+            } else if (GEM_FROST.equals(base)) {
+                player.setFrozenTicks(0);
+            } else if (GEM_STORM.equals(base)) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SPEED, 40, 0, true, false));
+            } else if (GEM_SOLAR.equals(base) && player.getY() < 60) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.NIGHT_VISION, 240, 0, true, false));
             }
         }
     }
@@ -428,6 +446,10 @@ public class ChainModifiers {
         int echoCount = 0;
         int magnetCount = 0;
         int chronoCount = 0;
+        int frostCount = 0;
+        int stormCount = 0;
+        int venomCount = 0;
+        int solarCount = 0;
 
         for (String gem : gems) {
             String base = getBaseGemType(gem);
@@ -441,6 +463,10 @@ public class ChainModifiers {
                 case GEM_ECHO -> echoCount += tier;
                 case GEM_MAGNET -> magnetCount += tier;
                 case GEM_CHRONO -> chronoCount += tier;
+                case GEM_FROST -> frostCount += tier;
+                case GEM_STORM -> stormCount += tier;
+                case GEM_VENOM -> venomCount += tier;
+                case GEM_SOLAR -> solarCount += tier;
             }
         }
 
@@ -543,6 +569,76 @@ public class ChainModifiers {
                         sw.spawnParticles(net.minecraft.particle.ParticleTypes.HAPPY_VILLAGER, cp.getX() + 0.5, cp.getY() + 0.5, cp.getZ() + 0.5, 3, 0.2, 0.2, 0.2, 0.0);
                         break;
                     }
+                }
+            }
+        }
+
+        if (frostCount > 0) {
+            player.setFrozenTicks(0);
+            net.minecraft.util.math.BlockPos under = player.getBlockPos().down();
+            if (player.getEntityWorld().getBlockState(under).isOf(net.minecraft.block.Blocks.WATER) && player.isOnGround()) {
+                player.getEntityWorld().setBlockState(under, net.minecraft.block.Blocks.FROSTED_ICE.getDefaultState());
+            }
+            if (frostCount >= 2 && player.age % 40 == 0) {
+                ServerWorld sw = (ServerWorld) player.getEntityWorld();
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(4.0 + 1.5 * frostCount);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e != player && e.isAlive() && !(e instanceof net.minecraft.entity.player.PlayerEntity))) {
+                    target.setFrozenTicks(Math.max(target.getFrozenTicks(), 120));
+                    target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOWNESS, 60, 1, true, false));
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.SNOWFLAKE, target.getX(), target.getY() + 1.0, target.getZ(), 4, 0.2, 0.3, 0.2, 0.05);
+                }
+            }
+        }
+        if (stormCount > 0) {
+            int spdAmp = Math.min(stormCount - 1, 2);
+            player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SPEED, 40, spdAmp, true, false));
+            if (stormCount >= 2) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.JUMP_BOOST, 40, 1, true, false));
+            }
+            if (stormCount >= 2 && player.age % 30 == 0) {
+                ServerWorld sw = (ServerWorld) player.getEntityWorld();
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(4.0);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e != player && e.isAlive() && !(e instanceof net.minecraft.entity.player.PlayerEntity))) {
+                    target.damage(sw, player.getDamageSources().magic(), 4.0f * stormCount);
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.ELECTRIC_SPARK, target.getX(), target.getY() + 1.0, target.getZ(), 6, 0.2, 0.3, 0.2, 0.1);
+                }
+            }
+        }
+        if (venomCount > 0) {
+            if (player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.POISON)) player.removeStatusEffect(net.minecraft.entity.effect.StatusEffects.POISON);
+            if (player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.HUNGER)) player.removeStatusEffect(net.minecraft.entity.effect.StatusEffects.HUNGER);
+            if (venomCount >= 2 && player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.WITHER)) player.removeStatusEffect(net.minecraft.entity.effect.StatusEffects.WITHER);
+
+            if (player.age % 50 == 0) {
+                ServerWorld sw = (ServerWorld) player.getEntityWorld();
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(3.0 + 1.2 * venomCount);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e != player && e.isAlive() && !(e instanceof net.minecraft.entity.player.PlayerEntity))) {
+                    target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.POISON, 80, Math.min(venomCount - 1, 2), true, false));
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.ITEM_SLIME, target.getX(), target.getY() + 1.0, target.getZ(), 3, 0.2, 0.2, 0.2, 0.05);
+                }
+            }
+        }
+        if (solarCount > 0) {
+            boolean isDay = player.getEntityWorld().isDay();
+            boolean isSky = player.getEntityWorld().isSkyVisible(player.getBlockPos());
+            if (isDay && isSky) {
+                if (player.age % 40 == 0) {
+                    player.getHungerManager().add(1, 0.5f);
+                }
+                if (solarCount >= 2) {
+                    player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.REGENERATION, 40, 0, true, false));
+                }
+            }
+            if (solarCount >= 2 && player.getY() < 60) {
+                player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.NIGHT_VISION, 240, 0, true, false));
+            }
+            if (solarCount >= 3 && player.age % 40 == 0) {
+                ServerWorld sw = (ServerWorld) player.getEntityWorld();
+                net.minecraft.util.math.Box b = player.getBoundingBox().expand(8.0);
+                for (net.minecraft.entity.LivingEntity target : sw.getEntitiesByClass(net.minecraft.entity.LivingEntity.class, b, e -> e.getType().isIn(net.minecraft.registry.tag.EntityTypeTags.UNDEAD) && e.isAlive())) {
+                    target.setOnFireFor(5);
+                    target.damage(sw, player.getDamageSources().onFire(), 8.0f);
+                    sw.spawnParticles(net.minecraft.particle.ParticleTypes.FLAME, target.getX(), target.getY() + 1.0, target.getZ(), 4, 0.2, 0.3, 0.2, 0.05);
                 }
             }
         }
@@ -667,6 +763,10 @@ public class ChainModifiers {
                         case GEM_ECHO -> socketLine.append(Text.literal("[◆ Eco" + roman + "] ").formatted(Formatting.DARK_AQUA, Formatting.BOLD));
                         case GEM_MAGNET -> socketLine.append(Text.literal("[◆ Imán" + roman + "] ").formatted(Formatting.BLUE, Formatting.BOLD));
                         case GEM_CHRONO -> socketLine.append(Text.literal("[◆ Crono" + roman + "] ").formatted(Formatting.GOLD, Formatting.BOLD));
+                        case GEM_FROST -> socketLine.append(Text.literal("[◆ Glacial" + roman + "] ").formatted(Formatting.AQUA, Formatting.BOLD));
+                        case GEM_STORM -> socketLine.append(Text.literal("[◆ Tempestad" + roman + "] ").formatted(Formatting.YELLOW, Formatting.BOLD));
+                        case GEM_VENOM -> socketLine.append(Text.literal("[◆ Veneno" + roman + "] ").formatted(Formatting.DARK_GREEN, Formatting.BOLD));
+                        case GEM_SOLAR -> socketLine.append(Text.literal("[◆ Solar" + roman + "] ").formatted(Formatting.GOLD, Formatting.BOLD));
                         default -> socketLine.append(Text.literal("[◆ Gema" + roman + "] ").formatted(Formatting.AQUA));
                     }
                 } else {

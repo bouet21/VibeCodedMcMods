@@ -125,6 +125,21 @@ public class GodOmnitoolItem extends Item {
                 } else if (com.chainores.modifier.ChainModifiers.GEM_CHRONO.equals(base)) {
                     target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60 * gemTier, 3));
                     target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 60 * gemTier, 1));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_FROST.equals(base)) {
+                    target.setFrozenTicks(140 * gemTier);
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 80 * gemTier, Math.min(gemTier, 3)));
+                    target.damage(serverWorld, attacker.getDamageSources().freeze(), 12.0f * gemTier);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_STORM.equals(base)) {
+                    target.damage(serverWorld, attacker.getDamageSources().magic(), 12.0f * gemTier);
+                    serverWorld.spawnParticles(net.minecraft.particle.ParticleTypes.ELECTRIC_SPARK, target.getX(), target.getY() + 1.0, target.getZ(), 8 * gemTier, 0.3, 0.3, 0.3, 0.1);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_VENOM.equals(base)) {
+                    target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 80 * gemTier, gemTier - 1));
+                    if (gemTier >= 2) target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 60 * gemTier, 0));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_SOLAR.equals(base)) {
+                    target.setOnFireFor(8 * gemTier);
+                    if (target.getType().isIn(net.minecraft.registry.tag.EntityTypeTags.UNDEAD)) {
+                        target.damage(serverWorld, attacker.getDamageSources().magic(), 24.0f * gemTier);
+                    }
                 }
             }
 

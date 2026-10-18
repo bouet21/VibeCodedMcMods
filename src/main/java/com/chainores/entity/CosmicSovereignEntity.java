@@ -31,6 +31,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -44,6 +45,9 @@ public class CosmicSovereignEntity extends HostileEntity {
     private int supernovaCooldown = 130;
     private boolean isEnraged = false;
     private int scaledPlayerCount = 1;
+    private BlockPos domainOrigin = null;
+    private boolean isDying = false;
+    private int deathTicks = 0;
 
     public CosmicSovereignEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -85,12 +89,27 @@ public class CosmicSovereignEntity extends HostileEntity {
 
     @Override
     public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        if (this.isDying) {
+            return false;
+        }
+
         // Immunity to all projectiles (cosmic kinetic shield)
         if (source.getSource() instanceof ProjectileEntity) {
             world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK.value(), SoundCategory.HOSTILE, 2.0f, 1.8f);
             world.spawnParticles(ParticleTypes.FIREWORK, this.getX(), this.getY() + 1.5, this.getZ(), 8, 0.3, 0.3, 0.3, 0.05);
             return false;
         }
+
+        if (amount >= this.getHealth()) {
+            this.isDying = true;
+            this.setHealth(1.0f);
+            this.setInvulnerable(true);
+            this.bossBar.setPercent(0.0f);
+            world.playSound(null, this.getX(), this.getY(), this.getZ(),
+                    SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 2.0f, 0.6f);
+            return true;
+        }
+
         return super.damage(world, source, amount);
     }
 
@@ -121,6 +140,20 @@ public class CosmicSovereignEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+
+        if (this.domainOrigin == null) {
+            this.domainOrigin = this.getBlockPos();
+        }
+
+        if (this.isDying) {
+            this.deathTicks++;
+            BossCinematicsHelper.tickBossDeath(this, world, this.deathTicks, ParticleTypes.END_ROD, () -> {
+                dropLootAndFinish(world);
+            });
+            return;
+        }
+
+        BossArenaHelper.enforceDomain(this, world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.END_ROD);
         this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 2500.0, 75.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
@@ -278,6 +311,7 @@ public class CosmicSovereignEntity extends HostileEntity {
                 enemy.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 1), this);
             }
         }
+        BossCinematicsHelper.triggerScreenShake(world, this.getEntityPos(), 24.0, 0.45);
     }
 
     @Override
@@ -292,15 +326,18 @@ public class CosmicSovereignEntity extends HostileEntity {
         this.bossBar.removePlayer(player);
     }
 
-    @Override
-    protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
-        super.dropLoot(world, damageSource, causedByPlayer);
-        // Guaranteed ultimate rewards
-        this.dropStack(world, new ItemStack(ModBossItems.COSMIC_SINGULARITY, 1));
+    private void dropLootAndFinish(ServerWorld world) {
+        if (this.domainOrigin != null) {
+            BossArenaHelper.breakDomain(world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.END_ROD);
+        }
+        this.dropStack(world, new ItemStack(ModBossItems.SUPERNOVA_SCEPTER, 1));
         this.dropStack(world, new ItemStack(ModBossItems.COSMIC_TROPHY, 1));
+        this.dropStack(world, new ItemStack(ModBossItems.COSMIC_SINGULARITY, 1));
         if (OreRegistryData.TIERS.size() >= 150) {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(149).ingotItem, 16));
         }
+        this.bossBar.clearPlayers();
+        this.discard();
     }
 
     @Override

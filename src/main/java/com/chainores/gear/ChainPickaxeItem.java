@@ -67,6 +67,21 @@ public class ChainPickaxeItem extends Item {
                 } else if (com.chainores.modifier.ChainModifiers.GEM_CHRONO.equals(base)) {
                     target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOWNESS, 40 * gemTier, 3));
                     target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.WEAKNESS, 40 * gemTier, 1));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_FROST.equals(base)) {
+                    target.setFrozenTicks(80 * gemTier);
+                    target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOWNESS, 50 * gemTier, Math.min(gemTier, 2)));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_STORM.equals(base)) {
+                    target.damage(world, attacker.getDamageSources().magic(), 6.0f * gemTier);
+                    world.spawnParticles(net.minecraft.particle.ParticleTypes.ELECTRIC_SPARK, target.getX(), target.getY() + 1.0, target.getZ(), 5 * gemTier, 0.2, 0.3, 0.2, 0.1);
+                } else if (com.chainores.modifier.ChainModifiers.GEM_VENOM.equals(base)) {
+                    target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.POISON, 60 * gemTier, gemTier - 1));
+                } else if (com.chainores.modifier.ChainModifiers.GEM_SOLAR.equals(base)) {
+                    if (target.getType().isIn(net.minecraft.registry.tag.EntityTypeTags.UNDEAD)) {
+                        target.damage(world, attacker.getDamageSources().magic(), 12.0f * gemTier);
+                        target.setOnFireFor(5 * gemTier);
+                    } else {
+                        target.setOnFireFor(3 * gemTier);
+                    }
                 }
             }
             float mult = com.chainores.modifier.ChainModifiers.getDamageMultiplier(stack);

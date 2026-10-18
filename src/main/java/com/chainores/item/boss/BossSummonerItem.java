@@ -139,11 +139,14 @@ public class BossSummonerItem extends Item {
 
         serverWorld.spawnEntity(boss);
 
-        // Server-wide broadcast announcement
+        // Server-wide broadcast announcement and Cinematic Screen Title
         Text announcement = Text.translatable(summonMessageKey).formatted(messageColor, Formatting.BOLD);
         for (ServerPlayerEntity serverPlayer : serverWorld.getServer().getPlayerManager().getPlayerList()) {
             serverPlayer.sendMessage(announcement, false);
         }
+        Text title = Text.literal("¡" + boss.getName().getString().toUpperCase() + " HA DESPERTADO!").formatted(messageColor, Formatting.BOLD);
+        Text subtitle = Text.translatable(summonMessageKey).formatted(Formatting.ITALIC, Formatting.WHITE);
+        com.chainores.entity.BossCinematicsHelper.sendBossSpawnTitle(serverWorld, pos, title, subtitle, summonSound);
 
         if (player != null && !player.getAbilities().creativeMode) {
             stack.decrement(1);

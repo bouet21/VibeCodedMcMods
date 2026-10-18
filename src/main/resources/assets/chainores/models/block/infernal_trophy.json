@@ -1,0 +1,8 @@
+{
+  "parent": "chainores:block/boss_trophy_template",
+  "textures": {
+    "base": "minecraft:block/nether_bricks",
+    "post": "minecraft:block/crying_obsidian",
+    "top": "minecraft:block/magma"
+  }
+}

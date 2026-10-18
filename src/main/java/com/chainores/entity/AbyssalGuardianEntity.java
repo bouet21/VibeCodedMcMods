@@ -29,6 +29,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -43,6 +44,9 @@ public class AbyssalGuardianEntity extends HostileEntity {
     private int dashCooldown = 80;
     private boolean isEnraged = false;
     private int scaledPlayerCount = 1;
+    private BlockPos domainOrigin = null;
+    private boolean isDying = false;
+    private int deathTicks = 0;
 
     public AbyssalGuardianEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -78,6 +82,23 @@ public class AbyssalGuardianEntity extends HostileEntity {
     }
 
     @Override
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        if (this.isDying) {
+            return false;
+        }
+        if (amount >= this.getHealth()) {
+            this.isDying = true;
+            this.setHealth(1.0f);
+            this.setInvulnerable(true);
+            this.bossBar.setPercent(0.0f);
+            world.playSound(null, this.getX(), this.getY(), this.getZ(),
+                    SoundEvents.ENTITY_WARDEN_DEATH, SoundCategory.HOSTILE, 1.8f, 0.7f);
+            return true;
+        }
+        return super.damage(world, source, amount);
+    }
+
+    @Override
     public boolean tryAttack(ServerWorld world, Entity target) {
         boolean success = super.tryAttack(world, target);
         if (success && target instanceof LivingEntity living) {
@@ -96,6 +117,20 @@ public class AbyssalGuardianEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+
+        if (this.domainOrigin == null) {
+            this.domainOrigin = this.getBlockPos();
+        }
+
+        if (this.isDying) {
+            this.deathTicks++;
+            BossCinematicsHelper.tickBossDeath(this, world, this.deathTicks, ParticleTypes.SCULK_SOUL, () -> {
+                dropLootAndFinish(world);
+            });
+            return;
+        }
+
+        BossArenaHelper.enforceDomain(this, world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.SCULK_SOUL);
         this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 650.0, 32.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
@@ -196,6 +231,7 @@ public class AbyssalGuardianEntity extends HostileEntity {
     private void executeGroundSlam(ServerWorld world) {
         world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, SoundCategory.HOSTILE, 2.0f, 0.7f);
         world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.HOSTILE, 1.4f, 1.2f);
+        BossCinematicsHelper.triggerScreenShake(world, this.getEntityPos(), 24.0, 0.28);
 
         // Ring of sculk soul particles
         for (int angle = 0; angle < 360; angle += 15) {
@@ -245,6 +281,7 @@ public class AbyssalGuardianEntity extends HostileEntity {
         Vec3d direction = targetPos.subtract(origin).normalize();
 
         world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.HOSTILE, 2.0f, 1.0f);
+        BossCinematicsHelper.triggerScreenShake(world, this.getEntityPos(), 26.0, 0.30);
 
         // Particle beam
         double distance = origin.distanceTo(targetPos);
@@ -272,14 +309,18 @@ public class AbyssalGuardianEntity extends HostileEntity {
         this.bossBar.removePlayer(player);
     }
 
-    @Override
-    protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
-        super.dropLoot(world, damageSource, causedByPlayer);
-        // Guaranteed transition drops
-        this.dropStack(world, new ItemStack(ModBossItems.ABYSSAL_CATALYST, 1 + world.random.nextInt(2)));
-        if (OreRegistryData.TIERS.size() >= 70) {
-            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(69).ingotItem, 4 + world.random.nextInt(5)));
+    private void dropLootAndFinish(ServerWorld world) {
+        if (this.domainOrigin != null) {
+            BossArenaHelper.breakDomain(world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.SCULK_SOUL);
         }
+        this.dropStack(world, new ItemStack(ModBossItems.ABYSSAL_CATALYST, 2));
+        this.dropStack(world, new ItemStack(ModBossItems.ABYSSAL_TRIDENT, 1));
+        this.dropStack(world, new ItemStack(ModBossItems.ABYSSAL_TROPHY, 1));
+        if (OreRegistryData.TIERS.size() >= 70) {
+            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(69).ingotItem, 6));
+        }
+        this.bossBar.clearPlayers();
+        this.discard();
     }
 
     @Override

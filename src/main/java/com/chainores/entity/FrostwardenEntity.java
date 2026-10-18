@@ -29,6 +29,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -40,6 +41,9 @@ public class FrostwardenEntity extends HostileEntity {
     private int slamCooldown = 90;
     private int novaCooldown = 130;
     private int scaledPlayerCount = 1;
+    private BlockPos domainOrigin = null;
+    private boolean isDying = false;
+    private int deathTicks = 0;
 
     public FrostwardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -75,6 +79,23 @@ public class FrostwardenEntity extends HostileEntity {
     }
 
     @Override
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        if (this.isDying) {
+            return false;
+        }
+        if (amount >= this.getHealth()) {
+            this.isDying = true;
+            this.setHealth(1.0f);
+            this.setInvulnerable(true);
+            this.bossBar.setPercent(0.0f);
+            world.playSound(null, this.getX(), this.getY(), this.getZ(),
+                    SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.5f, 1.3f);
+            return true;
+        }
+        return super.damage(world, source, amount);
+    }
+
+    @Override
     public boolean tryAttack(ServerWorld world, Entity target) {
         boolean success = super.tryAttack(world, target);
         if (success && target instanceof LivingEntity living) {
@@ -89,6 +110,20 @@ public class FrostwardenEntity extends HostileEntity {
     @Override
     protected void mobTick(ServerWorld world) {
         super.mobTick(world);
+
+        if (this.domainOrigin == null) {
+            this.domainOrigin = this.getBlockPos();
+        }
+
+        if (this.isDying) {
+            this.deathTicks++;
+            BossCinematicsHelper.tickBossDeath(this, world, this.deathTicks, ParticleTypes.SNOWFLAKE, () -> {
+                dropLootAndFinish(world);
+            });
+            return;
+        }
+
+        BossArenaHelper.enforceDomain(this, world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.SNOWFLAKE);
         this.scaledPlayerCount = BossScalingHelper.updateBossScaling(this, world, 350.0, 18.0, this.scaledPlayerCount);
         this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 
@@ -120,6 +155,7 @@ public class FrostwardenEntity extends HostileEntity {
     private void performFrostSlam(ServerWorld world) {
         world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.HOSTILE, 1.2f, 1.4f);
         world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_SNOW_BREAK, SoundCategory.HOSTILE, 1.5f, 0.8f);
+        BossCinematicsHelper.triggerScreenShake(world, this.getEntityPos(), 22.0, 0.22);
 
         Box impactBox = this.getBoundingBox().expand(7.0, 3.0, 7.0);
         List<LivingEntity> enemies = world.getEntitiesByClass(LivingEntity.class, impactBox,
@@ -168,13 +204,18 @@ public class FrostwardenEntity extends HostileEntity {
         this.bossBar.removePlayer(player);
     }
 
-    @Override
-    protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
-        super.dropLoot(world, damageSource, causedByPlayer);
-        this.dropStack(world, new ItemStack(ModBossItems.GLACIAL_CATALYST, 1 + world.random.nextInt(2)));
-        if (OreRegistryData.TIERS.size() >= 20) {
-            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(19).ingotItem, 4 + world.random.nextInt(5)));
+    private void dropLootAndFinish(ServerWorld world) {
+        if (this.domainOrigin != null) {
+            BossArenaHelper.breakDomain(world, this.domainOrigin, BossArenaHelper.DEFAULT_RADIUS, ParticleTypes.SNOWFLAKE);
         }
+        this.dropStack(world, new ItemStack(ModBossItems.GLACIAL_CATALYST, 2));
+        this.dropStack(world, new ItemStack(ModBossItems.GLACIAL_BLADE, 1));
+        this.dropStack(world, new ItemStack(ModBossItems.GLACIAL_TROPHY, 1));
+        if (OreRegistryData.TIERS.size() >= 20) {
+            this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(19).ingotItem, 6));
+        }
+        this.bossBar.clearPlayers();
+        this.discard();
     }
 
     @Override
