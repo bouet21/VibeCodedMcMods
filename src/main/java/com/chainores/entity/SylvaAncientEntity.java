@@ -204,6 +204,8 @@ public class SylvaAncientEntity extends HostileEntity {
         this.dropStack(world, new ItemStack(ModBossItems.SYLVA_CATALYST, 2));
         this.dropStack(world, new ItemStack(ModBossItems.BRAMBLE_WHIP, 1));
         this.dropStack(world, new ItemStack(ModBossItems.SYLVA_TROPHY, 1));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.VENOM_GEM, 2));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.EARTH_GEM, 2));
         if (OreRegistryData.TIERS.size() >= 40) {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(39).ingotItem, 6));
         }

@@ -321,6 +321,8 @@ public class VoidColossusEntity extends HostileEntity {
         this.dropStack(world, new ItemStack(ModBossItems.VOID_SHARD, 2));
         this.dropStack(world, new ItemStack(ModBossItems.SINGULARITY_BLADE, 1));
         this.dropStack(world, new ItemStack(ModBossItems.VOID_TROPHY, 1));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.VOID_GEM, 2));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.STORM_GEM, 2));
         if (OreRegistryData.TIERS.size() >= 135) {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(134).ingotItem, 6));
         }

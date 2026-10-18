@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " I ",
+    "INI",
+    " I "
+  ],
+  "key": {
+    "I": "minecraft:blue_ice",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "chainores:frost_gem",
+    "count": 1
+  }
+}

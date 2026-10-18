@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " E ",
+    "SNS",
+    " E "
+  ],
+  "key": {
+    "E": "minecraft:fermented_spider_eye",
+    "S": "minecraft:slime_block",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "chainores:venom_gem",
+    "count": 1
+  }
+}

@@ -316,6 +316,8 @@ public class AbyssalGuardianEntity extends HostileEntity {
         this.dropStack(world, new ItemStack(ModBossItems.ABYSSAL_CATALYST, 2));
         this.dropStack(world, new ItemStack(ModBossItems.ABYSSAL_TRIDENT, 1));
         this.dropStack(world, new ItemStack(ModBossItems.ABYSSAL_TROPHY, 1));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.ECHO_GEM, 2));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.BLOOD_GEM, 2));
         if (OreRegistryData.TIERS.size() >= 70) {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(69).ingotItem, 6));
         }

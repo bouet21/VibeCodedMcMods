@@ -348,6 +348,8 @@ public class NetherBehemothEntity extends HostileEntity {
         this.dropStack(world, new ItemStack(ModBossItems.NETHER_CORE, 2));
         this.dropStack(world, new ItemStack(ModBossItems.INFERNAL_WARAXE, 1));
         this.dropStack(world, new ItemStack(ModBossItems.INFERNAL_TROPHY, 1));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.CORE_GEM, 2));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.SOLAR_GEM, 2));
         if (OreRegistryData.TIERS.size() >= 105) {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(104).ingotItem, 6));
         }

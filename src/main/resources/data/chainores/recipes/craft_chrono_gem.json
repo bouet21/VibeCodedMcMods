@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "GNG",
+    " C "
+  ],
+  "key": {
+    "C": "minecraft:clock",
+    "G": "minecraft:gold_block",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "chainores:chrono_gem",
+    "count": 1
+  }
+}

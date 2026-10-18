@@ -333,6 +333,9 @@ public class CosmicSovereignEntity extends HostileEntity {
         this.dropStack(world, new ItemStack(ModBossItems.SUPERNOVA_SCEPTER, 1));
         this.dropStack(world, new ItemStack(ModBossItems.COSMIC_TROPHY, 1));
         this.dropStack(world, new ItemStack(ModBossItems.COSMIC_SINGULARITY, 1));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.GENESIS_GEM, 2));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.CHRONO_GEM, 2));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.MAGNET_GEM, 2));
         if (OreRegistryData.TIERS.size() >= 150) {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(149).ingotItem, 16));
         }

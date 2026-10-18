@@ -1060,20 +1060,22 @@ public class ChainOresGuideScreen extends Screen {
             checkTooltip(context, amethyst, cx, cy + 12, mouseX, mouseY);
 
         } else {
-            // subPage 4: Fusión de Gemas T1-T3 (All 12 Gems)
-            context.drawText(this.textRenderer, Text.literal("✦ FUSIÓN Y NIVELES DE GEMAS (TIER I-III) ✦").formatted(Formatting.GOLD, Formatting.BOLD),
+            // subPage 4: Fusión y Obtención de Gemas (Tiers I-III)
+            context.drawText(this.textRenderer, Text.literal("✦ CÓMO CONSEGUIR Y FUSIONAR GEMAS ✦").formatted(Formatting.GOLD, Formatting.BOLD),
                     cx, cy, 0xFFFFD700, false);
 
-            context.drawText(this.textRenderer, "⚒ FUSIÓN EN EL YUNQUE EN CADENA:", cx, cy + 14, 0xFF55FF55, false);
-            context.drawText(this.textRenderer, "• Combina 2 gemas iguales de Tier I para forjar Tier II.", cx, cy + 24, 0xFFE0E0E0, false);
-            context.drawText(this.textRenderer, "• Combina 2 gemas de Tier II para forjar Tier III (Máx).", cx, cy + 34, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, "1. ⚔ DROPS DE JEFES TEMÁTICOS (Garantizados):", cx, cy + 12, 0xFFFF5555, false);
+            context.drawText(this.textRenderer, " • Frostwarden: Glacial | Sylva Ancient: Veneno y Tierra", cx + 4, cy + 22, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, " • Nether Behemoth: Núcleo y Solar | Coloso Vacío: Vacío y Tempestad", cx + 4, cy + 32, 0xFFE0E0E0, false);
+            context.drawText(this.textRenderer, " • Guardián Abisal: Eco y Carmesí | Soberano Cósmico: Génesis y Crono", cx + 4, cy + 42, 0xFFE0E0E0, false);
 
-            context.drawText(this.textRenderer, "💎 ESCALADO DE PODER DE TIER III (12 GEMAS ÚNICAS):", cx, cy + 46, 0xFF55FFFF, false);
-            context.drawText(this.textRenderer, "• Sangre / Vacío / Núcleo / Génesis / Tierra / Eco / Imán / Crono", cx, cy + 56, 0xFFFFFFFF, false);
-            context.drawText(this.textRenderer, "• Glacial (Cero Absoluto) | Tempestad (Rayo) | Veneno (Ácido) | Solar (Luz)", cx, cy + 66, 0xFFFFF1A8, false);
-            context.drawText(this.textRenderer, "• Todas las gemas multiplican drásticamente sus estadísticas en Tier III.", cx, cy + 76, 0xFFA5D6A7, false);
+            context.drawText(this.textRenderer, "2. ⚒ MESA DE CRAFTEO (Tier I):", cx, cy + 54, 0xFF55FF55, false);
+            context.drawText(this.textRenderer, " • 1 Lingote de Netherite + 4 Materiales Elementales temáticos.", cx + 4, cy + 64, 0xFFE0E0E0, false);
 
-            int dockY = cy + 96;
+            context.drawText(this.textRenderer, "3. 💎 YUNQUE EN CADENA (Fusión de Rangos):", cx, cy + 76, 0xFF55FFFF, false);
+            context.drawText(this.textRenderer, " • 2 Gemas Tier I = Tier II | 2 Gemas Tier II = Tier III (Máx).", cx + 4, cy + 86, 0xFFE0E0E0, false);
+
+            int dockY = cy + 98;
             drawCustomBorder(context, cx, dockY, 332, 28, 0xFF4A3E31);
             context.drawText(this.textRenderer, "Tier III:", cx + 4, dockY + 10, 0xFFAAAAAA, false);
 

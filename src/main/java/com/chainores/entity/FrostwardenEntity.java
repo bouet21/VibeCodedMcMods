@@ -211,6 +211,8 @@ public class FrostwardenEntity extends HostileEntity {
         this.dropStack(world, new ItemStack(ModBossItems.GLACIAL_CATALYST, 2));
         this.dropStack(world, new ItemStack(ModBossItems.GLACIAL_BLADE, 1));
         this.dropStack(world, new ItemStack(ModBossItems.GLACIAL_TROPHY, 1));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.FROST_GEM, 2));
+        this.dropStack(world, new ItemStack(com.chainores.registry.ModGems.FROST_GEM_2, 1));
         if (OreRegistryData.TIERS.size() >= 20) {
             this.dropStack(world, new ItemStack(OreRegistryData.TIERS.get(19).ingotItem, 6));
         }

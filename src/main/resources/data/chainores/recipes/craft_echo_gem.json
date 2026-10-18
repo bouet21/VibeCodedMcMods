@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "SNS",
+    " S "
+  ],
+  "key": {
+    "S": "minecraft:echo_shard",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "chainores:echo_gem",
+    "count": 1
+  }
+}
